@@ -1,0 +1,785 @@
+const { useState, useEffect, useRef, useMemo, useCallback } = React;
+
+const CHAPTER_COLORS = {
+  '07':'#10B981','33':'#F59E0B','49':'#8B5CF6','61':'#EC4899',
+  '64':'#F97316','69':'#14B8A6','72':'#6366F1','73':'#06B6D4',
+  '78':'#A78BFA','84':'#3B82F6','85':'#EF4444','87':'#22D3EE',
+  '39':'#D946EF','40':'#FB923C','94':'#84CC16',
+};
+
+const COUNTRY_NAMES = {
+  '156':'Xitoy','276':'Germaniya','392':'Yaponiya','410':'Koreya',
+  '840':'AQSh','036':'Avstraliya','764':'Tailand','682':'Saudiya',
+  '356':'Hindiston',
+};
+
+window.NetworkAnalysisPage = () => {
+  const [hsLevel, setHsLevel] = useState('6');
+  const [period, setPeriod] = useState('1y');
+  const [weightMetric, setWeightMetric] = useState('frequency');
+  const [nodeColor, setNodeColor] = useState('uniform');
+  const [nodeSize, setNodeSize] = useState('uniform');
+  const [importerFilter, setImporterFilter] = useState('all');
+  const [countryFilter, setCountryFilter] = useState('all');
+  const [minEdge, setMinEdge] = useState(1);
+  const [selected, setSelected] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const cyRef = useRef(null);
+  const containerRef = useRef(null);
+  const searchTimerRef = useRef(null);
+
+  // Debounce search
+  useEffect(() => {
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    searchTimerRef.current = setTimeout(() => {
+      setDebouncedSearch(searchTerm.trim());
+    }, 300);
+    return () => { if (searchTimerRef.current) clearTimeout(searchTimerRef.current); };
+  }, [searchTerm]);
+
+  const dataKey = `${hsLevel}_${period}`;
+  const amendments = MOCK.network[`amendments_${dataKey}`] || [];
+  const declarations = MOCK.network[`declarations_${dataKey}`] || [];
+
+  // Filtered data
+  const filteredAmendments = useMemo(() => {
+    return amendments.filter(r =>
+      (importerFilter === 'all' || r.importer === importerFilter) &&
+      (countryFilter === 'all' || r.country_of_origin === countryFilter)
+    );
+  }, [amendments, importerFilter, countryFilter]);
+
+  const filteredDeclarations = useMemo(() => {
+    return declarations.filter(r =>
+      (importerFilter === 'all' || r.importer === importerFilter) &&
+      (countryFilter === 'all' || r.country_of_origin === countryFilter)
+    );
+  }, [declarations, importerFilter, countryFilter]);
+
+  // Build declarations lookup for amendment rate
+  const declLookup = useMemo(() => {
+    const map = {};
+    filteredDeclarations.forEach(d => {
+      const key = `${d.hs_code}|${d.importer}|${d.country_of_origin}`;
+      map[key] = (map[key] || 0) + d.count;
+    });
+    return map;
+  }, [filteredDeclarations]);
+
+  // Unique importers and countries from full (unfiltered) data
+  const uniqueImporters = useMemo(() => {
+    const s = new Set();
+    amendments.forEach(r => s.add(r.importer));
+    declarations.forEach(r => s.add(r.importer));
+    return [...s].sort();
+  }, [amendments, declarations]);
+
+  const uniqueCountries = useMemo(() => {
+    const s = new Set();
+    amendments.forEach(r => s.add(r.country_of_origin));
+    declarations.forEach(r => s.add(r.country_of_origin));
+    return [...s].sort();
+  }, [amendments, declarations]);
+
+  // Aggregate edges
+  const edgeMap = useMemo(() => {
+    const map = {};
+    filteredAmendments.forEach(r => {
+      const key = `${r.first_hs_code}\u2192${r.corrected_hs_code}`;
+      if (!map[key]) map[key] = { source: r.first_hs_code, target: r.corrected_hs_code, frequency: 0, tax: 0, amendCount: 0, declCount: 0, importers: new Set() };
+      map[key].frequency += r.count;
+      map[key].tax += r.tax_amount;
+      map[key].importers.add(r.importer);
+      const declKey = `${r.first_hs_code}|${r.importer}|${r.country_of_origin}`;
+      map[key].amendCount += r.count;
+      map[key].declCount += (declLookup[declKey] || 0);
+    });
+    return map;
+  }, [filteredAmendments, declLookup]);
+
+  // Compute node amendment counts for sizing
+  const nodeAmendCounts = useMemo(() => {
+    const counts = {};
+    Object.values(edgeMap).forEach(e => {
+      counts[e.source] = (counts[e.source] || 0) + e.frequency;
+      counts[e.target] = (counts[e.target] || 0) + e.frequency;
+    });
+    return counts;
+  }, [edgeMap]);
+
+  // Build graph elements
+  const { nodeElements, edgeElements, maxWeight, summaryStats } = useMemo(() => {
+    const nodes = new Set();
+    const edges = [];
+    let totalAmend = 0, totalTax = 0;
+    const declaredSet = new Set(), correctedSet = new Set();
+    const pairCounts = [];
+
+    Object.values(edgeMap).forEach(e => {
+      let weight;
+      if (weightMetric === 'frequency') weight = e.frequency;
+      else if (weightMetric === 'tax') weight = e.tax;
+      else weight = e.declCount > 0 ? e.frequency / e.declCount : 0;
+
+      if (weight < minEdge && weightMetric === 'frequency') return;
+      if (weightMetric === 'frequency' && e.frequency < minEdge) return;
+      if (weightMetric !== 'frequency' && e.frequency < minEdge) return;
+
+      nodes.add(e.source);
+      nodes.add(e.target);
+      declaredSet.add(e.source);
+      correctedSet.add(e.target);
+      totalAmend += e.frequency;
+      totalTax += e.tax;
+      pairCounts.push({ source: e.source, target: e.target, count: e.frequency, tax: e.tax });
+
+      edges.push({
+        group: 'edges',
+        data: {
+          id: `${e.source}\u2192${e.target}`,
+          source: e.source,
+          target: e.target,
+          weight,
+          frequency: e.frequency,
+          tax: e.tax,
+          rate: e.declCount > 0 ? (e.frequency / e.declCount) : null,
+          importerCount: e.importers.size,
+        }
+      });
+    });
+
+    const maxW = edges.length > 0 ? Math.max(...edges.map(e => e.data.weight)) : 1;
+
+    // Compute top 20% weight threshold for edge labels
+    const sortedWeights = edges.map(e => e.data.weight).sort((a, b) => a - b);
+    const top20Threshold = sortedWeights.length > 0
+      ? sortedWeights[Math.floor(sortedWeights.length * 0.8)]
+      : Infinity;
+
+    // Normalize edge widths and assign labels
+    edges.forEach(e => {
+      const norm = maxW > 0 ? e.data.weight / maxW : 0;
+      e.data.width = 1 + norm * 7;
+      e.data.opacity = 0.4 + norm * 0.4;
+
+      // Edge label for top 20%
+      if (e.data.weight >= top20Threshold) {
+        if (weightMetric === 'frequency') {
+          e.data.edgeLabel = String(e.data.frequency);
+        } else if (weightMetric === 'tax') {
+          e.data.edgeLabel = formatCurrency(e.data.tax);
+        } else {
+          e.data.edgeLabel = e.data.rate !== null ? (e.data.rate * 100).toFixed(0) + '%' : '';
+        }
+      } else {
+        e.data.edgeLabel = '';
+      }
+    });
+
+    const getColor = (code) => {
+      if (nodeColor === 'uniform') return '#06B6D4';
+      return CHAPTER_COLORS[code.substring(0, 2)] || '#06B6D4';
+    };
+
+    // Node sizing
+    const allCounts = [...nodes].map(code => nodeAmendCounts[code] || 0);
+    const minCount = allCounts.length > 0 ? Math.min(...allCounts) : 0;
+    const maxCount = allCounts.length > 0 ? Math.max(...allCounts) : 0;
+    const countRange = maxCount - minCount || 1;
+
+    const nodeEls = [...nodes].map(code => {
+      let size = 22;
+      if (nodeSize === 'volume') {
+        const c = nodeAmendCounts[code] || 0;
+        size = 20 + ((c - minCount) / countRange) * 40;
+      }
+      return {
+        group: 'nodes',
+        data: { id: code, label: code, color: getColor(code), nodeWidth: size, nodeHeight: size }
+      };
+    });
+
+    pairCounts.sort((a, b) => b.count - a.count);
+    const top5 = pairCounts.slice(0, 5);
+
+    return {
+      nodeElements: nodeEls,
+      edgeElements: edges,
+      maxWeight: maxW,
+      summaryStats: { totalAmend, totalTax, declaredCount: declaredSet.size, correctedCount: correctedSet.size, top5 }
+    };
+  }, [edgeMap, filteredDeclarations, minEdge, weightMetric, nodeColor, nodeSize, nodeAmendCounts]);
+
+  // Max edge for slider
+  const maxEdgeCount = useMemo(() => {
+    const counts = Object.values(edgeMap).map(e => e.frequency);
+    return counts.length > 0 ? Math.max(...counts) : 1;
+  }, [edgeMap]);
+
+  // Initialize Cytoscape
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const cy = cytoscape({
+      container: containerRef.current,
+      style: [
+        { selector: 'node', style: {
+          'background-color': 'data(color)',
+          'label': 'data(label)',
+          'font-size': '9px',
+          'color': '#F1F5F9',
+          'text-outline-color': '#0B1120',
+          'text-outline-width': 1.5,
+          'text-valign': 'bottom',
+          'text-margin-y': 4,
+          'width': 'data(nodeWidth)',
+          'height': 'data(nodeHeight)',
+          'border-width': 0,
+          'border-color': '#F59E0B',
+          'transition-property': 'width, height, border-width, border-color, opacity, background-color',
+          'transition-duration': '200ms',
+        }},
+        { selector: 'edge', style: {
+          'width': 'data(width)',
+          'line-color': '#FFFFFF',
+          'line-opacity': 'data(opacity)',
+          'target-arrow-color': '#FFFFFF',
+          'target-arrow-shape': 'triangle',
+          'arrow-scale': 0.7,
+          'curve-style': 'bezier',
+          'label': 'data(edgeLabel)',
+          'font-size': '10px',
+          'color': '#F1F5F9',
+          'text-background-color': '#0B1120',
+          'text-background-opacity': 0.75,
+          'text-background-padding': '2px',
+          'text-background-shape': 'roundrectangle',
+          'text-margin-y': -8,
+          'transition-property': 'line-opacity, width, line-color, target-arrow-color',
+          'transition-duration': '200ms',
+        }},
+        { selector: '.dimmed', style: {
+          'opacity': 0.15,
+        }},
+        { selector: 'edge.dimmed', style: {
+          'line-opacity': 0.08,
+        }},
+        { selector: 'node.highlighted', style: {
+          'border-width': 2,
+          'border-color': '#F59E0B',
+        }},
+        { selector: 'node.neighbor', style: {
+          'border-width': 1.5,
+          'border-color': '#F59E0B',
+        }},
+        { selector: 'edge.highlighted', style: {
+          'line-opacity': 1,
+          'line-color': '#F59E0B',
+          'target-arrow-color': '#F59E0B',
+        }},
+        { selector: 'node:active, node:selected', style: {
+          'border-width': 2.5,
+          'border-color': '#F59E0B',
+          'background-color': '#F59E0B',
+        }},
+        { selector: 'edge:active, edge:selected', style: {
+          'line-color': '#F59E0B',
+          'target-arrow-color': '#F59E0B',
+          'line-opacity': 1,
+        }},
+        // Search highlight styles
+        { selector: 'node.search-match', style: {
+          'border-width': 2.5,
+          'border-color': '#06B6D4',
+          'background-color': 'data(color)',
+          'z-index': 10,
+        }},
+        { selector: '.search-dimmed', style: {
+          'opacity': 0.15,
+        }},
+        { selector: 'edge.search-dimmed', style: {
+          'line-opacity': 0.08,
+        }},
+      ],
+      layout: { name: 'cose', animate: false },
+      minZoom: 0.2,
+      maxZoom: 4,
+      wheelSensitivity: 0.3,
+    });
+    cyRef.current = cy;
+
+    cy.on('tap', 'node', (e) => {
+      const nd = e.target.data();
+      let outCount = 0, inCount = 0, outTax = 0, inTax = 0;
+      const connected = {};
+      Object.values(edgeMap).forEach(ed => {
+        if (ed.source === nd.id) {
+          outCount += ed.frequency; outTax += ed.tax;
+          const k = ed.target;
+          connected[k] = connected[k] || { code: k, dir: '\u2192', count: 0, tax: 0 };
+          connected[k].count += ed.frequency; connected[k].tax += ed.tax;
+        }
+        if (ed.target === nd.id) {
+          inCount += ed.frequency; inTax += ed.tax;
+          const k = ed.source;
+          connected[k] = connected[k] || { code: k, dir: '\u2190', count: 0, tax: 0 };
+          connected[k].count += ed.frequency; connected[k].tax += ed.tax;
+        }
+      });
+      const top5 = Object.values(connected).sort((a, b) => b.count - a.count).slice(0, 5);
+      setSelected({ type: 'node', data: { id: nd.id, outCount, inCount, outTax, inTax, totalTax: outTax + inTax, top5 } });
+    });
+
+    cy.on('tap', 'edge', (e) => {
+      const ed = e.target.data();
+      setSelected({ type: 'edge', data: ed });
+    });
+
+    cy.on('tap', (e) => {
+      if (e.target === cy) setSelected(null);
+    });
+
+    // Hover highlight — node
+    cy.on('mouseover', 'node', (e) => {
+      const node = e.target;
+      const neighborhood = node.neighborhood();
+      cy.elements().addClass('dimmed');
+      node.removeClass('dimmed').addClass('highlighted');
+      neighborhood.removeClass('dimmed');
+      neighborhood.nodes().addClass('neighbor');
+      neighborhood.edges().addClass('highlighted');
+      containerRef.current.style.cursor = 'pointer';
+    });
+
+    cy.on('mouseout', 'node', () => {
+      cy.elements().removeClass('dimmed highlighted neighbor');
+      // Re-apply search highlight if active
+      applySearchHighlight();
+      containerRef.current.style.cursor = '';
+    });
+
+    // Hover highlight — edge
+    cy.on('mouseover', 'edge', (e) => {
+      const edge = e.target;
+      const srcNode = edge.source();
+      const tgtNode = edge.target();
+      cy.elements().addClass('dimmed');
+      edge.removeClass('dimmed').addClass('highlighted');
+      srcNode.removeClass('dimmed').addClass('neighbor');
+      tgtNode.removeClass('dimmed').addClass('neighbor');
+      containerRef.current.style.cursor = 'pointer';
+    });
+
+    cy.on('mouseout', 'edge', () => {
+      cy.elements().removeClass('dimmed highlighted neighbor');
+      applySearchHighlight();
+      containerRef.current.style.cursor = '';
+    });
+
+    return () => cy.destroy();
+  }, []);
+
+  // Function to apply search highlight (called after hover clears)
+  const applySearchHighlight = useCallback(() => {
+    const cy = cyRef.current;
+    if (!cy || !debouncedSearch) return;
+
+    const term = debouncedSearch.toLowerCase();
+    const matches = cy.nodes().filter(n => {
+      const id = n.data('id').toLowerCase();
+      return id.startsWith(term) || id.includes(term);
+    });
+
+    if (matches.length > 0) {
+      cy.elements().addClass('search-dimmed');
+      matches.removeClass('search-dimmed').addClass('search-match');
+      // Also show connected edges
+      matches.connectedEdges().removeClass('search-dimmed');
+    }
+  }, [debouncedSearch]);
+
+  // Search highlight effect
+  useEffect(() => {
+    const cy = cyRef.current;
+    if (!cy) return;
+
+    // Clear previous search highlights
+    cy.elements().removeClass('search-match search-dimmed');
+
+    if (!debouncedSearch) return;
+
+    const term = debouncedSearch.toLowerCase();
+    const matches = cy.nodes().filter(n => {
+      const id = n.data('id').toLowerCase();
+      return id.startsWith(term) || id.includes(term);
+    });
+
+    if (matches.length === 0) return;
+
+    // Dim everything, highlight matches
+    cy.elements().addClass('search-dimmed');
+    matches.removeClass('search-dimmed').addClass('search-match');
+    matches.connectedEdges().removeClass('search-dimmed');
+
+    // If exactly one match, zoom to it
+    if (matches.length === 1) {
+      cy.animate({
+        center: { eles: matches },
+        zoom: 2.5,
+      }, { duration: 400 });
+    }
+  }, [debouncedSearch]);
+
+  // Update graph when data changes
+  useEffect(() => {
+    const cy = cyRef.current;
+    if (!cy) return;
+    cy.elements().remove();
+    if (nodeElements.length > 0) {
+      cy.add([...nodeElements, ...edgeElements]);
+      cy.layout({
+        name: 'cose',
+        animate: true,
+        animationDuration: 400,
+        nodeRepulsion: () => 6000,
+        idealEdgeLength: () => 90,
+        gravity: 0.3,
+        padding: 30,
+        randomize: true,
+      }).run();
+    }
+  }, [nodeElements, edgeElements]);
+
+  // Update node click handler when edgeMap changes
+  useEffect(() => {
+    const cy = cyRef.current;
+    if (!cy) return;
+    cy.removeListener('tap', 'node');
+    cy.on('tap', 'node', (e) => {
+      const nd = e.target.data();
+      let outCount = 0, inCount = 0, outTax = 0, inTax = 0;
+      const connected = {};
+      Object.values(edgeMap).forEach(ed => {
+        if (ed.source === nd.id) {
+          outCount += ed.frequency; outTax += ed.tax;
+          const k = ed.target;
+          connected[k] = connected[k] || { code: k, dir: '\u2192', count: 0, tax: 0 };
+          connected[k].count += ed.frequency; connected[k].tax += ed.tax;
+        }
+        if (ed.target === nd.id) {
+          inCount += ed.frequency; inTax += ed.tax;
+          const k = ed.source;
+          connected[k] = connected[k] || { code: k, dir: '\u2190', count: 0, tax: 0 };
+          connected[k].count += ed.frequency; connected[k].tax += ed.tax;
+        }
+      });
+      const top5 = Object.values(connected).sort((a, b) => b.count - a.count).slice(0, 5);
+      setSelected({ type: 'node', data: { id: nd.id, outCount, inCount, outTax, inTax, totalTax: outTax + inTax, top5 } });
+    });
+  }, [edgeMap]);
+
+  // Zoom controls
+  const handleZoomIn = () => {
+    const cy = cyRef.current;
+    if (!cy) return;
+    const center = { x: cy.width() / 2, y: cy.height() / 2 };
+    cy.animate({ zoom: { level: cy.zoom() * 1.3, renderedPosition: center } }, { duration: 200 });
+  };
+
+  const handleZoomOut = () => {
+    const cy = cyRef.current;
+    if (!cy) return;
+    const center = { x: cy.width() / 2, y: cy.height() / 2 };
+    cy.animate({ zoom: { level: cy.zoom() / 1.3, renderedPosition: center } }, { duration: 200 });
+  };
+
+  const handleFit = () => {
+    const cy = cyRef.current;
+    if (!cy) return;
+    cy.animate({ fit: { eles: cy.elements(), padding: 30 } }, { duration: 200 });
+  };
+
+  // Export PNG
+  const handleExport = () => {
+    const cy = cyRef.current;
+    if (!cy) return;
+    const png = cy.png({ full: true, bg: '#0B1120', scale: 2 });
+    const link = document.createElement('a');
+    link.href = png;
+    link.download = `tarmoq_tahlili_${new Date().toISOString().split('T')[0]}.png`;
+    link.click();
+  };
+
+  // Toggle button helper
+  const ToggleBtn = ({ active, onClick, children }) => (
+    <button onClick={onClick}
+      className={`px-3 py-1 rounded text-xs font-medium transition-all ${
+        active ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/40'
+               : 'bg-[#151F35] text-gray-400 border border-transparent hover:text-gray-300'
+      }`}>{children}</button>
+  );
+
+  // Summary panel
+  const SummaryPanel = () => (
+    <div className="space-y-4">
+      <h3 className="text-sm font-semibold text-white">Umumiy ko'rsatkichlar</h3>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="bg-[#151F35] rounded-lg p-3">
+          <div className="text-[10px] text-gray-500 mb-1">Jami tuzatishlar</div>
+          <div className="text-lg font-bold text-cyan-400">{formatNumber(summaryStats.totalAmend)}</div>
+        </div>
+        <div className="bg-[#151F35] rounded-lg p-3">
+          <div className="text-[10px] text-gray-500 mb-1">Jami summa</div>
+          <div className="text-lg font-bold text-cyan-400">{formatCurrency(summaryStats.totalTax)}</div>
+        </div>
+        <div className="bg-[#151F35] rounded-lg p-3">
+          <div className="text-[10px] text-gray-500 mb-1">Deklarat. kodlar</div>
+          <div className="text-lg font-bold text-white">{summaryStats.declaredCount}</div>
+        </div>
+        <div className="bg-[#151F35] rounded-lg p-3">
+          <div className="text-[10px] text-gray-500 mb-1">Tuzatilgan kodlar</div>
+          <div className="text-lg font-bold text-white">{summaryStats.correctedCount}</div>
+        </div>
+      </div>
+      <div>
+        <h4 className="text-xs font-semibold text-gray-400 mb-2">Top 5 juftliklar</h4>
+        <div className="space-y-1.5">
+          {summaryStats.top5.map((p, i) => (
+            <div key={i} className="flex items-center justify-between bg-[#151F35] rounded px-2.5 py-1.5">
+              <span className="text-[10px] font-mono text-gray-300">{p.source} <span className="text-cyan-400">{'\u2192'}</span> {p.target}</span>
+              <span className="text-[10px] font-semibold text-cyan-400">{p.count}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  // Node detail panel
+  const NodeDetail = ({ data }) => (
+    <div className="space-y-4">
+      <div>
+        <div className="text-[10px] text-gray-500 mb-1">HS kod</div>
+        <h3 className="text-lg font-bold font-mono text-white">{data.id}</h3>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="bg-[#151F35] rounded-lg p-3">
+          <div className="text-[10px] text-gray-500 mb-1">Chiquvchi tuzatishlar</div>
+          <div className="text-base font-bold text-cyan-400">{data.outCount}</div>
+        </div>
+        <div className="bg-[#151F35] rounded-lg p-3">
+          <div className="text-[10px] text-gray-500 mb-1">Kiruvchi tuzatishlar</div>
+          <div className="text-base font-bold text-cyan-400">{data.inCount}</div>
+        </div>
+      </div>
+      <div className="bg-[#151F35] rounded-lg p-3">
+        <div className="text-[10px] text-gray-500 mb-1">Jami soliq summasi</div>
+        <div className="text-base font-bold text-cyan-400">{formatCurrency(data.totalTax)}</div>
+      </div>
+      <div>
+        <h4 className="text-xs font-semibold text-gray-400 mb-2">Eng ko'p bog'langan kodlar</h4>
+        <div className="space-y-1.5">
+          {data.top5.map((c, i) => (
+            <div key={i} className="flex items-center justify-between bg-[#151F35] rounded px-2.5 py-1.5">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-cyan-400">{c.dir}</span>
+                <span className="text-[10px] font-mono text-gray-300">{c.code}</span>
+              </div>
+              <div className="text-right">
+                <span className="text-[10px] font-semibold text-white">{c.count}</span>
+                <span className="text-[10px] text-gray-500 ml-2">{formatCurrency(c.tax)}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  // Edge detail panel
+  const EdgeDetail = ({ data }) => (
+    <div className="space-y-4">
+      <div>
+        <div className="text-[10px] text-gray-500 mb-1">Tuzatish yo'nalishi</div>
+        <h3 className="text-sm font-bold font-mono text-white">{data.source} <span className="text-cyan-400">{'\u2192'}</span> {data.target}</h3>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="bg-[#151F35] rounded-lg p-3">
+          <div className="text-[10px] text-gray-500 mb-1">Chastota</div>
+          <div className="text-base font-bold text-cyan-400">{data.frequency}</div>
+        </div>
+        <div className="bg-[#151F35] rounded-lg p-3">
+          <div className="text-[10px] text-gray-500 mb-1">Soliq summasi</div>
+          <div className="text-base font-bold text-cyan-400">{formatCurrency(data.tax)}</div>
+        </div>
+      </div>
+      <div className="bg-[#151F35] rounded-lg p-3">
+        <div className="text-[10px] text-gray-500 mb-1">Importyorlar soni</div>
+        <div className="text-base font-bold text-white">{data.importerCount}</div>
+      </div>
+      {data.rate !== null && (
+        <div className="bg-[#151F35] rounded-lg p-3">
+          <div className="text-[10px] text-gray-500 mb-1">Tuzatish darajasi</div>
+          <div className="text-base font-bold text-amber-400">{(data.rate * 100).toFixed(1)}%</div>
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <div style={{animation:'fadeInUp 0.4s ease'}}>
+      {/* Controls */}
+      <div className="glass rounded-xl p-4 mb-4 flex items-center gap-5 flex-wrap" style={{animation:'fadeInUp 0.3s ease'}}>
+        {/* HS level */}
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] text-gray-500">HS daraja:</span>
+          <ToggleBtn active={hsLevel==='6'} onClick={() => setHsLevel('6')}>6 xona</ToggleBtn>
+          <ToggleBtn active={hsLevel==='10'} onClick={() => setHsLevel('10')}>10 xona</ToggleBtn>
+        </div>
+
+        <div className="w-px h-6 bg-gray-700"/>
+
+        {/* Period */}
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] text-gray-500">Davr:</span>
+          <ToggleBtn active={period==='1y'} onClick={() => setPeriod('1y')}>1 yil</ToggleBtn>
+          <ToggleBtn active={period==='3m'} onClick={() => setPeriod('3m')}>3 oy</ToggleBtn>
+        </div>
+
+        <div className="w-px h-6 bg-gray-700"/>
+
+        {/* Weight metric */}
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] text-gray-500">Edge og'irligi:</span>
+          <ToggleBtn active={weightMetric==='frequency'} onClick={() => setWeightMetric('frequency')}>Chastota</ToggleBtn>
+          <ToggleBtn active={weightMetric==='tax'} onClick={() => setWeightMetric('tax')}>Soliq summasi</ToggleBtn>
+          <ToggleBtn active={weightMetric==='rate'} onClick={() => setWeightMetric('rate')}>Tuzatish darajasi</ToggleBtn>
+        </div>
+
+        <div className="w-px h-6 bg-gray-700"/>
+
+        {/* Node color */}
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] text-gray-500">Node rangi:</span>
+          <ToggleBtn active={nodeColor==='uniform'} onClick={() => setNodeColor('uniform')}>Bir xil</ToggleBtn>
+          <ToggleBtn active={nodeColor==='chapter'} onClick={() => setNodeColor('chapter')}>Chapter</ToggleBtn>
+        </div>
+
+        <div className="w-px h-6 bg-gray-700"/>
+
+        {/* Node size */}
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] text-gray-500">Node o'lchami:</span>
+          <ToggleBtn active={nodeSize==='uniform'} onClick={() => setNodeSize('uniform')}>Bir xil</ToggleBtn>
+          <ToggleBtn active={nodeSize==='volume'} onClick={() => setNodeSize('volume')}>Hajm bo'yicha</ToggleBtn>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="glass rounded-xl p-3 mb-4 flex items-center gap-5 flex-wrap" style={{animation:'fadeInUp 0.35s ease'}}>
+        <div className="flex items-center gap-2">
+          <Icon name="filter" size={13} className="text-gray-500"/>
+          <select value={importerFilter} onChange={e => { setImporterFilter(e.target.value); setSelected(null); }}
+            className="rule-builder-field text-xs py-1 px-2 rounded bg-[#151F35] border border-gray-700 text-gray-300">
+            <option value="all">Barcha importyorlar</option>
+            {uniqueImporters.map(imp => <option key={imp} value={imp}>{imp}</option>)}
+          </select>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <select value={countryFilter} onChange={e => { setCountryFilter(e.target.value); setSelected(null); }}
+            className="rule-builder-field text-xs py-1 px-2 rounded bg-[#151F35] border border-gray-700 text-gray-300">
+            <option value="all">Barcha mamlakatlar</option>
+            {uniqueCountries.map(c => <option key={c} value={c}>{COUNTRY_NAMES[c] || c} ({c})</option>)}
+          </select>
+        </div>
+
+        {/* Search input */}
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <Icon name="search" size={12} className="text-gray-500 absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none"/>
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              placeholder="HS kod qidirish..."
+              className="text-xs py-1 pl-7 pr-7 rounded bg-[#151F35] border border-gray-700 text-gray-300 placeholder-gray-600 w-40 focus:outline-none focus:border-cyan-500/50"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
+              >
+                <Icon name="x" size={12}/>
+              </button>
+            )}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] text-gray-500">Minimal uchrashish soni:</span>
+          <input type="range" min="1" max={Math.max(maxEdgeCount, 2)} step="1" value={minEdge}
+            onChange={e => setMinEdge(Number(e.target.value))}
+            className="w-24 accent-cyan-500"/>
+          <span className="text-xs font-mono text-cyan-400 w-6 text-center">{minEdge}</span>
+        </div>
+
+        <div className="ml-auto flex items-center gap-2">
+          <span className="text-[10px] text-gray-500">Nodelar:</span>
+          <span className="text-xs font-semibold text-white">{nodeElements.length}</span>
+          <span className="text-[10px] text-gray-500 ml-2">Bog'lanishlar:</span>
+          <span className="text-xs font-semibold text-white">{edgeElements.length}</span>
+        </div>
+      </div>
+
+      {/* Main content */}
+      <div className="flex gap-4" style={{animation:'fadeInUp 0.4s ease'}}>
+        {/* Graph */}
+        <div className="glass rounded-xl p-3 relative" style={{width:'73%'}}>
+          <div ref={containerRef}
+            style={{width:'100%', height:'580px', background:'rgba(11,17,32,0.8)', borderRadius:'8px'}}/>
+
+          {/* Zoom & Export controls */}
+          <div className="absolute bottom-6 right-6 flex flex-col gap-1.5" style={{zIndex:10}}>
+            <button
+              onClick={handleExport}
+              title="PNG eksport"
+              className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#0B1120]/80 border border-gray-700 text-gray-400 hover:text-cyan-400 hover:border-cyan-500/50 transition-all backdrop-blur-sm"
+            >
+              <Icon name="download" size={14}/>
+            </button>
+            <div className="w-full h-px bg-gray-700/50 my-0.5"/>
+            <button
+              onClick={handleZoomIn}
+              title="Zoom in"
+              className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#0B1120]/80 border border-gray-700 text-gray-400 hover:text-cyan-400 hover:border-cyan-500/50 transition-all backdrop-blur-sm"
+            >
+              <Icon name="plus" size={14}/>
+            </button>
+            <button
+              onClick={handleZoomOut}
+              title="Zoom out"
+              className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#0B1120]/80 border border-gray-700 text-gray-400 hover:text-cyan-400 hover:border-cyan-500/50 transition-all backdrop-blur-sm"
+            >
+              <Icon name="minus" size={14}/>
+            </button>
+            <button
+              onClick={handleFit}
+              title="Ekranga moslashtirish"
+              className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#0B1120]/80 border border-gray-700 text-gray-400 hover:text-cyan-400 hover:border-cyan-500/50 transition-all backdrop-blur-sm"
+            >
+              <Icon name="maximize" size={14}/>
+            </button>
+          </div>
+        </div>
+
+        {/* Detail panel */}
+        <div className="glass rounded-xl p-4 overflow-y-auto" style={{width:'27%', maxHeight:'620px'}}>
+          {!selected && <SummaryPanel/>}
+          {selected?.type === 'node' && <NodeDetail data={selected.data}/>}
+          {selected?.type === 'edge' && <EdgeDetail data={selected.data}/>}
+        </div>
+      </div>
+    </div>
+  );
+};

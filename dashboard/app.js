@@ -8,6 +8,7 @@ const App = () => {
     {id:'discovery',label:'Statistik tahlil',icon:'search'},
     {id:'monitoring',label:'Monitoring',icon:'activity'},
     {id:'rules',label:'Qoidalar boshqaruvi',icon:'settings'},
+    {id:'network',label:'Tarmoq tahlili',icon:'share-2'},
   ];
 
   return (
@@ -55,6 +56,7 @@ const App = () => {
         {page === 'discovery' && <DiscoveryPage/>}
         {page === 'monitoring' && <MonitoringPage/>}
         {page === 'rules' && <RuleManagementPage/>}
+        {page === 'network' && <NetworkAnalysisPage/>}
       </main>
     </div>
   );
