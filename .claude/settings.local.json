@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /d/projects/hs_code -type f -name *.py -o -name *.r -o -name *.R)"
+    ]
+  }
+}
