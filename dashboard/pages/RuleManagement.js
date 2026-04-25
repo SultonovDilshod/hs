@@ -35,8 +35,8 @@ window.RuleManagementPage = () => {
   };
 
   const indicators = [
-    {value:'hs6',label:'HS kod (6 xona)'},
-    {value:'hs10',label:'HS kod (10 xona)'},
+    {value:'hs6',label:'TIF TN kod (6 xona)'},
+    {value:'hs10',label:'TIF TN kod (10 xona)'},
     {value:'country',label:'Kelib chiqish mamlakati'},
     {value:'importer',label:'Importyor ID'},
     {value:'declarant',label:'Deklarant ID'},
@@ -100,14 +100,14 @@ window.RuleManagementPage = () => {
                   {r.status === 'active' && (
                     <div className="flex items-center gap-6">
                       <div className="text-center">
-                        <div className="text-xs text-txt-muted mb-0.5">Hit rate</div>
+                        <div className="text-xs text-txt-muted mb-0.5">Tasdiqlanish foizi</div>
                         <div className="text-sm font-bold text-accent-cyan flex items-center gap-1">
                           {r.hitRate}%
                           <MiniSparkline data={r.hitRateTrend} width={40} height={16} color={r.hitRateTrend[r.hitRateTrend.length-1] >= r.hitRateTrend[0] ? '#10B981' : '#F59E0B'}/>
                         </div>
                       </div>
                       <div className="text-center">
-                        <div className="text-xs text-txt-muted mb-0.5">Revenue</div>
+                        <div className="text-xs text-txt-muted mb-0.5">Bojxona to'lovi</div>
                         <div className="text-sm font-bold text-status-green">{formatCurrency(r.revenueRecovered)}</div>
                       </div>
                     </div>
@@ -196,11 +196,11 @@ window.RuleManagementPage = () => {
                     <div className="text-xl font-bold text-accent-cyan">{testResult.totalAffected}</div>
                   </div>
                   <div className="bg-surface-200 rounded-lg p-3">
-                    <div className="text-[10px] text-txt-muted mb-1">Taxminiy hit rate</div>
+                    <div className="text-[10px] text-txt-muted mb-1">Taxminiy tasdiqlanish foizi</div>
                     <div className="text-xl font-bold text-accent-cyan">{testResult.estimatedHitRate}%</div>
                   </div>
                   <div className="col-span-2 bg-surface-200 rounded-lg p-3">
-                    <div className="text-[10px] text-txt-muted mb-1">Taxminiy revenue impact</div>
+                    <div className="text-[10px] text-txt-muted mb-1">Taxminiy qo'shimcha bojxona to'lovi</div>
                     <div className="text-xl font-bold text-status-green">{formatCurrency(testResult.estimatedRevenue)}</div>
                   </div>
                 </div>

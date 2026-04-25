@@ -27,7 +27,7 @@ window.DiscoveryPage = () => {
           <span className="text-xs font-medium text-txt-secondary">Filtrlar:</span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-txt-muted">HS daraja:</span>
+          <span className="text-xs text-txt-muted">TIF TN daraja:</span>
           {['all','6','10'].map(v => (
             <button key={v} onClick={() => setHsLevel(v)}
               className={`px-3 py-1 rounded text-xs font-medium transition-all ${hsLevel===v ? 'bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/40' : 'bg-surface-200 text-txt-muted border border-transparent hover:text-txt-secondary'}`}>
@@ -45,15 +45,15 @@ window.DiscoveryPage = () => {
           ))}
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-txt-muted">Min hit rate:</span>
+          <span className="text-xs text-txt-muted">Min. tasdiqlanish foizi:</span>
           <input type="range" min="0" max="90" step="5" value={minHitRate} onChange={e=>setMinHitRate(Number(e.target.value))} className="w-24 accent-cyan-500"/>
           <span className="text-xs font-mono text-accent-cyan w-8">{minHitRate}%</span>
         </div>
         <div className="ml-auto flex items-center gap-2">
           <span className="text-xs text-txt-muted">Saralash:</span>
           <select value={sortBy} onChange={e=>setSortBy(e.target.value)} className="rule-builder-field text-xs py-1">
-            <option value="revenue">Revenue impact</option>
-            <option value="hitRate">Hit rate</option>
+            <option value="revenue">Qo'shimcha bojxona to'lovi</option>
+            <option value="hitRate">Tasdiqlanish foizi</option>
             <option value="cases">Holatlar soni</option>
           </select>
         </div>
@@ -65,14 +65,14 @@ window.DiscoveryPage = () => {
           <thead>
             <tr className="border-b border-surface-300">
               <th className="px-4 py-3 text-left text-xs font-medium text-txt-muted">#</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-txt-muted">HS kod</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-txt-muted">TIF TN kod</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-txt-muted">Shart</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-txt-muted">Indikatorlar</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-txt-muted">Status</th>
-              <th className="px-4 py-3 text-right text-xs font-medium text-txt-muted">Hit rate</th>
+              <th className="px-4 py-3 text-right text-xs font-medium text-txt-muted">Tasdiqlanish foizi</th>
               <th className="px-4 py-3 text-right text-xs font-medium text-txt-muted">Holatlar</th>
-              <th className="px-4 py-3 text-right text-xs font-medium text-txt-muted">Revenue</th>
-              <th className="px-4 py-3 text-right text-xs font-medium text-txt-muted">Actual kodlar</th>
+              <th className="px-4 py-3 text-right text-xs font-medium text-txt-muted">Bojxona to'lovi</th>
+              <th className="px-4 py-3 text-right text-xs font-medium text-txt-muted">Haqiqiy kodlar</th>
             </tr>
           </thead>
           <tbody>
@@ -111,7 +111,7 @@ window.DiscoveryPage = () => {
       {filtered.length === 0 && (
         <div className="glass rounded-xl p-12 text-center animate-fade">
           <Icon name="search" size={32} className="text-txt-dim mx-auto mb-3 block"/>
-          <p className="text-txt-muted">Filtrlarga mos pattern topilmadi</p>
+          <p className="text-txt-muted">Filtrlarga mos shablon topilmadi</p>
         </div>
       )}
 
@@ -122,7 +122,7 @@ window.DiscoveryPage = () => {
             <div className="flex items-start justify-between mb-5">
               <div>
                 <div className="flex items-center gap-3 mb-2">
-                  <h2 className="text-lg font-bold text-txt-primary">Pattern {selectedPattern.id}</h2>
+                  <h2 className="text-lg font-bold text-txt-primary">Shablon {selectedPattern.id}</h2>
                   <StatusBadge status={selectedPattern.status}/>
                 </div>
                 <p className="font-mono text-sm text-accent-cyan">{selectedPattern.conditions}</p>
@@ -134,10 +134,10 @@ window.DiscoveryPage = () => {
 
             <div className="grid grid-cols-4 gap-4 mb-5">
               {[
-                {l:'Hit rate',v:selectedPattern.hitRate+'%',c:'text-accent-cyan'},
+                {l:'Tasdiqlanish foizi',v:selectedPattern.hitRate+'%',c:'text-accent-cyan'},
                 {l:'Jami holatlar',v:selectedPattern.totalCases,c:'text-txt-primary'},
-                {l:'Misklassifikatsiya',v:selectedPattern.misclassCases,c:'text-status-amber'},
-                {l:'Revenue impact',v:formatCurrency(selectedPattern.revenueImpact),c:'text-status-green'},
+                {l:'Noto\'g\'ri tasniflash',v:selectedPattern.misclassCases,c:'text-status-amber'},
+                {l:'Qo\'shimcha bojxona to\'lovi',v:formatCurrency(selectedPattern.revenueImpact),c:'text-status-green'},
               ].map((s,i) => (
                 <div key={i} className="bg-surface-200 rounded-lg p-3">
                   <div className="text-xs text-txt-muted mb-1">{s.l}</div>
@@ -147,7 +147,7 @@ window.DiscoveryPage = () => {
             </div>
 
             {/* Actual Codes */}
-            <h4 className="text-sm font-semibold text-txt-primary mb-3">Mumkin bo'lgan haqiqiy HS kodlar</h4>
+            <h4 className="text-sm font-semibold text-txt-primary mb-3">Mumkin bo'lgan haqiqiy TIF TN kodlar</h4>
             <div className="space-y-2 mb-5">
               {selectedPattern.actualCodes.map((ac,i) => (
                 <div key={i} className="flex items-center gap-3 bg-surface-200 rounded-lg p-3">
@@ -168,10 +168,10 @@ window.DiscoveryPage = () => {
                 <thead>
                   <tr className="border-b border-surface-300">
                     <th className="px-3 py-2 text-left text-txt-muted font-medium">Deklaratsiya</th>
-                    <th className="px-3 py-2 text-left text-txt-muted font-medium">Eski HS</th>
-                    <th className="px-3 py-2 text-left text-txt-muted font-medium">Yangi HS</th>
+                    <th className="px-3 py-2 text-left text-txt-muted font-medium">Eski kod</th>
+                    <th className="px-3 py-2 text-left text-txt-muted font-medium">Yangi kod</th>
                     <th className="px-3 py-2 text-left text-txt-muted font-medium">Importyor</th>
-                    <th className="px-3 py-2 text-right text-txt-muted font-medium">Revenue</th>
+                    <th className="px-3 py-2 text-right text-txt-muted font-medium">Bojxona to'lovi</th>
                   </tr>
                 </thead>
                 <tbody>

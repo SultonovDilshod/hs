@@ -23,8 +23,8 @@ const App = () => {
                 <Icon name="shield" size={16} className="text-white"/>
               </div>
               <div>
-                <h1 className="text-sm font-bold text-txt-primary tracking-tight">HS Risk Analytics</h1>
-                <p className="text-[10px] text-txt-dim -mt-0.5">Misclassification Detection System</p>
+                <h1 className="text-sm font-bold text-txt-primary tracking-tight">Tovar kodi moduli</h1>
+                <p className="text-[10px] text-txt-dim -mt-0.5">Noto'g'ri tasniflashni aniqlash tizimi</p>
               </div>
             </div>
 

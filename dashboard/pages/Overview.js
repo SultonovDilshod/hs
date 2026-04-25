@@ -4,10 +4,10 @@ const { AreaChart, Area, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, Car
 window.OverviewPage = () => {
   const cards = [
     {label:'Tekshirilgan deklaratsiyalar',value:formatNumber(MOCK.summary.totalInspected),icon:'shield',color:'#06B6D4',sub:`Jami: ${formatNumber(MOCK.summary.totalDeclarations)}`},
-    {label:'Aniqlangan misklassifikatsiyalar',value:formatNumber(MOCK.summary.misclassifications),icon:'alertTriangle',color:'#F59E0B',sub:`${((MOCK.summary.misclassifications/MOCK.summary.totalInspected)*100).toFixed(1)}% hit rate`},
+    {label:'Aniqlangan noto\'g\'ri tasniflashlar',value:formatNumber(MOCK.summary.misclassifications),icon:'alertTriangle',color:'#F59E0B',sub:`${((MOCK.summary.misclassifications/MOCK.summary.totalInspected)*100).toFixed(1)}% tasdiqlanish foizi`},
     {label:'Faol qoidalar',value:MOCK.summary.activeRules,icon:'layers',color:'#06B6D4',sub:MOCK.ruleTypeDistribution.map(d=>d.value+' '+d.name.toLowerCase()).join(' · ')},
-    {label:'Qaytarilgan daromad',value:formatCurrency(MOCK.summary.revenueImpact),icon:'dollarSign',color:'#10B981',sub:'So\'nggi 12 oy'},
-    {label:'O\'rtacha hit rate',value:MOCK.summary.avgHitRate+'%',icon:'target',color:'#06B6D4',sub:'+6.4% o\'sish'},
+    {label:'Qo\'shimcha bojxona to\'lovi',value:formatCurrency(MOCK.summary.revenueImpact),icon:'dollarSign',color:'#10B981',sub:'So\'nggi 12 oy'},
+    {label:'O\'rtacha tasdiqlanish foizi',value:MOCK.summary.avgHitRate+'%',icon:'target',color:'#06B6D4',sub:'+6.4% o\'sish'},
   ];
 
   return (
@@ -30,10 +30,10 @@ window.OverviewPage = () => {
         {/* Main Trend Chart */}
         <div className="col-span-2 glass rounded-xl p-5 animate-in stagger-2">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-txt-primary">Misklassifikatsiya trendi</h3>
+            <h3 className="text-sm font-semibold text-txt-primary">Noto'g'ri tasniflash trendi</h3>
             <div className="flex gap-4 text-xs text-txt-muted">
               <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-accent-cyan inline-block"/>Holatlar</span>
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-status-green inline-block"/>Revenue</span>
+              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-status-green inline-block"/>Bojxona to'lovi</span>
             </div>
           </div>
           <ResponsiveContainer width="100%" height={260}>
@@ -50,7 +50,7 @@ window.OverviewPage = () => {
               <YAxis yAxisId="right" orientation="right" tick={{fill:'#64748B',fontSize:11}} axisLine={false} tickLine={false} tickFormatter={v=>formatCurrency(v)}/>
               <Tooltip content={<CustomTooltip/>}/>
               <Area yAxisId="left" type="monotone" dataKey="misclass" fill="url(#gradCyan)" stroke="#06B6D4" strokeWidth={2} name="Holatlar"/>
-              <Line yAxisId="right" type="monotone" dataKey="revenue" stroke="#10B981" strokeWidth={2} dot={false} name="Revenue"/>
+              <Line yAxisId="right" type="monotone" dataKey="revenue" stroke="#10B981" strokeWidth={2} dot={false} name="Bojxona to'lovi"/>
             </ComposedChart>
           </ResponsiveContainer>
         </div>
@@ -62,10 +62,10 @@ window.OverviewPage = () => {
             <div className="p-3 rounded-lg bg-accent-cyan/5 border border-accent-cyan/20">
               <div className="flex items-center gap-2 mb-2">
                 <Icon name="zap" size={14} className="text-accent-cyan"/>
-                <span className="text-xs font-semibold text-accent-cyan">Yangi patternlar</span>
+                <span className="text-xs font-semibold text-accent-cyan">Yangi shablonlar</span>
                 <span className="ml-auto text-lg font-bold text-accent-cyan">{MOCK.summary.weeklyNewPatterns}</span>
               </div>
-              <p className="text-xs text-txt-muted">Bu hafta yangi aniqlangan patternlar</p>
+              <p className="text-xs text-txt-muted">Bu hafta yangi aniqlangan shablonlar</p>
             </div>
             <div className="p-3 rounded-lg bg-status-green/5 border border-status-green/20">
               <div className="flex items-center gap-2 mb-2">
@@ -73,7 +73,7 @@ window.OverviewPage = () => {
                 <span className="text-xs font-semibold text-status-green">Kuchaygan</span>
                 <span className="ml-auto text-lg font-bold text-status-green">{MOCK.summary.weeklyStrengthened}</span>
               </div>
-              <p className="text-xs text-txt-muted">Ko'rsatkichlari oshgan patternlar</p>
+              <p className="text-xs text-txt-muted">Ko'rsatkichlari oshgan shablonlar</p>
             </div>
             <div className="p-3 rounded-lg bg-status-amber/5 border border-status-amber/20">
               <div className="flex items-center gap-2 mb-2">
@@ -81,7 +81,7 @@ window.OverviewPage = () => {
                 <span className="text-xs font-semibold text-status-amber">Susaygan</span>
                 <span className="ml-auto text-lg font-bold text-status-amber">{MOCK.summary.weeklyWeakened}</span>
               </div>
-              <p className="text-xs text-txt-muted">Ko'rsatkichlari pasaygan patternlar</p>
+              <p className="text-xs text-txt-muted">Ko'rsatkichlari pasaygan shablonlar</p>
             </div>
           </div>
         </div>
@@ -91,8 +91,8 @@ window.OverviewPage = () => {
         {/* Top Risk Signals */}
         <div className="col-span-2 glass rounded-xl p-5 animate-in stagger-4">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-txt-primary">Yuqori risk signallari</h3>
-            <span className="text-xs text-txt-muted">Top 5 pattern — revenue impact bo'yicha</span>
+            <h3 className="text-sm font-semibold text-txt-primary">Yuqori xavf signallari</h3>
+            <span className="text-xs text-txt-muted">Top 5 shablon — qo'shimcha bojxona to'lovi bo'yicha</span>
           </div>
           <div className="space-y-2">
             {MOCK.topSignals.map((s,i) => (

@@ -17,10 +17,10 @@ window.MonitoringPage = () => {
   const totalRev = activeForKpi.reduce((s,r) => s+(r.revenueRecovered||0), 0);
 
   const kpis = [
-    {label:'O\'rtacha hit rate',value:avgHit+'%',change:'+3.2%',up:true,icon:'target',color:'#06B6D4'},
-    {label:'O\'rtacha false positive',value:avgFp+'%',change:'-2.1%',up:false,icon:'alertTriangle',color:'#F59E0B'},
-    {label:'Jami coverage',value:totalCov+'%',change:'+1.8%',up:true,icon:'layers',color:'#06B6D4'},
-    {label:'Qaytarilgan daromad',value:formatCurrency(totalRev),change:'+12.4%',up:true,icon:'dollarSign',color:'#10B981'},
+    {label:'O\'rtacha tasdiqlanish foizi',value:avgHit+'%',change:'+3.2%',up:true,icon:'target',color:'#06B6D4'},
+    {label:'O\'rtacha noto\'g\'ri signal',value:avgFp+'%',change:'-2.1%',up:false,icon:'alertTriangle',color:'#F59E0B'},
+    {label:'Jami qamrov',value:totalCov+'%',change:'+1.8%',up:true,icon:'layers',color:'#06B6D4'},
+    {label:'Qo\'shimcha bojxona to\'lovi',value:formatCurrency(totalRev),change:'+12.4%',up:true,icon:'dollarSign',color:'#10B981'},
   ];
 
   // alerts for declining rules
@@ -38,7 +38,7 @@ window.MonitoringPage = () => {
             </div>
             <div className="text-2xl font-bold mb-1" style={{color:k.color}}>{k.value}</div>
             <div className={`text-xs flex items-center gap-1 ${k.up?'text-status-green':'text-status-green'}`}>
-              <Icon name={k.up?'trendUp':'trendDown'} size={12}/>{k.change} so'nggi oy
+              <Icon name={k.up?'trendUp':'trendDown'} size={12}/>{k.change} so'nggi oyga nisbatan
             </div>
           </div>
         ))}
@@ -79,7 +79,7 @@ window.MonitoringPage = () => {
           <table className="w-full text-xs">
             <thead>
               <tr className="border-b border-surface-300/50">
-                {['Nomi','Turi','Hit rate','Trend','False +','Coverage','Revenue','Yoshi',''].map((h,i) => (
+                {['Nomi','Turi','Tasd. foizi','Trend','Noto\'g\'ri','Qamrov','Bojxona to\'lovi','Yoshi',''].map((h,i) => (
                   <th key={i} className="px-4 py-3 text-left text-txt-muted font-medium uppercase tracking-wider text-[10px]">{h}</th>
                 ))}
               </tr>
@@ -136,7 +136,7 @@ window.MonitoringPage = () => {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <h4 className="text-xs font-semibold text-txt-secondary mb-3">Hit rate trendi</h4>
+              <h4 className="text-xs font-semibold text-txt-secondary mb-3">Tasdiqlanish foizi trendi</h4>
               <ResponsiveContainer width="100%" height={160}>
                 <AreaChart data={selectedRule.hitRateTrend.map((v,i) => ({week:`Hafta ${i+1}`,rate:v}))}>
                   <defs>
@@ -149,15 +149,15 @@ window.MonitoringPage = () => {
                   <XAxis dataKey="week" tick={{fill:'#64748B',fontSize:10}} axisLine={false} tickLine={false}/>
                   <YAxis domain={['dataMin-5','dataMax+5']} tick={{fill:'#64748B',fontSize:10}} axisLine={false} tickLine={false}/>
                   <Tooltip content={<CustomTooltip/>}/>
-                  <Area type="monotone" dataKey="rate" stroke="#06B6D4" fill="url(#gradTrend)" strokeWidth={2} name="Hit rate"/>
+                  <Area type="monotone" dataKey="rate" stroke="#06B6D4" fill="url(#gradTrend)" strokeWidth={2} name="Tasdiqlanish foizi"/>
                 </AreaChart>
               </ResponsiveContainer>
             </div>
             <div className="grid grid-cols-2 gap-3">
               {[
-                {l:'Jami flagged',v:selectedRule.flagged,c:'text-txt-primary'},
+                {l:'Jami belgilangan',v:selectedRule.flagged,c:'text-txt-primary'},
                 {l:'Tasdiqlangan',v:selectedRule.confirmed,c:'text-status-green'},
-                {l:'False positive',v:selectedRule.flagged - selectedRule.confirmed,c:'text-status-amber'},
+                {l:'Noto\'g\'ri signal',v:selectedRule.flagged - selectedRule.confirmed,c:'text-status-amber'},
                 {l:'Oxirgi ishga tushdi',v:selectedRule.lastTriggered?.slice(5)||'—',c:'text-txt-secondary'},
               ].map((s,i) => (
                 <div key={i} className="bg-surface-200 rounded-lg p-3">

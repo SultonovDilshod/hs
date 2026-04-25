@@ -559,7 +559,7 @@ window.NetworkAnalysisPage = () => {
   const NodeDetail = ({ data }) => (
     <div className="space-y-4">
       <div>
-        <div className="text-[10px] text-gray-500 mb-1">HS kod</div>
+        <div className="text-[10px] text-gray-500 mb-1">TIF TN kod</div>
         <h3 className="text-lg font-bold font-mono text-white">{data.id}</h3>
       </div>
       <div className="grid grid-cols-2 gap-3">
@@ -573,7 +573,7 @@ window.NetworkAnalysisPage = () => {
         </div>
       </div>
       <div className="bg-[#151F35] rounded-lg p-3">
-        <div className="text-[10px] text-gray-500 mb-1">Jami soliq summasi</div>
+        <div className="text-[10px] text-gray-500 mb-1">Jami to'lov summasi</div>
         <div className="text-base font-bold text-cyan-400">{formatCurrency(data.totalTax)}</div>
       </div>
       <div>
@@ -609,7 +609,7 @@ window.NetworkAnalysisPage = () => {
           <div className="text-base font-bold text-cyan-400">{data.frequency}</div>
         </div>
         <div className="bg-[#151F35] rounded-lg p-3">
-          <div className="text-[10px] text-gray-500 mb-1">Soliq summasi</div>
+          <div className="text-[10px] text-gray-500 mb-1">To'lov summasi</div>
           <div className="text-base font-bold text-cyan-400">{formatCurrency(data.tax)}</div>
         </div>
       </div>
@@ -632,7 +632,7 @@ window.NetworkAnalysisPage = () => {
       <div className="glass rounded-xl p-4 mb-4 flex items-center gap-5 flex-wrap" style={{animation:'fadeInUp 0.3s ease'}}>
         {/* HS level */}
         <div className="flex items-center gap-2">
-          <span className="text-[10px] text-gray-500">HS daraja:</span>
+          <span className="text-[10px] text-gray-500">TIF TN daraja:</span>
           <ToggleBtn active={hsLevel==='6'} onClick={() => setHsLevel('6')}>6 xona</ToggleBtn>
           <ToggleBtn active={hsLevel==='10'} onClick={() => setHsLevel('10')}>10 xona</ToggleBtn>
         </div>
@@ -650,9 +650,9 @@ window.NetworkAnalysisPage = () => {
 
         {/* Weight metric */}
         <div className="flex items-center gap-2">
-          <span className="text-[10px] text-gray-500">Edge og'irligi:</span>
+          <span className="text-[10px] text-gray-500">Bog'lanish og'irligi:</span>
           <ToggleBtn active={weightMetric==='frequency'} onClick={() => setWeightMetric('frequency')}>Chastota</ToggleBtn>
-          <ToggleBtn active={weightMetric==='tax'} onClick={() => setWeightMetric('tax')}>Soliq summasi</ToggleBtn>
+          <ToggleBtn active={weightMetric==='tax'} onClick={() => setWeightMetric('tax')}>To'lov summasi</ToggleBtn>
           <ToggleBtn active={weightMetric==='rate'} onClick={() => setWeightMetric('rate')}>Tuzatish darajasi</ToggleBtn>
         </div>
 
@@ -660,16 +660,16 @@ window.NetworkAnalysisPage = () => {
 
         {/* Node color */}
         <div className="flex items-center gap-2">
-          <span className="text-[10px] text-gray-500">Node rangi:</span>
+          <span className="text-[10px] text-gray-500">Tugun rangi:</span>
           <ToggleBtn active={nodeColor==='uniform'} onClick={() => setNodeColor('uniform')}>Bir xil</ToggleBtn>
-          <ToggleBtn active={nodeColor==='chapter'} onClick={() => setNodeColor('chapter')}>Chapter</ToggleBtn>
+          <ToggleBtn active={nodeColor==='chapter'} onClick={() => setNodeColor('chapter')}>Guruh</ToggleBtn>
         </div>
 
         <div className="w-px h-6 bg-gray-700"/>
 
         {/* Node size */}
         <div className="flex items-center gap-2">
-          <span className="text-[10px] text-gray-500">Node o'lchami:</span>
+          <span className="text-[10px] text-gray-500">Tugun o'lchami:</span>
           <ToggleBtn active={nodeSize==='uniform'} onClick={() => setNodeSize('uniform')}>Bir xil</ToggleBtn>
           <ToggleBtn active={nodeSize==='volume'} onClick={() => setNodeSize('volume')}>Hajm bo'yicha</ToggleBtn>
         </div>
@@ -702,7 +702,7 @@ window.NetworkAnalysisPage = () => {
               type="text"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              placeholder="HS kod qidirish..."
+              placeholder="TIF TN kod qidirish..."
               className="text-xs py-1 pl-7 pr-7 rounded bg-[#151F35] border border-gray-700 text-gray-300 placeholder-gray-600 w-40 focus:outline-none focus:border-cyan-500/50"
             />
             {searchTerm && (
@@ -725,7 +725,7 @@ window.NetworkAnalysisPage = () => {
         </div>
 
         <div className="ml-auto flex items-center gap-2">
-          <span className="text-[10px] text-gray-500">Nodelar:</span>
+          <span className="text-[10px] text-gray-500">Tugunlar:</span>
           <span className="text-xs font-semibold text-white">{nodeElements.length}</span>
           <span className="text-[10px] text-gray-500 ml-2">Bog'lanishlar:</span>
           <span className="text-xs font-semibold text-white">{edgeElements.length}</span>
@@ -751,14 +751,14 @@ window.NetworkAnalysisPage = () => {
             <div className="w-full h-px bg-gray-700/50 my-0.5"/>
             <button
               onClick={handleZoomIn}
-              title="Zoom in"
+              title="Kattalashtirish"
               className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#0B1120]/80 border border-gray-700 text-gray-400 hover:text-cyan-400 hover:border-cyan-500/50 transition-all backdrop-blur-sm"
             >
               <Icon name="plus" size={14}/>
             </button>
             <button
               onClick={handleZoomOut}
-              title="Zoom out"
+              title="Kichiklashtirish"
               className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#0B1120]/80 border border-gray-700 text-gray-400 hover:text-cyan-400 hover:border-cyan-500/50 transition-all backdrop-blur-sm"
             >
               <Icon name="minus" size={14}/>
