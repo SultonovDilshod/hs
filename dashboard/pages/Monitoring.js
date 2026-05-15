@@ -28,6 +28,14 @@ window.MonitoringPage = () => {
 
   return (
     <div className="animate-fade">
+      {/* Demo data banner */}
+      <div className="bg-accent-cyan/5 border border-accent-cyan/20 rounded-xl p-3 mb-5 animate-in stagger-1 flex items-center gap-2">
+        <Icon name="alertTriangle" size={14} className="text-accent-cyan"/>
+        <span className="text-xs text-accent-cyan">
+          Demo ma'lumot — qoidalar hali ishlab chiqarishga chiqarilmagan, ko'rsatilgan ko'rsatkichlar shartli.
+        </span>
+      </div>
+
       {/* KPI Cards */}
       <div className="grid grid-cols-4 gap-4 mb-6">
         {kpis.map((k,i) => (

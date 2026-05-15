@@ -11,10 +11,11 @@ window.DiscoveryPage = () => {
     let items = [...MOCK.patterns];
     if (hsLevel !== 'all') items = items.filter(p => p.level === parseInt(hsLevel));
     if (statusFilter !== 'all') items = items.filter(p => p.status === statusFilter);
-    items = items.filter(p => p.hitRate >= minHitRate);
+    items = items.filter(p => (p.hitRate ?? 0) >= minHitRate);
     if (sortBy === 'revenue') items.sort((a,b) => b.revenueImpact - a.revenueImpact);
-    else if (sortBy === 'hitRate') items.sort((a,b) => b.hitRate - a.hitRate);
-    else if (sortBy === 'cases') items.sort((a,b) => b.misclassCases - a.misclassCases);
+    else if (sortBy === 'hitRate') items.sort((a,b) => (b.hitRate ?? 0) - (a.hitRate ?? 0));
+    else if (sortBy === 'cases') items.sort((a,b) => (b.misclassCases ?? 0) - (a.misclassCases ?? 0));
+    else if (sortBy === 'lift') items.sort((a,b) => (b.lift ?? 0) - (a.lift ?? 0));
     return items;
   }, [hsLevel, minHitRate, statusFilter, sortBy]);
 
@@ -55,6 +56,7 @@ window.DiscoveryPage = () => {
             <option value="revenue">Qo'shimcha bojxona to'lovi</option>
             <option value="hitRate">Tasdiqlanish foizi</option>
             <option value="cases">Holatlar soni</option>
+            <option value="lift">Lift</option>
           </select>
         </div>
       </div>
@@ -70,6 +72,7 @@ window.DiscoveryPage = () => {
               <th className="px-4 py-3 text-left text-xs font-medium text-txt-muted">Indikatorlar</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-txt-muted">Status</th>
               <th className="px-4 py-3 text-right text-xs font-medium text-txt-muted">Tasdiqlanish foizi</th>
+              <th className="px-4 py-3 text-right text-xs font-medium text-txt-muted">Lift</th>
               <th className="px-4 py-3 text-right text-xs font-medium text-txt-muted">Holatlar</th>
               <th className="px-4 py-3 text-right text-xs font-medium text-txt-muted">Bojxona to'lovi</th>
               <th className="px-4 py-3 text-right text-xs font-medium text-txt-muted">Haqiqiy kodlar</th>
@@ -95,10 +98,21 @@ window.DiscoveryPage = () => {
                   </div>
                 </td>
                 <td className="px-4 py-3"><StatusBadge status={p.status}/></td>
-                <td className="px-4 py-3 text-right font-semibold text-accent-cyan">{p.hitRate}%</td>
+                <td className="px-4 py-3 text-right font-semibold text-accent-cyan">
+                  {p.hitRate != null ? `${p.hitRate}%` : '—'}
+                </td>
                 <td className="px-4 py-3 text-right">
-                  <span className="font-semibold text-txt-primary">{p.misclassCases}</span>
-                  <span className="text-xs text-txt-muted">/{p.totalCases}</span>
+                  {p.lift != null ? (
+                    <span className="tag bg-accent-cyan/10 text-accent-cyan border border-accent-cyan/20 text-[10px] font-mono">{p.lift.toFixed(1)}x</span>
+                  ) : '—'}
+                </td>
+                <td className="px-4 py-3 text-right">
+                  {p.misclassCases != null && p.totalCases != null ? (
+                    <>
+                      <span className="font-semibold text-txt-primary">{p.misclassCases}</span>
+                      <span className="text-xs text-txt-muted">/{p.totalCases}</span>
+                    </>
+                  ) : '—'}
                 </td>
                 <td className="px-4 py-3 text-right font-semibold text-status-green">{formatCurrency(p.revenueImpact)}</td>
                 <td className="px-4 py-3 text-right text-accent-cyan font-semibold">{p.actualCodes.length}</td>
@@ -132,11 +146,12 @@ window.DiscoveryPage = () => {
               </button>
             </div>
 
-            <div className="grid grid-cols-4 gap-4 mb-5">
+            <div className="grid grid-cols-5 gap-4 mb-5">
               {[
-                {l:'Tasdiqlanish foizi',v:selectedPattern.hitRate+'%',c:'text-accent-cyan'},
-                {l:'Jami holatlar',v:selectedPattern.totalCases,c:'text-txt-primary'},
-                {l:'Noto\'g\'ri tasniflash',v:selectedPattern.misclassCases,c:'text-status-amber'},
+                {l:'Tasdiqlanish foizi',v:selectedPattern.hitRate != null ? selectedPattern.hitRate+'%' : '—',c:'text-accent-cyan'},
+                {l:'Lift',v:selectedPattern.lift != null ? selectedPattern.lift.toFixed(2)+'x' : '—',c:'text-accent-cyan'},
+                {l:'Jami holatlar',v:selectedPattern.totalCases ?? '—',c:'text-txt-primary'},
+                {l:'Noto\'g\'ri tasniflash',v:selectedPattern.misclassCases ?? '—',c:'text-status-amber'},
                 {l:'Qo\'shimcha bojxona to\'lovi',v:formatCurrency(selectedPattern.revenueImpact),c:'text-status-green'},
               ].map((s,i) => (
                 <div key={i} className="bg-surface-200 rounded-lg p-3">
@@ -162,31 +177,35 @@ window.DiscoveryPage = () => {
             </div>
 
             {/* Example Declarations */}
-            <h4 className="text-sm font-semibold text-txt-primary mb-3">Misol deklaratsiyalar</h4>
-            <div className="bg-surface-50 rounded-lg border border-surface-300 overflow-hidden">
-              <table className="w-full text-xs">
-                <thead>
-                  <tr className="border-b border-surface-300">
-                    <th className="px-3 py-2 text-left text-txt-muted font-medium">Deklaratsiya</th>
-                    <th className="px-3 py-2 text-left text-txt-muted font-medium">Eski kod</th>
-                    <th className="px-3 py-2 text-left text-txt-muted font-medium">Yangi kod</th>
-                    <th className="px-3 py-2 text-left text-txt-muted font-medium">Importyor</th>
-                    <th className="px-3 py-2 text-right text-txt-muted font-medium">Bojxona to'lovi</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {selectedPattern.examples.map((ex,i) => (
-                    <tr key={i} className="border-b border-surface-300/50 last:border-0">
-                      <td className="px-3 py-2 font-mono text-accent-cyan">{ex.declId}</td>
-                      <td className="px-3 py-2 font-mono text-status-amber">{ex.oldHs}</td>
-                      <td className="px-3 py-2 font-mono text-status-green">{ex.newHs}</td>
-                      <td className="px-3 py-2 text-txt-secondary">{ex.importer}</td>
-                      <td className="px-3 py-2 text-right font-semibold text-status-green">{formatCurrency(ex.revenue)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            {selectedPattern.examples && selectedPattern.examples.length > 0 && (
+              <>
+                <h4 className="text-sm font-semibold text-txt-primary mb-3">Misol deklaratsiyalar</h4>
+                <div className="bg-surface-50 rounded-lg border border-surface-300 overflow-hidden">
+                  <table className="w-full text-xs">
+                    <thead>
+                      <tr className="border-b border-surface-300">
+                        <th className="px-3 py-2 text-left text-txt-muted font-medium">Deklaratsiya</th>
+                        <th className="px-3 py-2 text-left text-txt-muted font-medium">Eski kod</th>
+                        <th className="px-3 py-2 text-left text-txt-muted font-medium">Yangi kod</th>
+                        <th className="px-3 py-2 text-left text-txt-muted font-medium">Importyor</th>
+                        <th className="px-3 py-2 text-right text-txt-muted font-medium">Bojxona to'lovi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {selectedPattern.examples.map((ex,i) => (
+                        <tr key={i} className="border-b border-surface-300/50 last:border-0">
+                          <td className="px-3 py-2 font-mono text-accent-cyan">{ex.declId}</td>
+                          <td className="px-3 py-2 font-mono text-status-amber">{ex.oldHs}</td>
+                          <td className="px-3 py-2 font-mono text-status-green">{ex.newHs}</td>
+                          <td className="px-3 py-2 text-txt-secondary">{ex.importer}</td>
+                          <td className="px-3 py-2 text-right font-semibold text-status-green">{formatCurrency(ex.revenue)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
 
             <div className="flex gap-3 mt-5">
               <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent-cyan/20 text-accent-cyan text-sm font-medium hover:bg-accent-cyan/30 transition-colors border border-accent-cyan/30">
