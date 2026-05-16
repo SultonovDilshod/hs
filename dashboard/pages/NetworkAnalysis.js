@@ -21,18 +21,23 @@ const LAYOUT = {
   // much faster on large graphs.
   coseMaxNodes: 250,
 
-  // "cose" layout tuning:
-  // - nodeRepulsion: higher = nodes push each other further apart (wider graph).
+  // "cose" layout tuning. Most edges in this dataset are between codes that
+  // don't share a neighbour, so the graph has *many* small components. The
+  // critical knob for that case is `componentSpacing` — cytoscape's default
+  // (40) spreads components so far apart that fit-to-viewport shrinks the
+  // main cluster to a dot. Keep it small.
+  //
+  // - nodeRepulsion: higher = nodes inside a component push each other further apart.
   // - idealEdgeLength: target distance between connected nodes, in pixels.
-  // - gravity: higher = stronger pull toward the centre (less spread).
-  //   If components fly off into the corners, raise this.
-  // - numIter: more iterations = better layout but slower. 250 is a good
-  //   default for ~50–250 nodes; drop to ~150 if the page feels sluggish.
+  // - componentSpacing: gap between disconnected sub-graphs. Lower = tighter overall layout.
+  // - gravity: pull toward the centre. Higher = less spread.
+  // - numIter: more iterations = better layout but slower.
   cose: {
-    nodeRepulsion: 2500,
-    idealEdgeLength: 60,
-    gravity: 1.2,
-    numIter: 250,
+    nodeRepulsion: 1500,
+    idealEdgeLength: 45,
+    componentSpacing: 20,
+    gravity: 80,
+    numIter: 400,
   },
 
   // After the layout finishes, zoom out so all elements are visible plus
@@ -527,6 +532,7 @@ window.NetworkAnalysisPage = () => {
             numIter: LAYOUT.cose.numIter,
             nodeRepulsion: () => LAYOUT.cose.nodeRepulsion,
             idealEdgeLength: () => LAYOUT.cose.idealEdgeLength,
+            componentSpacing: LAYOUT.cose.componentSpacing,
             gravity: LAYOUT.cose.gravity,
             padding: LAYOUT.fitPadding,
           }
