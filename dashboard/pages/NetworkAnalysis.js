@@ -14,8 +14,8 @@ const COUNTRY_NAMES = {
 };
 
 window.NetworkAnalysisPage = () => {
-  const [hsLevel, setHsLevel] = useState('6');
-  const [period, setPeriod] = useState('1y');
+  const [hsLevel, setHsLevel] = useState('10');
+  const [period, setPeriod] = useState('3m');
   const [weightMetric, setWeightMetric] = useState('frequency');
   const [nodeColor, setNodeColor] = useState('uniform');
   const [nodeSize, setNodeSize] = useState('uniform');
@@ -70,17 +70,20 @@ window.NetworkAnalysisPage = () => {
   // Unique importers and countries from full (unfiltered) data
   const uniqueImporters = useMemo(() => {
     const s = new Set();
-    amendments.forEach(r => s.add(r.importer));
-    declarations.forEach(r => s.add(r.importer));
+    amendments.forEach(r => { if (r.importer) s.add(r.importer); });
+    declarations.forEach(r => { if (r.importer) s.add(r.importer); });
     return [...s].sort();
   }, [amendments, declarations]);
 
   const uniqueCountries = useMemo(() => {
     const s = new Set();
-    amendments.forEach(r => s.add(r.country_of_origin));
-    declarations.forEach(r => s.add(r.country_of_origin));
+    amendments.forEach(r => { if (r.country_of_origin) s.add(r.country_of_origin); });
+    declarations.forEach(r => { if (r.country_of_origin) s.add(r.country_of_origin); });
     return [...s].sort();
   }, [amendments, declarations]);
+
+  const hasImporterData = uniqueImporters.length > 0;
+  const hasCountryData = uniqueCountries.length > 0;
 
   // Aggregate edges
   const edgeMap = useMemo(() => {
@@ -677,22 +680,26 @@ window.NetworkAnalysisPage = () => {
 
       {/* Filters */}
       <div className="glass rounded-xl p-3 mb-4 flex items-center gap-5 flex-wrap" style={{animation:'fadeInUp 0.35s ease'}}>
-        <div className="flex items-center gap-2">
-          <Icon name="filter" size={13} className="text-gray-500"/>
-          <select value={importerFilter} onChange={e => { setImporterFilter(e.target.value); setSelected(null); }}
-            className="rule-builder-field text-xs py-1 px-2 rounded bg-[#151F35] border border-gray-700 text-gray-300">
-            <option value="all">Barcha importyorlar</option>
-            {uniqueImporters.map(imp => <option key={imp} value={imp}>{imp}</option>)}
-          </select>
-        </div>
+        <Icon name="filter" size={13} className="text-gray-500"/>
+        {hasImporterData && (
+          <div className="flex items-center gap-2">
+            <select value={importerFilter} onChange={e => { setImporterFilter(e.target.value); setSelected(null); }}
+              className="rule-builder-field text-xs py-1 px-2 rounded bg-[#151F35] border border-gray-700 text-gray-300">
+              <option value="all">Barcha importyorlar</option>
+              {uniqueImporters.map(imp => <option key={imp} value={imp}>{imp}</option>)}
+            </select>
+          </div>
+        )}
 
-        <div className="flex items-center gap-2">
-          <select value={countryFilter} onChange={e => { setCountryFilter(e.target.value); setSelected(null); }}
-            className="rule-builder-field text-xs py-1 px-2 rounded bg-[#151F35] border border-gray-700 text-gray-300">
-            <option value="all">Barcha mamlakatlar</option>
-            {uniqueCountries.map(c => <option key={c} value={c}>{COUNTRY_NAMES[c] || c} ({c})</option>)}
-          </select>
-        </div>
+        {hasCountryData && (
+          <div className="flex items-center gap-2">
+            <select value={countryFilter} onChange={e => { setCountryFilter(e.target.value); setSelected(null); }}
+              className="rule-builder-field text-xs py-1 px-2 rounded bg-[#151F35] border border-gray-700 text-gray-300">
+              <option value="all">Barcha mamlakatlar</option>
+              {uniqueCountries.map(c => <option key={c} value={c}>{COUNTRY_NAMES[c] || c} ({c})</option>)}
+            </select>
+          </div>
+        )}
 
         {/* Search input */}
         <div className="flex items-center gap-2">
