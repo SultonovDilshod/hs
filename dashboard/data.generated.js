@@ -172,18 +172,21 @@ window.MOCK = {
       actualCodes: [
         {
           code: "7304399301",
-          pct: 58,
-          cases: 19
+          cases: 19,
+          tax: 58000,
+          pct: 57.6
         },
         {
           code: "7304390009",
-          pct: 30,
-          cases: 10
+          cases: 10,
+          tax: 30000,
+          pct: 30.3
         },
         {
           code: "7304399100",
-          pct: 12,
-          cases: 4
+          cases: 4,
+          tax: 12000,
+          pct: 12.1
         }
       ],
       examples: []
@@ -210,18 +213,21 @@ window.MOCK = {
       actualCodes: [
         {
           code: "7304399301",
-          pct: 58,
-          cases: 19
+          cases: 19,
+          tax: 58000,
+          pct: 57.6
         },
         {
           code: "7304390009",
-          pct: 30,
-          cases: 10
+          cases: 10,
+          tax: 30000,
+          pct: 30.3
         },
         {
           code: "7304399100",
-          pct: 12,
-          cases: 4
+          cases: 4,
+          tax: 12000,
+          pct: 12.1
         }
       ],
       examples: []
@@ -248,18 +254,21 @@ window.MOCK = {
       actualCodes: [
         {
           code: "8432800001",
-          pct: 53,
-          cases: 16
+          cases: 16,
+          tax: 28000,
+          pct: 53.3
         },
         {
           code: "8432890000",
-          pct: 33,
-          cases: 10
+          cases: 10,
+          tax: 19000,
+          pct: 33.3
         },
         {
           code: "8432800090",
-          pct: 14,
-          cases: 4
+          cases: 4,
+          tax: 8000,
+          pct: 13.3
         }
       ],
       examples: []
@@ -286,13 +295,15 @@ window.MOCK = {
       actualCodes: [
         {
           code: "8415810001",
-          pct: 64,
-          cases: 7
+          cases: 7,
+          tax: 62000,
+          pct: 63.6
         },
         {
           code: "8415819010",
-          pct: 36,
-          cases: 4
+          cases: 4,
+          tax: 38000,
+          pct: 36.4
         }
       ],
       examples: []
@@ -319,13 +330,15 @@ window.MOCK = {
       actualCodes: [
         {
           code: "8422300001",
-          pct: 70,
-          cases: 7
+          cases: 7,
+          tax: 15000,
+          pct: 70
         },
         {
           code: "8422390003",
-          pct: 30,
-          cases: 3
+          cases: 3,
+          tax: 6000,
+          pct: 30
         }
       ],
       examples: []
@@ -339,24 +352,26 @@ window.MOCK = {
         "Importyor"
       ],
       conditions: "HS10=8483405109 AND Importer=200244767",
-      totalCases: 2,
-      misclassCases: 17,
-      hitRate: 1500,
-      misclassRate: 1500,
-      revenueImpact: 4,
-      lift: 0.82,
+      totalCases: 17,
+      misclassCases: 15,
+      hitRate: 82,
+      misclassRate: 82,
+      revenueImpact: 225000,
+      lift: 4,
       period: "2024-2025",
       status: "new",
       actualCodes: [
         {
           code: "8483405101",
-          pct: 60,
-          cases: 9
+          cases: 9,
+          tax: 72000,
+          pct: 60
         },
         {
           code: "8483400009",
-          pct: 40,
-          cases: 6
+          cases: 6,
+          tax: 48000,
+          pct: 40
         }
       ],
       examples: []
@@ -370,24 +385,26 @@ window.MOCK = {
         "Importyor"
       ],
       conditions: "HS10=8483109500 AND Importer=305862324",
-      totalCases: 2,
-      misclassCases: 11,
-      hitRate: 900,
-      misclassRate: 900,
-      revenueImpact: 3.5,
-      lift: 0.73,
+      totalCases: 11,
+      misclassCases: 9,
+      hitRate: 73,
+      misclassRate: 73,
+      revenueImpact: 171000,
+      lift: 3.5,
       period: "2024-2025",
       status: "new",
       actualCodes: [
         {
           code: "8483109501",
-          pct: 56,
-          cases: 5
+          cases: 5,
+          tax: 19000,
+          pct: 55.6
         },
         {
           code: "8483100500",
-          pct: 44,
-          cases: 4
+          cases: 4,
+          tax: 15000,
+          pct: 44.4
         }
       ],
       examples: []
@@ -402,24 +419,26 @@ window.MOCK = {
         "Mamlakat"
       ],
       conditions: "HS10=7806008009 AND Importer=200244767 AND Country=410",
-      totalCases: 3,
-      misclassCases: 19,
-      hitRate: 1400,
-      misclassRate: 1400,
-      revenueImpact: 3.3,
-      lift: 0.69,
+      totalCases: 19,
+      misclassCases: 14,
+      hitRate: 69,
+      misclassRate: 69,
+      revenueImpact: 252000,
+      lift: 3.3,
       period: "2024-2025",
       status: "new",
       actualCodes: [
         {
           code: "7806008001",
-          pct: 57,
-          cases: 8
+          cases: 8,
+          tax: 35000,
+          pct: 57.1
         },
         {
           code: "7806000009",
-          pct: 43,
-          cases: 6
+          cases: 6,
+          tax: 28000,
+          pct: 42.9
         }
       ],
       examples: []
@@ -446,215 +465,27 @@ window.MOCK = {
       actualCodes: [
         {
           code: "6109902001",
-          pct: 57,
-          cases: 4
+          cases: 4,
+          tax: 14000,
+          pct: 44.4
         },
         {
           code: "6109900000",
-          pct: 43,
-          cases: 3
+          cases: 3,
+          tax: 10000,
+          pct: 33.3
+        },
+        {
+          code: "6109300000",
+          cases: 2,
+          tax: 7000,
+          pct: 22.2
         }
       ],
       examples: []
     },
     {
       id: "P010",
-      level: 6,
-      hsCode: "721391",
-      indicators: [
-        "TIF TN kod",
-        "Importyor",
-        "Jo'natuvchi davlat",
-        "Mamlakat"
-      ],
-      conditions: "HS6=721391 AND Importer=310631855 AND Departure=398 AND Country=398",
-      totalCases: 20,
-      misclassCases: 13,
-      hitRate: 61,
-      misclassRate: 61,
-      revenueImpact: 156000,
-      lift: 2.9,
-      period: "2024-2025",
-      status: "new",
-      actualCodes: [
-        {
-          code: "721399",
-          pct: 54,
-          cases: 7
-        },
-        {
-          code: "721310",
-          pct: 46,
-          cases: 6
-        }
-      ],
-      examples: []
-    },
-    {
-      id: "P011",
-      level: 10,
-      hsCode: "0702000002",
-      indicators: [
-        "TIF TN kod",
-        "Importyor",
-        "Jo'natuvchi davlat",
-        "Mamlakat"
-      ],
-      conditions: "HS10=0702000002 AND Importer=311270964 AND Departure=795 AND Country=795",
-      totalCases: 21,
-      misclassCases: 12,
-      hitRate: 54,
-      misclassRate: 54,
-      revenueImpact: 108000,
-      lift: 2.6,
-      period: "2024-2025",
-      status: "new",
-      actualCodes: [
-        {
-          code: "0702000001",
-          pct: 58,
-          cases: 7
-        },
-        {
-          code: "0702000009",
-          pct: 42,
-          cases: 5
-        }
-      ],
-      examples: []
-    },
-    {
-      id: "P012",
-      level: 10,
-      hsCode: "8487909000",
-      indicators: [
-        "TIF TN kod",
-        "Importyor",
-        "Jo'natuvchi davlat",
-        "Mamlakat"
-      ],
-      conditions: "HS10=8487909000 AND Importer=310490526 AND Departure=156 AND Country=156",
-      totalCases: 13,
-      misclassCases: 7,
-      hitRate: 50,
-      misclassRate: 50,
-      revenueImpact: 119000,
-      lift: 2.4,
-      period: "2024-2025",
-      status: "new",
-      actualCodes: [
-        {
-          code: "8487909001",
-          pct: 57,
-          cases: 4
-        },
-        {
-          code: "8487900000",
-          pct: 43,
-          cases: 3
-        }
-      ],
-      examples: []
-    },
-    {
-      id: "P013",
-      level: 6,
-      hsCode: "330590",
-      indicators: [
-        "TIF TN kod",
-        "Importyor"
-      ],
-      conditions: "HS6=330590 AND Importer=311716558",
-      totalCases: 2,
-      misclassCases: 11,
-      hitRate: 600,
-      misclassRate: 600,
-      revenueImpact: 2.3,
-      lift: 0.5,
-      period: "2024-2025",
-      status: "new",
-      actualCodes: [
-        {
-          code: "330591",
-          pct: 67,
-          cases: 4
-        },
-        {
-          code: "330599",
-          pct: 33,
-          cases: 2
-        }
-      ],
-      examples: []
-    },
-    {
-      id: "P014",
-      level: 10,
-      hsCode: "7304293004",
-      indicators: [
-        "TIF TN kod",
-        "Importyor",
-        "Jo'natuvchi davlat",
-        "Mamlakat"
-      ],
-      conditions: "HS10=7304293004 AND Importer=311543774 AND Departure=156 AND Country=156",
-      totalCases: 16,
-      misclassCases: 7,
-      hitRate: 42,
-      misclassRate: 42,
-      revenueImpact: 112000,
-      lift: 2,
-      period: "2024-2025",
-      status: "new",
-      actualCodes: [
-        {
-          code: "7304293001",
-          pct: 57,
-          cases: 4
-        },
-        {
-          code: "7304290004",
-          pct: 43,
-          cases: 3
-        }
-      ],
-      examples: []
-    },
-    {
-      id: "P015",
-      level: 6,
-      hsCode: "490700",
-      indicators: [
-        "TIF TN kod",
-        "Importyor",
-        "Jo'natuvchi davlat",
-        "Mamlakat"
-      ],
-      conditions: "HS6=490700 AND Importer=306801374 AND Departure=203 AND Country=203",
-      totalCases: 11,
-      misclassCases: 5,
-      hitRate: 42,
-      misclassRate: 42,
-      revenueImpact: 55000,
-      lift: 1.9,
-      period: "2024-2025",
-      status: "new",
-      actualCodes: [
-        {
-          code: "490790",
-          pct: 60,
-          cases: 3
-        },
-        {
-          code: "490710",
-          pct: 40,
-          cases: 2
-        }
-      ],
-      examples: []
-    },
-    {
-      id: "P016",
       level: 10,
       hsCode: "8704210000",
       indicators: [
@@ -676,19 +507,21 @@ window.MOCK = {
       actualCodes: [
         {
           code: "8704220000",
-          pct: 63,
-          cases: 22
+          cases: 22,
+          tax: 125000,
+          pct: 62.9
         },
         {
           code: "8704310000",
-          pct: 37,
-          cases: 13
+          cases: 13,
+          tax: 87000,
+          pct: 37.1
         }
       ],
       examples: []
     },
     {
-      id: "P017",
+      id: "P011",
       level: 10,
       hsCode: "8504400000",
       indicators: [
@@ -710,19 +543,21 @@ window.MOCK = {
       actualCodes: [
         {
           code: "8504402000",
-          pct: 68,
-          cases: 15
+          cases: 15,
+          tax: 110000,
+          pct: 68.2
         },
         {
           code: "8504401000",
-          pct: 32,
-          cases: 7
+          cases: 7,
+          tax: 55000,
+          pct: 31.8
         }
       ],
       examples: []
     },
     {
-      id: "P018",
+      id: "P012",
       level: 10,
       hsCode: "9403500000",
       indicators: [
@@ -745,19 +580,21 @@ window.MOCK = {
       actualCodes: [
         {
           code: "9403600000",
-          pct: 64,
-          cases: 9
+          cases: 9,
+          tax: 48000,
+          pct: 64.3
         },
         {
           code: "9403700000",
-          pct: 36,
-          cases: 5
+          cases: 5,
+          tax: 28000,
+          pct: 35.7
         }
       ],
       examples: []
     },
     {
-      id: "P019",
+      id: "P013",
       level: 10,
       hsCode: "8542310000",
       indicators: [
@@ -779,19 +616,21 @@ window.MOCK = {
       actualCodes: [
         {
           code: "8542320000",
-          pct: 63,
-          cases: 12
+          cases: 12,
+          tax: 75000,
+          pct: 63.2
         },
         {
           code: "8542390000",
-          pct: 37,
-          cases: 7
+          cases: 7,
+          tax: 50000,
+          pct: 36.8
         }
       ],
       examples: []
     },
     {
-      id: "P020",
+      id: "P014",
       level: 10,
       hsCode: "8471300000",
       indicators: [
@@ -813,85 +652,21 @@ window.MOCK = {
       actualCodes: [
         {
           code: "8471411000",
-          pct: 67,
-          cases: 14
+          cases: 14,
+          tax: 125000,
+          pct: 66.7
         },
         {
           code: "8471490000",
-          pct: 33,
-          cases: 7
+          cases: 7,
+          tax: 73000,
+          pct: 33.3
         }
       ],
       examples: []
     },
     {
-      id: "P021",
-      level: 6,
-      hsCode: "640399",
-      indicators: [
-        "TIF TN kod",
-        "Importyor",
-        "Jo'natuvchi davlat",
-        "Mamlakat"
-      ],
-      conditions: "HS6=640399 AND Importer=306998877 AND Departure=156 AND Country=156",
-      totalCases: 17,
-      misclassCases: 10,
-      hitRate: 59,
-      misclassRate: 59,
-      revenueImpact: 98000,
-      lift: 2.8,
-      period: "2024-2025",
-      status: "new",
-      actualCodes: [
-        {
-          code: "640391",
-          pct: 60,
-          cases: 6
-        },
-        {
-          code: "640351",
-          pct: 40,
-          cases: 4
-        }
-      ],
-      examples: []
-    },
-    {
-      id: "P022",
-      level: 6,
-      hsCode: "610990",
-      indicators: [
-        "TIF TN kod",
-        "Importyor",
-        "Jo'natuvchi davlat",
-        "Mamlakat"
-      ],
-      conditions: "HS6=610990 AND Importer=310112233 AND Departure=764 AND Country=764",
-      totalCases: 22,
-      misclassCases: 12,
-      hitRate: 55,
-      misclassRate: 55,
-      revenueImpact: 87000,
-      lift: 2.6,
-      period: "2024-2025",
-      status: "new",
-      actualCodes: [
-        {
-          code: "611030",
-          pct: 67,
-          cases: 8
-        },
-        {
-          code: "611020",
-          pct: 33,
-          cases: 4
-        }
-      ],
-      examples: []
-    },
-    {
-      id: "P023",
+      id: "P015",
       level: 10,
       hsCode: "3926900000",
       indicators: [
@@ -912,80 +687,15 @@ window.MOCK = {
       actualCodes: [
         {
           code: "3926200000",
-          pct: 63,
-          cases: 5
+          cases: 5,
+          tax: 22000,
+          pct: 62.5
         },
         {
           code: "3926909000",
-          pct: 37,
-          cases: 3
-        }
-      ],
-      examples: []
-    },
-    {
-      id: "P024",
-      level: 10,
-      hsCode: "7213910000",
-      indicators: [
-        "TIF TN kod",
-        "Importyor",
-        "Jo'natuvchi davlat",
-        "Mamlakat",
-        "Broker"
-      ],
-      conditions: "HS10=7213910000 AND Importer=310667788 AND Departure=398 AND Country=398 AND Broker=IMP-BRK01",
-      totalCases: 19,
-      misclassCases: 11,
-      hitRate: 58,
-      misclassRate: 58,
-      revenueImpact: 134000,
-      lift: 2.7,
-      period: "2024-2025",
-      status: "new",
-      actualCodes: [
-        {
-          code: "7213990000",
-          pct: 64,
-          cases: 7
-        },
-        {
-          code: "7228300000",
-          pct: 36,
-          cases: 4
-        }
-      ],
-      examples: []
-    },
-    {
-      id: "P025",
-      level: 10,
-      hsCode: "8430490000",
-      indicators: [
-        "TIF TN kod",
-        "Importyor",
-        "Jo'natuvchi davlat",
-        "Mamlakat"
-      ],
-      conditions: "HS10=8430490000 AND Importer=311889900 AND Departure=156 AND Country=156",
-      totalCases: 16,
-      misclassCases: 9,
-      hitRate: 56,
-      misclassRate: 56,
-      revenueImpact: 165000,
-      lift: 2.6,
-      period: "2024-2025",
-      status: "new",
-      actualCodes: [
-        {
-          code: "8430410000",
-          pct: 67,
-          cases: 6
-        },
-        {
-          code: "8430500000",
-          pct: 33,
-          cases: 3
+          cases: 3,
+          tax: 14000,
+          pct: 37.5
         }
       ],
       examples: []
@@ -1309,7 +1019,7 @@ window.MOCK = {
   ruleTypeDistribution: [
     {
       name: "Statistik",
-      value: 25,
+      value: 15,
       color: "#06B6D4"
     }
   ],
@@ -1337,2600 +1047,992 @@ window.MOCK = {
     ]
   },
   network: {
-    amendments_6_1y: [
-      {
-        first_hs_code: "870421",
-        corrected_hs_code: "870422",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 14,
-        tax_amount: 68000
-      },
-      {
-        first_hs_code: "870421",
-        corrected_hs_code: "870431",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 9,
-        tax_amount: 42000
-      },
-      {
-        first_hs_code: "870421",
-        corrected_hs_code: "870422",
-        importer: "IMP-007",
-        country_of_origin: "410",
-        count: 11,
-        tax_amount: 53000
-      },
-      {
-        first_hs_code: "870422",
-        corrected_hs_code: "870431",
-        importer: "IMP-001",
-        country_of_origin: "276",
-        count: 7,
-        tax_amount: 31000
-      },
-      {
-        first_hs_code: "870422",
-        corrected_hs_code: "870421",
-        importer: "IMP-012",
-        country_of_origin: "840",
-        count: 5,
-        tax_amount: 24000
-      },
-      {
-        first_hs_code: "870431",
-        corrected_hs_code: "870421",
-        importer: "IMP-003",
-        country_of_origin: "392",
-        count: 8,
-        tax_amount: 39000
-      },
+    amendments_6_1y: [],
+    amendments_6_3m: [
       {
         first_hs_code: "730439",
-        corrected_hs_code: "730429",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 12,
-        tax_amount: 58000
-      },
-      {
-        first_hs_code: "730439",
-        corrected_hs_code: "730429",
-        importer: "IMP-007",
-        country_of_origin: "276",
-        count: 6,
-        tax_amount: 29000
-      },
-      {
-        first_hs_code: "730429",
         corrected_hs_code: "730439",
-        importer: "IMP-005",
-        country_of_origin: "410",
-        count: 4,
-        tax_amount: 18000
+        importer: "",
+        country_of_origin: "",
+        count: 33,
+        tax_amount: 100000
       },
       {
         first_hs_code: "843280",
-        corrected_hs_code: "843049",
-        importer: "IMP-003",
-        country_of_origin: "156",
+        corrected_hs_code: "843280",
+        importer: "",
+        country_of_origin: "",
+        count: 20,
+        tax_amount: 36000
+      },
+      {
+        first_hs_code: "843280",
+        corrected_hs_code: "843289",
+        importer: "",
+        country_of_origin: "",
         count: 10,
-        tax_amount: 95000
-      },
-      {
-        first_hs_code: "843280",
-        corrected_hs_code: "848340",
-        importer: "IMP-001",
-        country_of_origin: "392",
-        count: 6,
-        tax_amount: 47000
+        tax_amount: 19000
       },
       {
         first_hs_code: "841581",
-        corrected_hs_code: "842230",
-        importer: "IMP-012",
-        country_of_origin: "840",
-        count: 8,
-        tax_amount: 62000
-      },
-      {
-        first_hs_code: "841581",
-        corrected_hs_code: "842230",
-        importer: "IMP-007",
-        country_of_origin: "156",
-        count: 5,
-        tax_amount: 38000
+        corrected_hs_code: "841581",
+        importer: "",
+        country_of_origin: "",
+        count: 11,
+        tax_amount: 100000
       },
       {
         first_hs_code: "842230",
-        corrected_hs_code: "841581",
-        importer: "IMP-003",
-        country_of_origin: "276",
-        count: 3,
+        corrected_hs_code: "842230",
+        importer: "",
+        country_of_origin: "",
+        count: 7,
         tax_amount: 15000
       },
       {
-        first_hs_code: "848340",
-        corrected_hs_code: "848310",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 9,
-        tax_amount: 72000
+        first_hs_code: "842230",
+        corrected_hs_code: "842239",
+        importer: "",
+        country_of_origin: "",
+        count: 3,
+        tax_amount: 6000
       },
       {
         first_hs_code: "848340",
-        corrected_hs_code: "848790",
-        importer: "IMP-012",
-        country_of_origin: "764",
-        count: 4,
-        tax_amount: 33000
+        corrected_hs_code: "848340",
+        importer: "",
+        country_of_origin: "",
+        count: 15,
+        tax_amount: 120000
       },
       {
         first_hs_code: "848310",
-        corrected_hs_code: "848340",
-        importer: "IMP-007",
-        country_of_origin: "682",
-        count: 6,
-        tax_amount: 48000
+        corrected_hs_code: "848310",
+        importer: "",
+        country_of_origin: "",
+        count: 9,
+        tax_amount: 34000
       },
       {
         first_hs_code: "780600",
-        corrected_hs_code: "721391",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 7,
-        tax_amount: 35000
+        corrected_hs_code: "780600",
+        importer: "",
+        country_of_origin: "",
+        count: 14,
+        tax_amount: 63000
       },
       {
         first_hs_code: "610990",
-        corrected_hs_code: "611030",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 13,
-        tax_amount: 45000
-      },
-      {
-        first_hs_code: "610990",
-        corrected_hs_code: "611030",
-        importer: "IMP-009",
-        country_of_origin: "764",
-        count: 5,
-        tax_amount: 17000
-      },
-      {
-        first_hs_code: "611030",
         corrected_hs_code: "610990",
-        importer: "IMP-012",
-        country_of_origin: "410",
-        count: 4,
-        tax_amount: 14000
+        importer: "",
+        country_of_origin: "",
+        count: 7,
+        tax_amount: 24000
       },
       {
         first_hs_code: "070200",
         corrected_hs_code: "070200",
-        importer: "IMP-002",
-        country_of_origin: "036",
-        count: 2,
-        tax_amount: 5000
+        importer: "",
+        country_of_origin: "",
+        count: 12,
+        tax_amount: 16000
       },
       {
-        first_hs_code: "330590",
-        corrected_hs_code: "392690",
-        importer: "IMP-005",
-        country_of_origin: "156",
-        count: 6,
-        tax_amount: 28000
+        first_hs_code: "848790",
+        corrected_hs_code: "848790",
+        importer: "",
+        country_of_origin: "",
+        count: 7,
+        tax_amount: 29000
+      },
+      {
+        first_hs_code: "730429",
+        corrected_hs_code: "730429",
+        importer: "",
+        country_of_origin: "",
+        count: 7,
+        tax_amount: 27000
       },
       {
         first_hs_code: "490700",
-        corrected_hs_code: "490700",
-        importer: "IMP-004",
-        country_of_origin: "276",
-        count: 1,
+        corrected_hs_code: "490790",
+        importer: "",
+        country_of_origin: "",
+        count: 3,
+        tax_amount: 5000
+      },
+      {
+        first_hs_code: "490700",
+        corrected_hs_code: "490710",
+        importer: "",
+        country_of_origin: "",
+        count: 2,
         tax_amount: 3000
       },
       {
-        first_hs_code: "854231",
-        corrected_hs_code: "853710",
-        importer: "IMP-001",
-        country_of_origin: "410",
-        count: 10,
+        first_hs_code: "870421",
+        corrected_hs_code: "870422",
+        importer: "",
+        country_of_origin: "",
+        count: 22,
         tax_amount: 125000
       },
       {
-        first_hs_code: "854231",
-        corrected_hs_code: "853710",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 7,
+        first_hs_code: "870421",
+        corrected_hs_code: "870431",
+        importer: "",
+        country_of_origin: "",
+        count: 13,
         tax_amount: 87000
       },
       {
-        first_hs_code: "853710",
-        corrected_hs_code: "854231",
-        importer: "IMP-007",
-        country_of_origin: "840",
-        count: 3,
-        tax_amount: 42000
-      },
-      {
-        first_hs_code: "392690",
-        corrected_hs_code: "401699",
-        importer: "IMP-012",
-        country_of_origin: "156",
-        count: 8,
-        tax_amount: 36000
-      },
-      {
-        first_hs_code: "401699",
-        corrected_hs_code: "392690",
-        importer: "IMP-001",
-        country_of_origin: "764",
-        count: 5,
-        tax_amount: 22000
-      },
-      {
-        first_hs_code: "690790",
-        corrected_hs_code: "690790",
-        importer: "IMP-006",
-        country_of_origin: "156",
-        count: 2,
-        tax_amount: 8000
-      },
-      {
-        first_hs_code: "847130",
-        corrected_hs_code: "850440",
-        importer: "IMP-003",
-        country_of_origin: "392",
-        count: 9,
-        tax_amount: 110000
-      },
-      {
-        first_hs_code: "847130",
-        corrected_hs_code: "850440",
-        importer: "IMP-012",
-        country_of_origin: "156",
-        count: 6,
-        tax_amount: 73000
-      },
-      {
         first_hs_code: "850440",
-        corrected_hs_code: "847130",
-        importer: "IMP-007",
-        country_of_origin: "276",
-        count: 4,
-        tax_amount: 49000
+        corrected_hs_code: "850440",
+        importer: "",
+        country_of_origin: "",
+        count: 22,
+        tax_amount: 165000
       },
       {
         first_hs_code: "940350",
-        corrected_hs_code: "940350",
-        importer: "IMP-008",
-        country_of_origin: "156",
-        count: 3,
-        tax_amount: 12000
-      },
-      {
-        first_hs_code: "640399",
-        corrected_hs_code: "610990",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 5,
-        tax_amount: 19000
-      },
-      {
-        first_hs_code: "720839",
-        corrected_hs_code: "721391",
-        importer: "IMP-003",
-        country_of_origin: "276",
-        count: 7,
-        tax_amount: 34000
-      },
-      {
-        first_hs_code: "720839",
-        corrected_hs_code: "780600",
-        importer: "IMP-012",
-        country_of_origin: "840",
-        count: 4,
-        tax_amount: 21000
-      },
-      {
-        first_hs_code: "843049",
-        corrected_hs_code: "843280",
-        importer: "IMP-007",
-        country_of_origin: "156",
-        count: 6,
-        tax_amount: 55000
-      },
-      {
-        first_hs_code: "843049",
-        corrected_hs_code: "843280",
-        importer: "IMP-001",
-        country_of_origin: "410",
-        count: 3,
-        tax_amount: 28000
-      },
-      {
-        first_hs_code: "848790",
-        corrected_hs_code: "848340",
-        importer: "IMP-003",
-        country_of_origin: "682",
-        count: 5,
-        tax_amount: 41000
-      },
-      {
-        first_hs_code: "721391",
-        corrected_hs_code: "720839",
-        importer: "IMP-010",
-        country_of_origin: "156",
-        count: 4,
-        tax_amount: 19000
-      },
-      {
-        first_hs_code: "721391",
-        corrected_hs_code: "780600",
-        importer: "IMP-001",
-        country_of_origin: "036",
-        count: 3,
-        tax_amount: 15000
-      },
-      {
-        first_hs_code: "330590",
-        corrected_hs_code: "330590",
-        importer: "IMP-011",
-        country_of_origin: "356",
-        count: 2,
-        tax_amount: 7000
-      },
-      {
-        first_hs_code: "870421",
-        corrected_hs_code: "870422",
-        importer: "IMP-012",
-        country_of_origin: "156",
-        count: 6,
-        tax_amount: 29000
-      },
-      {
-        first_hs_code: "854231",
-        corrected_hs_code: "850440",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 5,
-        tax_amount: 65000
-      },
-      {
-        first_hs_code: "841581",
-        corrected_hs_code: "848310",
-        importer: "IMP-003",
-        country_of_origin: "410",
-        count: 4,
-        tax_amount: 32000
-      },
-      {
-        first_hs_code: "610990",
-        corrected_hs_code: "640399",
-        importer: "IMP-007",
-        country_of_origin: "156",
-        count: 3,
-        tax_amount: 11000
-      },
-      {
-        first_hs_code: "730439",
-        corrected_hs_code: "720839",
-        importer: "IMP-012",
-        country_of_origin: "276",
-        count: 5,
-        tax_amount: 24000
-      },
-      {
-        first_hs_code: "392690",
-        corrected_hs_code: "330590",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 4,
-        tax_amount: 16000
-      },
-      {
-        first_hs_code: "847130",
-        corrected_hs_code: "843280",
-        importer: "IMP-003",
-        country_of_origin: "840",
-        count: 3,
-        tax_amount: 38000
-      }
-    ],
-    amendments_6_3m: [
-      {
-        first_hs_code: "870421",
-        corrected_hs_code: "870422",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 4,
-        tax_amount: 19000
-      },
-      {
-        first_hs_code: "870421",
-        corrected_hs_code: "870431",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 3,
-        tax_amount: 14000
-      },
-      {
-        first_hs_code: "870421",
-        corrected_hs_code: "870422",
-        importer: "IMP-007",
-        country_of_origin: "410",
-        count: 3,
-        tax_amount: 15000
-      },
-      {
-        first_hs_code: "870422",
-        corrected_hs_code: "870431",
-        importer: "IMP-001",
-        country_of_origin: "276",
-        count: 2,
-        tax_amount: 9000
-      },
-      {
-        first_hs_code: "870431",
-        corrected_hs_code: "870421",
-        importer: "IMP-003",
-        country_of_origin: "392",
-        count: 2,
-        tax_amount: 10000
-      },
-      {
-        first_hs_code: "730439",
-        corrected_hs_code: "730429",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 4,
-        tax_amount: 19000
-      },
-      {
-        first_hs_code: "730439",
-        corrected_hs_code: "730429",
-        importer: "IMP-007",
-        country_of_origin: "276",
-        count: 2,
-        tax_amount: 10000
-      },
-      {
-        first_hs_code: "843280",
-        corrected_hs_code: "843049",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 3,
-        tax_amount: 28000
-      },
-      {
-        first_hs_code: "843280",
-        corrected_hs_code: "848340",
-        importer: "IMP-001",
-        country_of_origin: "392",
-        count: 2,
-        tax_amount: 16000
-      },
-      {
-        first_hs_code: "841581",
-        corrected_hs_code: "842230",
-        importer: "IMP-012",
-        country_of_origin: "840",
-        count: 2,
-        tax_amount: 16000
-      },
-      {
-        first_hs_code: "848340",
-        corrected_hs_code: "848310",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 3,
-        tax_amount: 24000
-      },
-      {
-        first_hs_code: "610990",
-        corrected_hs_code: "611030",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 4,
-        tax_amount: 14000
-      },
-      {
-        first_hs_code: "610990",
-        corrected_hs_code: "611030",
-        importer: "IMP-009",
-        country_of_origin: "764",
-        count: 2,
-        tax_amount: 7000
-      },
-      {
-        first_hs_code: "854231",
-        corrected_hs_code: "853710",
-        importer: "IMP-001",
-        country_of_origin: "410",
-        count: 3,
-        tax_amount: 38000
-      },
-      {
-        first_hs_code: "854231",
-        corrected_hs_code: "853710",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 2,
-        tax_amount: 25000
-      },
-      {
-        first_hs_code: "392690",
-        corrected_hs_code: "401699",
-        importer: "IMP-012",
-        country_of_origin: "156",
-        count: 2,
-        tax_amount: 9000
-      },
-      {
-        first_hs_code: "847130",
-        corrected_hs_code: "850440",
-        importer: "IMP-003",
-        country_of_origin: "392",
-        count: 3,
-        tax_amount: 37000
-      },
-      {
-        first_hs_code: "847130",
-        corrected_hs_code: "850440",
-        importer: "IMP-012",
-        country_of_origin: "156",
-        count: 2,
-        tax_amount: 24000
-      },
-      {
-        first_hs_code: "640399",
-        corrected_hs_code: "610990",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 2,
-        tax_amount: 7000
-      },
-      {
-        first_hs_code: "720839",
-        corrected_hs_code: "721391",
-        importer: "IMP-003",
-        country_of_origin: "276",
-        count: 2,
-        tax_amount: 10000
-      },
-      {
-        first_hs_code: "780600",
-        corrected_hs_code: "721391",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 2,
-        tax_amount: 10000
-      },
-      {
-        first_hs_code: "843049",
-        corrected_hs_code: "843280",
-        importer: "IMP-007",
-        country_of_origin: "156",
-        count: 2,
-        tax_amount: 18000
-      },
-      {
-        first_hs_code: "848790",
-        corrected_hs_code: "848340",
-        importer: "IMP-003",
-        country_of_origin: "682",
-        count: 2,
-        tax_amount: 17000
-      },
-      {
-        first_hs_code: "850440",
-        corrected_hs_code: "847130",
-        importer: "IMP-007",
-        country_of_origin: "276",
-        count: 1,
-        tax_amount: 12000
-      },
-      {
-        first_hs_code: "330590",
-        corrected_hs_code: "392690",
-        importer: "IMP-005",
-        country_of_origin: "156",
-        count: 2,
-        tax_amount: 9000
-      }
-    ],
-    amendments_10_1y: [
-      {
-        first_hs_code: "8704210001",
-        corrected_hs_code: "8704220001",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 8,
-        tax_amount: 39000
-      },
-      {
-        first_hs_code: "8704210001",
-        corrected_hs_code: "8704220002",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 5,
-        tax_amount: 24000
-      },
-      {
-        first_hs_code: "8704210002",
-        corrected_hs_code: "8704220001",
-        importer: "IMP-007",
-        country_of_origin: "410",
-        count: 6,
-        tax_amount: 29000
-      },
-      {
-        first_hs_code: "8704210002",
-        corrected_hs_code: "8704310001",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 4,
-        tax_amount: 18000
-      },
-      {
-        first_hs_code: "8704220001",
-        corrected_hs_code: "8704310001",
-        importer: "IMP-001",
-        country_of_origin: "276",
-        count: 5,
-        tax_amount: 22000
-      },
-      {
-        first_hs_code: "8704220002",
-        corrected_hs_code: "8704210001",
-        importer: "IMP-012",
-        country_of_origin: "840",
-        count: 3,
-        tax_amount: 15000
-      },
-      {
-        first_hs_code: "8704310001",
-        corrected_hs_code: "8704210001",
-        importer: "IMP-003",
-        country_of_origin: "392",
-        count: 5,
-        tax_amount: 24000
-      },
-      {
-        first_hs_code: "8704310002",
-        corrected_hs_code: "8704210002",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 3,
-        tax_amount: 14000
-      },
-      {
-        first_hs_code: "7304390001",
-        corrected_hs_code: "7304290001",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 7,
-        tax_amount: 34000
-      },
-      {
-        first_hs_code: "7304390002",
-        corrected_hs_code: "7304290001",
-        importer: "IMP-007",
-        country_of_origin: "276",
-        count: 4,
-        tax_amount: 19000
-      },
-      {
-        first_hs_code: "7304390001",
-        corrected_hs_code: "7304290002",
-        importer: "IMP-012",
-        country_of_origin: "156",
-        count: 3,
-        tax_amount: 15000
-      },
-      {
-        first_hs_code: "7304290001",
-        corrected_hs_code: "7304390001",
-        importer: "IMP-005",
-        country_of_origin: "410",
-        count: 3,
-        tax_amount: 13000
-      },
-      {
-        first_hs_code: "8432800001",
-        corrected_hs_code: "8430490001",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 6,
-        tax_amount: 57000
-      },
-      {
-        first_hs_code: "8432800002",
-        corrected_hs_code: "8483400001",
-        importer: "IMP-001",
-        country_of_origin: "392",
-        count: 4,
-        tax_amount: 31000
-      },
-      {
-        first_hs_code: "8432800001",
-        corrected_hs_code: "8483400002",
-        importer: "IMP-007",
-        country_of_origin: "156",
-        count: 3,
-        tax_amount: 28000
-      },
-      {
-        first_hs_code: "8415810001",
-        corrected_hs_code: "8422300001",
-        importer: "IMP-012",
-        country_of_origin: "840",
-        count: 5,
-        tax_amount: 39000
-      },
-      {
-        first_hs_code: "8415810002",
-        corrected_hs_code: "8422300001",
-        importer: "IMP-007",
-        country_of_origin: "156",
-        count: 3,
-        tax_amount: 23000
-      },
-      {
-        first_hs_code: "8422300001",
-        corrected_hs_code: "8415810001",
-        importer: "IMP-003",
-        country_of_origin: "276",
-        count: 2,
-        tax_amount: 10000
-      },
-      {
-        first_hs_code: "8483400001",
-        corrected_hs_code: "8483100001",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 6,
+        corrected_hs_code: "940360",
+        importer: "",
+        country_of_origin: "",
+        count: 9,
         tax_amount: 48000
       },
       {
-        first_hs_code: "8483400002",
-        corrected_hs_code: "8487900001",
-        importer: "IMP-012",
-        country_of_origin: "764",
-        count: 3,
-        tax_amount: 25000
-      },
-      {
-        first_hs_code: "8483100001",
-        corrected_hs_code: "8483400001",
-        importer: "IMP-007",
-        country_of_origin: "682",
-        count: 4,
-        tax_amount: 32000
-      },
-      {
-        first_hs_code: "7806000001",
-        corrected_hs_code: "7213910001",
-        importer: "IMP-003",
-        country_of_origin: "156",
+        first_hs_code: "940350",
+        corrected_hs_code: "940370",
+        importer: "",
+        country_of_origin: "",
         count: 5,
-        tax_amount: 25000
+        tax_amount: 28000
       },
       {
-        first_hs_code: "6109900001",
-        corrected_hs_code: "6110300001",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 7,
-        tax_amount: 24000
-      },
-      {
-        first_hs_code: "6109900002",
-        corrected_hs_code: "6110300001",
-        importer: "IMP-009",
-        country_of_origin: "764",
-        count: 4,
-        tax_amount: 14000
-      },
-      {
-        first_hs_code: "6110300001",
-        corrected_hs_code: "6109900001",
-        importer: "IMP-012",
-        country_of_origin: "410",
-        count: 3,
-        tax_amount: 10000
-      },
-      {
-        first_hs_code: "6109900001",
-        corrected_hs_code: "6110300002",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 3,
-        tax_amount: 11000
-      },
-      {
-        first_hs_code: "3305900001",
-        corrected_hs_code: "3926900001",
-        importer: "IMP-005",
-        country_of_origin: "156",
-        count: 4,
-        tax_amount: 19000
-      },
-      {
-        first_hs_code: "8542310001",
-        corrected_hs_code: "8537100001",
-        importer: "IMP-001",
-        country_of_origin: "410",
-        count: 6,
+        first_hs_code: "854231",
+        corrected_hs_code: "854232",
+        importer: "",
+        country_of_origin: "",
+        count: 12,
         tax_amount: 75000
       },
       {
-        first_hs_code: "8542310002",
-        corrected_hs_code: "8537100001",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 4,
+        first_hs_code: "854231",
+        corrected_hs_code: "854239",
+        importer: "",
+        country_of_origin: "",
+        count: 7,
         tax_amount: 50000
       },
       {
-        first_hs_code: "8537100001",
-        corrected_hs_code: "8542310001",
-        importer: "IMP-007",
-        country_of_origin: "840",
-        count: 2,
-        tax_amount: 28000
+        first_hs_code: "847130",
+        corrected_hs_code: "847141",
+        importer: "",
+        country_of_origin: "",
+        count: 14,
+        tax_amount: 125000
       },
       {
-        first_hs_code: "3926900001",
-        corrected_hs_code: "4016990001",
-        importer: "IMP-012",
-        country_of_origin: "156",
+        first_hs_code: "847130",
+        corrected_hs_code: "847149",
+        importer: "",
+        country_of_origin: "",
+        count: 7,
+        tax_amount: 73000
+      },
+      {
+        first_hs_code: "392690",
+        corrected_hs_code: "392620",
+        importer: "",
+        country_of_origin: "",
         count: 5,
         tax_amount: 22000
       },
       {
-        first_hs_code: "4016990001",
-        corrected_hs_code: "3926900001",
-        importer: "IMP-001",
-        country_of_origin: "764",
+        first_hs_code: "392690",
+        corrected_hs_code: "392690",
+        importer: "",
+        country_of_origin: "",
         count: 3,
         tax_amount: 14000
       },
       {
-        first_hs_code: "8471300001",
-        corrected_hs_code: "8504400001",
-        importer: "IMP-003",
-        country_of_origin: "392",
-        count: 5,
-        tax_amount: 62000
+        first_hs_code: "721391",
+        corrected_hs_code: "721399",
+        importer: "",
+        country_of_origin: "",
+        count: 7,
+        tax_amount: 34000
       },
       {
-        first_hs_code: "8471300002",
-        corrected_hs_code: "8504400001",
-        importer: "IMP-012",
-        country_of_origin: "156",
+        first_hs_code: "721391",
+        corrected_hs_code: "722830",
+        importer: "",
+        country_of_origin: "",
         count: 4,
-        tax_amount: 48000
-      },
-      {
-        first_hs_code: "8504400001",
-        corrected_hs_code: "8471300001",
-        importer: "IMP-007",
-        country_of_origin: "276",
-        count: 3,
-        tax_amount: 37000
-      },
-      {
-        first_hs_code: "6403990001",
-        corrected_hs_code: "6109900001",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 3,
-        tax_amount: 12000
-      },
-      {
-        first_hs_code: "7208390001",
-        corrected_hs_code: "7213910001",
-        importer: "IMP-003",
-        country_of_origin: "276",
-        count: 4,
-        tax_amount: 20000
-      },
-      {
-        first_hs_code: "7208390001",
-        corrected_hs_code: "7806000001",
-        importer: "IMP-012",
-        country_of_origin: "840",
-        count: 3,
-        tax_amount: 16000
-      },
-      {
-        first_hs_code: "8430490001",
-        corrected_hs_code: "8432800001",
-        importer: "IMP-007",
-        country_of_origin: "156",
-        count: 4,
-        tax_amount: 37000
-      },
-      {
-        first_hs_code: "8487900001",
-        corrected_hs_code: "8483400001",
-        importer: "IMP-003",
-        country_of_origin: "682",
-        count: 3,
-        tax_amount: 25000
-      },
-      {
-        first_hs_code: "7213910001",
-        corrected_hs_code: "7208390001",
-        importer: "IMP-010",
-        country_of_origin: "156",
-        count: 3,
-        tax_amount: 14000
-      },
-      {
-        first_hs_code: "8542310001",
-        corrected_hs_code: "8504400001",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 3,
-        tax_amount: 39000
-      },
-      {
-        first_hs_code: "8415810001",
-        corrected_hs_code: "8483100001",
-        importer: "IMP-003",
-        country_of_origin: "410",
-        count: 3,
-        tax_amount: 24000
-      },
-      {
-        first_hs_code: "6109900002",
-        corrected_hs_code: "6403990001",
-        importer: "IMP-007",
-        country_of_origin: "156",
-        count: 2,
-        tax_amount: 8000
-      },
-      {
-        first_hs_code: "7304390002",
-        corrected_hs_code: "7208390001",
-        importer: "IMP-012",
-        country_of_origin: "276",
-        count: 3,
-        tax_amount: 15000
-      },
-      {
-        first_hs_code: "3926900001",
-        corrected_hs_code: "3305900001",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 2,
-        tax_amount: 9000
-      },
-      {
-        first_hs_code: "8471300001",
-        corrected_hs_code: "8432800001",
-        importer: "IMP-003",
-        country_of_origin: "840",
-        count: 2,
-        tax_amount: 25000
-      },
-      {
-        first_hs_code: "9403500001",
-        corrected_hs_code: "9403500002",
-        importer: "IMP-008",
-        country_of_origin: "156",
-        count: 2,
-        tax_amount: 8000
-      },
-      {
-        first_hs_code: "6907900001",
-        corrected_hs_code: "6907900002",
-        importer: "IMP-006",
-        country_of_origin: "156",
-        count: 2,
-        tax_amount: 6000
-      },
-      {
-        first_hs_code: "4907000001",
-        corrected_hs_code: "4907000002",
-        importer: "IMP-004",
-        country_of_origin: "276",
-        count: 1,
-        tax_amount: 2000
-      }
-    ],
-    amendments_10_3m: [
-      {
-        first_hs_code: "8704210001",
-        corrected_hs_code: "8704220001",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 2,
-        tax_amount: 10000
-      },
-      {
-        first_hs_code: "8704210001",
-        corrected_hs_code: "8704220002",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 2,
-        tax_amount: 9000
-      },
-      {
-        first_hs_code: "8704210002",
-        corrected_hs_code: "8704220001",
-        importer: "IMP-007",
-        country_of_origin: "410",
-        count: 2,
-        tax_amount: 10000
-      },
-      {
-        first_hs_code: "8704220001",
-        corrected_hs_code: "8704310001",
-        importer: "IMP-001",
-        country_of_origin: "276",
-        count: 2,
-        tax_amount: 8000
-      },
-      {
-        first_hs_code: "7304390001",
-        corrected_hs_code: "7304290001",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 2,
-        tax_amount: 10000
-      },
-      {
-        first_hs_code: "8432800001",
-        corrected_hs_code: "8430490001",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 2,
         tax_amount: 19000
       },
       {
-        first_hs_code: "8415810001",
-        corrected_hs_code: "8422300001",
-        importer: "IMP-012",
-        country_of_origin: "840",
-        count: 2,
-        tax_amount: 16000
+        first_hs_code: "843049",
+        corrected_hs_code: "843041",
+        importer: "",
+        country_of_origin: "",
+        count: 6,
+        tax_amount: 37000
       },
       {
-        first_hs_code: "8483400001",
-        corrected_hs_code: "8483100001",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 2,
-        tax_amount: 16000
+        first_hs_code: "843049",
+        corrected_hs_code: "843050",
+        importer: "",
+        country_of_origin: "",
+        count: 3,
+        tax_amount: 19000
       },
       {
-        first_hs_code: "6109900001",
-        corrected_hs_code: "6110300001",
-        importer: "IMP-001",
-        country_of_origin: "156",
+        first_hs_code: "610990",
+        corrected_hs_code: "610930",
+        importer: "",
+        country_of_origin: "",
         count: 2,
         tax_amount: 7000
+      }
+    ],
+    amendments_10_1y: [],
+    amendments_10_3m: [
+      {
+        first_hs_code: "7304399309",
+        corrected_hs_code: "7304399301",
+        importer: "",
+        country_of_origin: "",
+        count: 19,
+        tax_amount: 58000
       },
       {
-        first_hs_code: "6109900002",
-        corrected_hs_code: "6110300001",
-        importer: "IMP-009",
-        country_of_origin: "764",
-        count: 1,
-        tax_amount: 4000
+        first_hs_code: "7304399309",
+        corrected_hs_code: "7304390009",
+        importer: "",
+        country_of_origin: "",
+        count: 10,
+        tax_amount: 30000
       },
       {
-        first_hs_code: "8542310001",
-        corrected_hs_code: "8537100001",
-        importer: "IMP-001",
-        country_of_origin: "410",
-        count: 2,
-        tax_amount: 25000
-      },
-      {
-        first_hs_code: "8542310002",
-        corrected_hs_code: "8537100001",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 1,
-        tax_amount: 13000
-      },
-      {
-        first_hs_code: "3926900001",
-        corrected_hs_code: "4016990001",
-        importer: "IMP-012",
-        country_of_origin: "156",
-        count: 2,
-        tax_amount: 9000
-      },
-      {
-        first_hs_code: "8471300001",
-        corrected_hs_code: "8504400001",
-        importer: "IMP-003",
-        country_of_origin: "392",
-        count: 2,
-        tax_amount: 24000
-      },
-      {
-        first_hs_code: "8471300002",
-        corrected_hs_code: "8504400001",
-        importer: "IMP-012",
-        country_of_origin: "156",
-        count: 1,
+        first_hs_code: "7304399309",
+        corrected_hs_code: "7304399100",
+        importer: "",
+        country_of_origin: "",
+        count: 4,
         tax_amount: 12000
       },
       {
-        first_hs_code: "6403990001",
-        corrected_hs_code: "6109900001",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 1,
-        tax_amount: 4000
-      },
-      {
-        first_hs_code: "7208390001",
-        corrected_hs_code: "7213910001",
-        importer: "IMP-003",
-        country_of_origin: "276",
-        count: 1,
-        tax_amount: 5000
-      },
-      {
-        first_hs_code: "8430490001",
+        first_hs_code: "8432800000",
         corrected_hs_code: "8432800001",
-        importer: "IMP-007",
-        country_of_origin: "156",
-        count: 1,
-        tax_amount: 9000
+        importer: "",
+        country_of_origin: "",
+        count: 16,
+        tax_amount: 28000
       },
       {
-        first_hs_code: "8487900001",
-        corrected_hs_code: "8483400001",
-        importer: "IMP-003",
-        country_of_origin: "682",
-        count: 1,
+        first_hs_code: "8432800000",
+        corrected_hs_code: "8432890000",
+        importer: "",
+        country_of_origin: "",
+        count: 10,
+        tax_amount: 19000
+      },
+      {
+        first_hs_code: "8432800000",
+        corrected_hs_code: "8432800090",
+        importer: "",
+        country_of_origin: "",
+        count: 4,
         tax_amount: 8000
       },
       {
-        first_hs_code: "7806000001",
-        corrected_hs_code: "7213910001",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 2,
+        first_hs_code: "8415810010",
+        corrected_hs_code: "8415810001",
+        importer: "",
+        country_of_origin: "",
+        count: 7,
+        tax_amount: 62000
+      },
+      {
+        first_hs_code: "8415810010",
+        corrected_hs_code: "8415819010",
+        importer: "",
+        country_of_origin: "",
+        count: 4,
+        tax_amount: 38000
+      },
+      {
+        first_hs_code: "8422300003",
+        corrected_hs_code: "8422300001",
+        importer: "",
+        country_of_origin: "",
+        count: 7,
+        tax_amount: 15000
+      },
+      {
+        first_hs_code: "8422300003",
+        corrected_hs_code: "8422390003",
+        importer: "",
+        country_of_origin: "",
+        count: 3,
+        tax_amount: 6000
+      },
+      {
+        first_hs_code: "8483405109",
+        corrected_hs_code: "8483405101",
+        importer: "",
+        country_of_origin: "",
+        count: 9,
+        tax_amount: 72000
+      },
+      {
+        first_hs_code: "8483405109",
+        corrected_hs_code: "8483400009",
+        importer: "",
+        country_of_origin: "",
+        count: 6,
+        tax_amount: 48000
+      },
+      {
+        first_hs_code: "8483109500",
+        corrected_hs_code: "8483109501",
+        importer: "",
+        country_of_origin: "",
+        count: 5,
+        tax_amount: 19000
+      },
+      {
+        first_hs_code: "8483109500",
+        corrected_hs_code: "8483100500",
+        importer: "",
+        country_of_origin: "",
+        count: 4,
+        tax_amount: 15000
+      },
+      {
+        first_hs_code: "7806008009",
+        corrected_hs_code: "7806008001",
+        importer: "",
+        country_of_origin: "",
+        count: 8,
+        tax_amount: 35000
+      },
+      {
+        first_hs_code: "7806008009",
+        corrected_hs_code: "7806000009",
+        importer: "",
+        country_of_origin: "",
+        count: 6,
+        tax_amount: 28000
+      },
+      {
+        first_hs_code: "6109902000",
+        corrected_hs_code: "6109902001",
+        importer: "",
+        country_of_origin: "",
+        count: 4,
+        tax_amount: 14000
+      },
+      {
+        first_hs_code: "6109902000",
+        corrected_hs_code: "6109900000",
+        importer: "",
+        country_of_origin: "",
+        count: 3,
         tax_amount: 10000
       },
       {
-        first_hs_code: "3305900001",
-        corrected_hs_code: "3926900001",
-        importer: "IMP-005",
-        country_of_origin: "156",
-        count: 1,
-        tax_amount: 5000
-      },
-      {
-        first_hs_code: "8504400001",
-        corrected_hs_code: "8471300001",
-        importer: "IMP-007",
-        country_of_origin: "276",
-        count: 1,
+        first_hs_code: "0702000002",
+        corrected_hs_code: "0702000001",
+        importer: "",
+        country_of_origin: "",
+        count: 7,
         tax_amount: 9000
       },
       {
-        first_hs_code: "8432800002",
-        corrected_hs_code: "8483400001",
-        importer: "IMP-001",
-        country_of_origin: "392",
-        count: 1,
-        tax_amount: 8000
+        first_hs_code: "0702000002",
+        corrected_hs_code: "0702000009",
+        importer: "",
+        country_of_origin: "",
+        count: 5,
+        tax_amount: 7000
       },
       {
-        first_hs_code: "7304390002",
-        corrected_hs_code: "7304290001",
-        importer: "IMP-007",
-        country_of_origin: "276",
-        count: 1,
+        first_hs_code: "8487909000",
+        corrected_hs_code: "8487909001",
+        importer: "",
+        country_of_origin: "",
+        count: 4,
+        tax_amount: 17000
+      },
+      {
+        first_hs_code: "8487909000",
+        corrected_hs_code: "8487900000",
+        importer: "",
+        country_of_origin: "",
+        count: 3,
+        tax_amount: 12000
+      },
+      {
+        first_hs_code: "7304293004",
+        corrected_hs_code: "7304293001",
+        importer: "",
+        country_of_origin: "",
+        count: 4,
+        tax_amount: 16000
+      },
+      {
+        first_hs_code: "7304293004",
+        corrected_hs_code: "7304290004",
+        importer: "",
+        country_of_origin: "",
+        count: 3,
+        tax_amount: 11000
+      },
+      {
+        first_hs_code: "4907009000",
+        corrected_hs_code: "4907900000",
+        importer: "",
+        country_of_origin: "",
+        count: 3,
         tax_amount: 5000
       },
       {
-        first_hs_code: "8537100001",
-        corrected_hs_code: "8542310001",
-        importer: "IMP-007",
-        country_of_origin: "840",
-        count: 1,
+        first_hs_code: "4907009000",
+        corrected_hs_code: "4907100000",
+        importer: "",
+        country_of_origin: "",
+        count: 2,
+        tax_amount: 3000
+      },
+      {
+        first_hs_code: "8704210000",
+        corrected_hs_code: "8704220000",
+        importer: "",
+        country_of_origin: "",
+        count: 22,
+        tax_amount: 125000
+      },
+      {
+        first_hs_code: "8704210000",
+        corrected_hs_code: "8704310000",
+        importer: "",
+        country_of_origin: "",
+        count: 13,
+        tax_amount: 87000
+      },
+      {
+        first_hs_code: "8504400000",
+        corrected_hs_code: "8504402000",
+        importer: "",
+        country_of_origin: "",
+        count: 15,
+        tax_amount: 110000
+      },
+      {
+        first_hs_code: "8504400000",
+        corrected_hs_code: "8504401000",
+        importer: "",
+        country_of_origin: "",
+        count: 7,
+        tax_amount: 55000
+      },
+      {
+        first_hs_code: "9403500000",
+        corrected_hs_code: "9403600000",
+        importer: "",
+        country_of_origin: "",
+        count: 9,
+        tax_amount: 48000
+      },
+      {
+        first_hs_code: "9403500000",
+        corrected_hs_code: "9403700000",
+        importer: "",
+        country_of_origin: "",
+        count: 5,
+        tax_amount: 28000
+      },
+      {
+        first_hs_code: "8542310000",
+        corrected_hs_code: "8542320000",
+        importer: "",
+        country_of_origin: "",
+        count: 12,
+        tax_amount: 75000
+      },
+      {
+        first_hs_code: "8542310000",
+        corrected_hs_code: "8542390000",
+        importer: "",
+        country_of_origin: "",
+        count: 7,
+        tax_amount: 50000
+      },
+      {
+        first_hs_code: "8471300000",
+        corrected_hs_code: "8471411000",
+        importer: "",
+        country_of_origin: "",
+        count: 14,
+        tax_amount: 125000
+      },
+      {
+        first_hs_code: "8471300000",
+        corrected_hs_code: "8471490000",
+        importer: "",
+        country_of_origin: "",
+        count: 7,
+        tax_amount: 73000
+      },
+      {
+        first_hs_code: "3926900000",
+        corrected_hs_code: "3926200000",
+        importer: "",
+        country_of_origin: "",
+        count: 5,
+        tax_amount: 22000
+      },
+      {
+        first_hs_code: "3926900000",
+        corrected_hs_code: "3926909000",
+        importer: "",
+        country_of_origin: "",
+        count: 3,
         tax_amount: 14000
+      },
+      {
+        first_hs_code: "7213910000",
+        corrected_hs_code: "7213990000",
+        importer: "",
+        country_of_origin: "",
+        count: 7,
+        tax_amount: 34000
+      },
+      {
+        first_hs_code: "7213910000",
+        corrected_hs_code: "7228300000",
+        importer: "",
+        country_of_origin: "",
+        count: 4,
+        tax_amount: 19000
+      },
+      {
+        first_hs_code: "8430490000",
+        corrected_hs_code: "8430410000",
+        importer: "",
+        country_of_origin: "",
+        count: 6,
+        tax_amount: 37000
+      },
+      {
+        first_hs_code: "8430490000",
+        corrected_hs_code: "8430500000",
+        importer: "",
+        country_of_origin: "",
+        count: 3,
+        tax_amount: 19000
+      },
+      {
+        first_hs_code: "6109902000",
+        corrected_hs_code: "6109300000",
+        importer: "",
+        country_of_origin: "",
+        count: 2,
+        tax_amount: 7000
       }
     ],
-    declarations_6_1y: [
-      {
-        hs_code: "870421",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 85
-      },
-      {
-        hs_code: "870421",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 62
-      },
-      {
-        hs_code: "870421",
-        importer: "IMP-007",
-        country_of_origin: "410",
-        count: 74
-      },
-      {
-        hs_code: "870421",
-        importer: "IMP-012",
-        country_of_origin: "156",
-        count: 48
-      },
-      {
-        hs_code: "870422",
-        importer: "IMP-001",
-        country_of_origin: "276",
-        count: 56
-      },
-      {
-        hs_code: "870422",
-        importer: "IMP-012",
-        country_of_origin: "840",
-        count: 42
-      },
-      {
-        hs_code: "870422",
-        importer: "IMP-007",
-        country_of_origin: "410",
-        count: 38
-      },
-      {
-        hs_code: "870431",
-        importer: "IMP-003",
-        country_of_origin: "392",
-        count: 65
-      },
-      {
-        hs_code: "870431",
-        importer: "IMP-001",
-        country_of_origin: "276",
-        count: 43
-      },
-      {
-        hs_code: "730439",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 78
-      },
-      {
-        hs_code: "730439",
-        importer: "IMP-007",
-        country_of_origin: "276",
-        count: 52
-      },
-      {
-        hs_code: "730439",
-        importer: "IMP-012",
-        country_of_origin: "276",
-        count: 35
-      },
-      {
-        hs_code: "730429",
-        importer: "IMP-005",
-        country_of_origin: "410",
-        count: 41
-      },
-      {
-        hs_code: "730429",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 60
-      },
-      {
-        hs_code: "843280",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 70
-      },
-      {
-        hs_code: "843280",
-        importer: "IMP-001",
-        country_of_origin: "392",
-        count: 45
-      },
-      {
-        hs_code: "843280",
-        importer: "IMP-007",
-        country_of_origin: "156",
-        count: 33
-      },
-      {
-        hs_code: "841581",
-        importer: "IMP-012",
-        country_of_origin: "840",
-        count: 55
-      },
-      {
-        hs_code: "841581",
-        importer: "IMP-007",
-        country_of_origin: "156",
-        count: 40
-      },
-      {
-        hs_code: "841581",
-        importer: "IMP-003",
-        country_of_origin: "410",
-        count: 38
-      },
-      {
-        hs_code: "842230",
-        importer: "IMP-003",
-        country_of_origin: "276",
-        count: 36
-      },
-      {
-        hs_code: "842230",
-        importer: "IMP-012",
-        country_of_origin: "840",
-        count: 48
-      },
-      {
-        hs_code: "848340",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 62
-      },
-      {
-        hs_code: "848340",
-        importer: "IMP-012",
-        country_of_origin: "764",
-        count: 35
-      },
-      {
-        hs_code: "848340",
-        importer: "IMP-007",
-        country_of_origin: "682",
-        count: 41
-      },
-      {
-        hs_code: "848310",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 50
-      },
-      {
-        hs_code: "848310",
-        importer: "IMP-007",
-        country_of_origin: "682",
-        count: 38
-      },
-      {
-        hs_code: "780600",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 44
-      },
-      {
-        hs_code: "721391",
-        importer: "IMP-003",
-        country_of_origin: "276",
-        count: 48
-      },
-      {
-        hs_code: "721391",
-        importer: "IMP-010",
-        country_of_origin: "156",
-        count: 37
-      },
-      {
-        hs_code: "721391",
-        importer: "IMP-001",
-        country_of_origin: "036",
-        count: 29
-      },
-      {
-        hs_code: "610990",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 90
-      },
-      {
-        hs_code: "610990",
-        importer: "IMP-009",
-        country_of_origin: "764",
-        count: 42
-      },
-      {
-        hs_code: "610990",
-        importer: "IMP-007",
-        country_of_origin: "156",
-        count: 55
-      },
-      {
-        hs_code: "611030",
-        importer: "IMP-012",
-        country_of_origin: "410",
-        count: 38
-      },
-      {
-        hs_code: "611030",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 52
-      },
-      {
-        hs_code: "070200",
-        importer: "IMP-002",
-        country_of_origin: "036",
-        count: 30
-      },
+    declarations_6_1y: [],
+    declarations_6_3m: [
       {
         hs_code: "330590",
-        importer: "IMP-005",
-        country_of_origin: "156",
-        count: 45
+        importer: "",
+        country_of_origin: "",
+        count: 130
       },
       {
-        hs_code: "330590",
-        importer: "IMP-011",
-        country_of_origin: "356",
-        count: 28
+        hs_code: "392690",
+        importer: "",
+        country_of_origin: "",
+        count: 220
       },
       {
         hs_code: "490700",
-        importer: "IMP-004",
-        country_of_origin: "276",
-        count: 22
-      },
-      {
-        hs_code: "854231",
-        importer: "IMP-001",
-        country_of_origin: "410",
-        count: 65
-      },
-      {
-        hs_code: "854231",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 50
-      },
-      {
-        hs_code: "854231",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 42
-      },
-      {
-        hs_code: "853710",
-        importer: "IMP-007",
-        country_of_origin: "840",
-        count: 35
-      },
-      {
-        hs_code: "392690",
-        importer: "IMP-012",
-        country_of_origin: "156",
-        count: 55
-      },
-      {
-        hs_code: "392690",
-        importer: "IMP-005",
-        country_of_origin: "156",
-        count: 40
-      },
-      {
-        hs_code: "392690",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 47
-      },
-      {
-        hs_code: "401699",
-        importer: "IMP-001",
-        country_of_origin: "764",
-        count: 38
-      },
-      {
-        hs_code: "401699",
-        importer: "IMP-012",
-        country_of_origin: "156",
-        count: 33
-      },
-      {
-        hs_code: "690790",
-        importer: "IMP-006",
-        country_of_origin: "156",
-        count: 26
-      },
-      {
-        hs_code: "847130",
-        importer: "IMP-003",
-        country_of_origin: "392",
-        count: 58
-      },
-      {
-        hs_code: "847130",
-        importer: "IMP-012",
-        country_of_origin: "156",
-        count: 45
-      },
-      {
-        hs_code: "847130",
-        importer: "IMP-003",
-        country_of_origin: "840",
-        count: 32
-      },
-      {
-        hs_code: "850440",
-        importer: "IMP-007",
-        country_of_origin: "276",
-        count: 40
-      },
-      {
-        hs_code: "850440",
-        importer: "IMP-003",
-        country_of_origin: "392",
-        count: 52
-      },
-      {
-        hs_code: "940350",
-        importer: "IMP-008",
-        country_of_origin: "156",
-        count: 35
-      },
-      {
-        hs_code: "640399",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 42
-      },
-      {
-        hs_code: "720839",
-        importer: "IMP-003",
-        country_of_origin: "276",
-        count: 50
-      },
-      {
-        hs_code: "720839",
-        importer: "IMP-012",
-        country_of_origin: "840",
-        count: 38
-      },
-      {
-        hs_code: "843049",
-        importer: "IMP-007",
-        country_of_origin: "156",
-        count: 44
-      },
-      {
-        hs_code: "843049",
-        importer: "IMP-001",
-        country_of_origin: "410",
-        count: 36
-      },
-      {
-        hs_code: "848790",
-        importer: "IMP-003",
-        country_of_origin: "682",
-        count: 40
-      },
-      {
-        hs_code: "780600",
-        importer: "IMP-012",
-        country_of_origin: "840",
-        count: 30
-      },
-      {
-        hs_code: "843280",
-        importer: "IMP-012",
-        country_of_origin: "764",
-        count: 28
-      },
-      {
-        hs_code: "841581",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 47
-      },
-      {
-        hs_code: "854231",
-        importer: "IMP-007",
-        country_of_origin: "840",
-        count: 30
-      },
-      {
-        hs_code: "610990",
-        importer: "IMP-012",
-        country_of_origin: "410",
-        count: 35
-      },
-      {
-        hs_code: "730429",
-        importer: "IMP-007",
-        country_of_origin: "276",
-        count: 33
-      },
-      {
-        hs_code: "870421",
-        importer: "IMP-005",
-        country_of_origin: "156",
-        count: 40
-      },
-      {
-        hs_code: "848340",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 45
-      },
-      {
-        hs_code: "847130",
-        importer: "IMP-007",
-        country_of_origin: "276",
-        count: 38
-      },
-      {
-        hs_code: "850440",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 43
-      },
-      {
-        hs_code: "640399",
-        importer: "IMP-007",
-        country_of_origin: "156",
-        count: 32
-      },
-      {
-        hs_code: "611030",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 40
-      },
-      {
-        hs_code: "842230",
-        importer: "IMP-007",
-        country_of_origin: "156",
-        count: 34
-      }
-    ],
-    declarations_6_3m: [
-      {
-        hs_code: "870421",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 22
-      },
-      {
-        hs_code: "870421",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 16
-      },
-      {
-        hs_code: "870421",
-        importer: "IMP-007",
-        country_of_origin: "410",
-        count: 19
-      },
-      {
-        hs_code: "870422",
-        importer: "IMP-001",
-        country_of_origin: "276",
-        count: 15
-      },
-      {
-        hs_code: "870431",
-        importer: "IMP-003",
-        country_of_origin: "392",
-        count: 17
-      },
-      {
-        hs_code: "730439",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 20
-      },
-      {
-        hs_code: "730439",
-        importer: "IMP-007",
-        country_of_origin: "276",
-        count: 14
-      },
-      {
-        hs_code: "843280",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 18
-      },
-      {
-        hs_code: "843280",
-        importer: "IMP-001",
-        country_of_origin: "392",
-        count: 12
-      },
-      {
-        hs_code: "841581",
-        importer: "IMP-012",
-        country_of_origin: "840",
-        count: 14
-      },
-      {
-        hs_code: "848340",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 16
-      },
-      {
-        hs_code: "610990",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 23
-      },
-      {
-        hs_code: "610990",
-        importer: "IMP-009",
-        country_of_origin: "764",
-        count: 11
-      },
-      {
-        hs_code: "854231",
-        importer: "IMP-001",
-        country_of_origin: "410",
-        count: 17
-      },
-      {
-        hs_code: "854231",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 13
-      },
-      {
-        hs_code: "392690",
-        importer: "IMP-012",
-        country_of_origin: "156",
-        count: 14
-      },
-      {
-        hs_code: "847130",
-        importer: "IMP-003",
-        country_of_origin: "392",
-        count: 15
-      },
-      {
-        hs_code: "847130",
-        importer: "IMP-012",
-        country_of_origin: "156",
-        count: 12
-      },
-      {
-        hs_code: "640399",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 11
-      },
-      {
-        hs_code: "720839",
-        importer: "IMP-003",
-        country_of_origin: "276",
-        count: 13
-      },
-      {
-        hs_code: "780600",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 12
-      },
-      {
-        hs_code: "843049",
-        importer: "IMP-007",
-        country_of_origin: "156",
-        count: 12
-      },
-      {
-        hs_code: "848790",
-        importer: "IMP-003",
-        country_of_origin: "682",
-        count: 10
-      },
-      {
-        hs_code: "850440",
-        importer: "IMP-007",
-        country_of_origin: "276",
-        count: 10
-      },
-      {
-        hs_code: "330590",
-        importer: "IMP-005",
-        country_of_origin: "156",
-        count: 12
-      },
-      {
-        hs_code: "611030",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 14
-      },
-      {
-        hs_code: "853710",
-        importer: "IMP-007",
-        country_of_origin: "840",
-        count: 9
-      },
-      {
-        hs_code: "730429",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 15
-      },
-      {
-        hs_code: "842230",
-        importer: "IMP-012",
-        country_of_origin: "840",
-        count: 12
-      },
-      {
-        hs_code: "848310",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 13
-      },
-      {
-        hs_code: "401699",
-        importer: "IMP-012",
-        country_of_origin: "156",
-        count: 9
-      },
-      {
-        hs_code: "721391",
-        importer: "IMP-003",
-        country_of_origin: "276",
-        count: 12
-      },
-      {
-        hs_code: "870421",
-        importer: "IMP-012",
-        country_of_origin: "156",
-        count: 12
-      },
-      {
-        hs_code: "843280",
-        importer: "IMP-007",
-        country_of_origin: "156",
-        count: 9
-      },
-      {
-        hs_code: "841581",
-        importer: "IMP-007",
-        country_of_origin: "156",
-        count: 10
-      },
-      {
-        hs_code: "610990",
-        importer: "IMP-007",
-        country_of_origin: "156",
-        count: 14
-      },
-      {
-        hs_code: "854231",
-        importer: "IMP-007",
-        country_of_origin: "840",
-        count: 8
-      },
-      {
-        hs_code: "392690",
-        importer: "IMP-005",
-        country_of_origin: "156",
-        count: 10
-      },
-      {
-        hs_code: "847130",
-        importer: "IMP-007",
-        country_of_origin: "276",
-        count: 10
-      },
-      {
-        hs_code: "850440",
-        importer: "IMP-003",
-        country_of_origin: "392",
-        count: 13
-      }
-    ],
-    declarations_10_1y: [
-      {
-        hs_code: "8704210001",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 45
-      },
-      {
-        hs_code: "8704210001",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 33
-      },
-      {
-        hs_code: "8704210002",
-        importer: "IMP-007",
-        country_of_origin: "410",
-        count: 40
-      },
-      {
-        hs_code: "8704210002",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 28
-      },
-      {
-        hs_code: "8704210002",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 35
-      },
-      {
-        hs_code: "8704220001",
-        importer: "IMP-001",
-        country_of_origin: "276",
-        count: 30
-      },
-      {
-        hs_code: "8704220001",
-        importer: "IMP-007",
-        country_of_origin: "410",
-        count: 25
-      },
-      {
-        hs_code: "8704220002",
-        importer: "IMP-012",
-        country_of_origin: "840",
-        count: 22
-      },
-      {
-        hs_code: "8704220002",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 20
-      },
-      {
-        hs_code: "8704310001",
-        importer: "IMP-003",
-        country_of_origin: "392",
-        count: 35
-      },
-      {
-        hs_code: "8704310001",
-        importer: "IMP-001",
-        country_of_origin: "276",
-        count: 28
-      },
-      {
-        hs_code: "8704310002",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 25
-      },
-      {
-        hs_code: "7304390001",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 42
-      },
-      {
-        hs_code: "7304390001",
-        importer: "IMP-012",
-        country_of_origin: "156",
-        count: 20
-      },
-      {
-        hs_code: "7304390002",
-        importer: "IMP-007",
-        country_of_origin: "276",
-        count: 28
-      },
-      {
-        hs_code: "7304390002",
-        importer: "IMP-012",
-        country_of_origin: "276",
-        count: 18
-      },
-      {
-        hs_code: "7304290001",
-        importer: "IMP-005",
-        country_of_origin: "410",
-        count: 24
-      },
-      {
-        hs_code: "7304290001",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 32
-      },
-      {
-        hs_code: "7304290002",
-        importer: "IMP-012",
-        country_of_origin: "156",
-        count: 18
-      },
-      {
-        hs_code: "8432800001",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 38
-      },
-      {
-        hs_code: "8432800001",
-        importer: "IMP-007",
-        country_of_origin: "156",
-        count: 22
-      },
-      {
-        hs_code: "8432800002",
-        importer: "IMP-001",
-        country_of_origin: "392",
-        count: 25
-      },
-      {
-        hs_code: "8415810001",
-        importer: "IMP-012",
-        country_of_origin: "840",
-        count: 30
-      },
-      {
-        hs_code: "8415810001",
-        importer: "IMP-003",
-        country_of_origin: "410",
-        count: 22
-      },
-      {
-        hs_code: "8415810002",
-        importer: "IMP-007",
-        country_of_origin: "156",
-        count: 24
-      },
-      {
-        hs_code: "8422300001",
-        importer: "IMP-003",
-        country_of_origin: "276",
-        count: 20
-      },
-      {
-        hs_code: "8422300001",
-        importer: "IMP-012",
-        country_of_origin: "840",
-        count: 28
-      },
-      {
-        hs_code: "8483400001",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 35
-      },
-      {
-        hs_code: "8483400001",
-        importer: "IMP-007",
-        country_of_origin: "682",
-        count: 22
-      },
-      {
-        hs_code: "8483400002",
-        importer: "IMP-012",
-        country_of_origin: "764",
-        count: 20
-      },
-      {
-        hs_code: "8483100001",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 28
-      },
-      {
-        hs_code: "8483100001",
-        importer: "IMP-007",
-        country_of_origin: "682",
-        count: 22
-      },
-      {
-        hs_code: "7806000001",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 26
-      },
-      {
-        hs_code: "6109900001",
-        importer: "IMP-001",
-        country_of_origin: "156",
+        importer: "",
+        country_of_origin: "",
         count: 48
       },
       {
-        hs_code: "6109900001",
-        importer: "IMP-007",
-        country_of_origin: "156",
-        count: 30
+        hs_code: "610990",
+        importer: "",
+        country_of_origin: "",
+        count: 247
       },
       {
-        hs_code: "6109900002",
-        importer: "IMP-009",
-        country_of_origin: "764",
-        count: 25
+        hs_code: "640399",
+        importer: "",
+        country_of_origin: "",
+        count: 90
       },
       {
-        hs_code: "6109900002",
-        importer: "IMP-007",
-        country_of_origin: "156",
-        count: 20
+        hs_code: "721391",
+        importer: "",
+        country_of_origin: "",
+        count: 156
       },
       {
-        hs_code: "6110300001",
-        importer: "IMP-012",
-        country_of_origin: "410",
-        count: 22
+        hs_code: "721399",
+        importer: "",
+        country_of_origin: "",
+        count: 65
       },
       {
-        hs_code: "6110300001",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 30
+        hs_code: "730429",
+        importer: "",
+        country_of_origin: "",
+        count: 185
       },
       {
-        hs_code: "6110300002",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 18
+        hs_code: "730439",
+        importer: "",
+        country_of_origin: "",
+        count: 523
       },
       {
-        hs_code: "3305900001",
-        importer: "IMP-005",
-        country_of_origin: "156",
-        count: 25
+        hs_code: "780600",
+        importer: "",
+        country_of_origin: "",
+        count: 65
       },
       {
-        hs_code: "8542310001",
-        importer: "IMP-001",
-        country_of_origin: "410",
-        count: 35
+        hs_code: "841581",
+        importer: "",
+        country_of_origin: "",
+        count: 133
       },
       {
-        hs_code: "8542310001",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 28
+        hs_code: "842230",
+        importer: "",
+        country_of_origin: "",
+        count: 106
       },
       {
-        hs_code: "8542310002",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 28
+        hs_code: "843049",
+        importer: "",
+        country_of_origin: "",
+        count: 88
       },
       {
-        hs_code: "8537100001",
-        importer: "IMP-007",
-        country_of_origin: "840",
-        count: 22
+        hs_code: "843280",
+        importer: "",
+        country_of_origin: "",
+        count: 256
       },
       {
-        hs_code: "3926900001",
-        importer: "IMP-012",
-        country_of_origin: "156",
-        count: 30
+        hs_code: "847130",
+        importer: "",
+        country_of_origin: "",
+        count: 310
       },
       {
-        hs_code: "3926900001",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 26
+        hs_code: "847141",
+        importer: "",
+        country_of_origin: "",
+        count: 120
       },
       {
-        hs_code: "3926900001",
-        importer: "IMP-005",
-        country_of_origin: "156",
-        count: 22
+        hs_code: "848310",
+        importer: "",
+        country_of_origin: "",
+        count: 88
       },
       {
-        hs_code: "4016990001",
-        importer: "IMP-001",
-        country_of_origin: "764",
-        count: 22
+        hs_code: "848340",
+        importer: "",
+        country_of_origin: "",
+        count: 164
       },
       {
-        hs_code: "4016990001",
-        importer: "IMP-012",
-        country_of_origin: "156",
-        count: 18
+        hs_code: "848790",
+        importer: "",
+        country_of_origin: "",
+        count: 72
       },
       {
-        hs_code: "8471300001",
-        importer: "IMP-003",
-        country_of_origin: "392",
-        count: 32
+        hs_code: "850440",
+        importer: "",
+        country_of_origin: "",
+        count: 282
       },
       {
-        hs_code: "8471300001",
-        importer: "IMP-003",
-        country_of_origin: "840",
-        count: 20
+        hs_code: "854231",
+        importer: "",
+        country_of_origin: "",
+        count: 195
       },
       {
-        hs_code: "8471300002",
-        importer: "IMP-012",
-        country_of_origin: "156",
-        count: 25
+        hs_code: "854232",
+        importer: "",
+        country_of_origin: "",
+        count: 78
       },
       {
-        hs_code: "8504400001",
-        importer: "IMP-007",
-        country_of_origin: "276",
-        count: 24
+        hs_code: "870421",
+        importer: "",
+        country_of_origin: "",
+        count: 1240
       },
       {
-        hs_code: "8504400001",
-        importer: "IMP-003",
-        country_of_origin: "392",
-        count: 30
+        hs_code: "870422",
+        importer: "",
+        country_of_origin: "",
+        count: 500
       },
       {
-        hs_code: "6403990001",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 24
+        hs_code: "870431",
+        importer: "",
+        country_of_origin: "",
+        count: 215
       },
       {
-        hs_code: "6403990001",
-        importer: "IMP-007",
-        country_of_origin: "156",
-        count: 18
+        hs_code: "940350",
+        importer: "",
+        country_of_origin: "",
+        count: 165
       },
       {
-        hs_code: "7208390001",
-        importer: "IMP-003",
-        country_of_origin: "276",
-        count: 28
-      },
-      {
-        hs_code: "7208390001",
-        importer: "IMP-012",
-        country_of_origin: "840",
-        count: 22
-      },
-      {
-        hs_code: "8430490001",
-        importer: "IMP-007",
-        country_of_origin: "156",
-        count: 26
-      },
-      {
-        hs_code: "8430490001",
-        importer: "IMP-001",
-        country_of_origin: "410",
-        count: 20
-      },
-      {
-        hs_code: "8487900001",
-        importer: "IMP-003",
-        country_of_origin: "682",
-        count: 22
-      },
-      {
-        hs_code: "7213910001",
-        importer: "IMP-003",
-        country_of_origin: "276",
-        count: 28
-      },
-      {
-        hs_code: "7213910001",
-        importer: "IMP-010",
-        country_of_origin: "156",
-        count: 22
-      },
-      {
-        hs_code: "7213910001",
-        importer: "IMP-001",
-        country_of_origin: "036",
-        count: 18
-      },
-      {
-        hs_code: "9403500001",
-        importer: "IMP-008",
-        country_of_origin: "156",
-        count: 20
-      },
-      {
-        hs_code: "9403500002",
-        importer: "IMP-008",
-        country_of_origin: "156",
-        count: 18
-      },
-      {
-        hs_code: "6907900001",
-        importer: "IMP-006",
-        country_of_origin: "156",
-        count: 16
-      },
-      {
-        hs_code: "6907900002",
-        importer: "IMP-006",
-        country_of_origin: "156",
-        count: 14
-      },
-      {
-        hs_code: "4907000001",
-        importer: "IMP-004",
-        country_of_origin: "276",
-        count: 12
-      },
-      {
-        hs_code: "4907000002",
-        importer: "IMP-004",
-        country_of_origin: "276",
-        count: 10
-      },
-      {
-        hs_code: "0702000001",
-        importer: "IMP-002",
-        country_of_origin: "036",
-        count: 18
-      },
-      {
-        hs_code: "8504400001",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 25
-      },
-      {
-        hs_code: "8483400001",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 26
-      },
-      {
-        hs_code: "8432800001",
-        importer: "IMP-012",
-        country_of_origin: "764",
-        count: 16
+        hs_code: "070200",
+        importer: "",
+        country_of_origin: "",
+        count: 420
       }
     ],
+    declarations_10_1y: [],
     declarations_10_3m: [
       {
-        hs_code: "8704210001",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 12
+        hs_code: "640399",
+        importer: "",
+        country_of_origin: "",
+        count: 0
       },
       {
-        hs_code: "8704210001",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 9
+        hs_code: "3305900009",
+        importer: "",
+        country_of_origin: "",
+        count: 130
       },
       {
-        hs_code: "8704210002",
-        importer: "IMP-007",
-        country_of_origin: "410",
-        count: 10
+        hs_code: "3926900000",
+        importer: "",
+        country_of_origin: "",
+        count: 220
+      },
+      {
+        hs_code: "8704210000",
+        importer: "",
+        country_of_origin: "",
+        count: 1240
+      },
+      {
+        hs_code: "8704220000",
+        importer: "",
+        country_of_origin: "",
+        count: 380
+      },
+      {
+        hs_code: "8704310000",
+        importer: "",
+        country_of_origin: "",
+        count: 215
+      },
+      {
+        hs_code: "7304399309",
+        importer: "",
+        country_of_origin: "",
+        count: 145
+      },
+      {
+        hs_code: "7304390000",
+        importer: "",
+        country_of_origin: "",
+        count: 320
+      },
+      {
+        hs_code: "8432800000",
+        importer: "",
+        country_of_origin: "",
+        count: 180
+      },
+      {
+        hs_code: "8415810010",
+        importer: "",
+        country_of_origin: "",
+        count: 95
+      },
+      {
+        hs_code: "8422300003",
+        importer: "",
+        country_of_origin: "",
+        count: 78
+      },
+      {
+        hs_code: "8483405109",
+        importer: "",
+        country_of_origin: "",
+        count: 112
+      },
+      {
+        hs_code: "8483109500",
+        importer: "",
+        country_of_origin: "",
+        count: 88
+      },
+      {
+        hs_code: "7806008009",
+        importer: "",
+        country_of_origin: "",
+        count: 65
+      },
+      {
+        hs_code: "6109902000",
+        importer: "",
+        country_of_origin: "",
+        count: 205
+      },
+      {
+        hs_code: "7213910000",
+        importer: "",
+        country_of_origin: "",
+        count: 156
+      },
+      {
+        hs_code: "0702000002",
+        importer: "",
+        country_of_origin: "",
+        count: 420
+      },
+      {
+        hs_code: "8487909000",
+        importer: "",
+        country_of_origin: "",
+        count: 72
+      },
+      {
+        hs_code: "7304293004",
+        importer: "",
+        country_of_origin: "",
+        count: 185
+      },
+      {
+        hs_code: "4907009000",
+        importer: "",
+        country_of_origin: "",
+        count: 48
+      },
+      {
+        hs_code: "8504400000",
+        importer: "",
+        country_of_origin: "",
+        count: 240
+      },
+      {
+        hs_code: "9403500000",
+        importer: "",
+        country_of_origin: "",
+        count: 165
+      },
+      {
+        hs_code: "8542310000",
+        importer: "",
+        country_of_origin: "",
+        count: 195
+      },
+      {
+        hs_code: "8471300000",
+        importer: "",
+        country_of_origin: "",
+        count: 310
+      },
+      {
+        hs_code: "8430490000",
+        importer: "",
+        country_of_origin: "",
+        count: 88
+      },
+      {
+        hs_code: "6109902001",
+        importer: "",
+        country_of_origin: "",
+        count: 42
       },
       {
         hs_code: "8704220001",
-        importer: "IMP-001",
-        country_of_origin: "276",
-        count: 8
+        importer: "",
+        country_of_origin: "",
+        count: 120
       },
       {
-        hs_code: "8704220001",
-        importer: "IMP-007",
-        country_of_origin: "410",
-        count: 7
-      },
-      {
-        hs_code: "8704220002",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 6
-      },
-      {
-        hs_code: "8704310001",
-        importer: "IMP-003",
-        country_of_origin: "392",
-        count: 9
-      },
-      {
-        hs_code: "8704310001",
-        importer: "IMP-001",
-        country_of_origin: "276",
-        count: 7
-      },
-      {
-        hs_code: "7304390001",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 11
-      },
-      {
-        hs_code: "7304390002",
-        importer: "IMP-007",
-        country_of_origin: "276",
-        count: 7
-      },
-      {
-        hs_code: "7304290001",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 8
+        hs_code: "7304399301",
+        importer: "",
+        country_of_origin: "",
+        count: 58
       },
       {
         hs_code: "8432800001",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 10
-      },
-      {
-        hs_code: "8432800002",
-        importer: "IMP-001",
-        country_of_origin: "392",
-        count: 7
+        importer: "",
+        country_of_origin: "",
+        count: 76
       },
       {
         hs_code: "8415810001",
-        importer: "IMP-012",
-        country_of_origin: "840",
-        count: 8
+        importer: "",
+        country_of_origin: "",
+        count: 38
       },
       {
         hs_code: "8422300001",
-        importer: "IMP-012",
-        country_of_origin: "840",
-        count: 7
+        importer: "",
+        country_of_origin: "",
+        count: 28
       },
       {
-        hs_code: "8483400001",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 9
-      },
-      {
-        hs_code: "8483100001",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 7
-      },
-      {
-        hs_code: "6109900001",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 13
-      },
-      {
-        hs_code: "6109900002",
-        importer: "IMP-009",
-        country_of_origin: "764",
-        count: 7
-      },
-      {
-        hs_code: "6110300001",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 8
-      },
-      {
-        hs_code: "6110300001",
-        importer: "IMP-012",
-        country_of_origin: "410",
-        count: 6
-      },
-      {
-        hs_code: "8542310001",
-        importer: "IMP-001",
-        country_of_origin: "410",
-        count: 9
-      },
-      {
-        hs_code: "8542310002",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 7
-      },
-      {
-        hs_code: "8537100001",
-        importer: "IMP-007",
-        country_of_origin: "840",
-        count: 6
-      },
-      {
-        hs_code: "3926900001",
-        importer: "IMP-012",
-        country_of_origin: "156",
-        count: 8
-      },
-      {
-        hs_code: "4016990001",
-        importer: "IMP-012",
-        country_of_origin: "156",
-        count: 5
-      },
-      {
-        hs_code: "8471300001",
-        importer: "IMP-003",
-        country_of_origin: "392",
-        count: 8
-      },
-      {
-        hs_code: "8471300002",
-        importer: "IMP-012",
-        country_of_origin: "156",
-        count: 7
-      },
-      {
-        hs_code: "8504400001",
-        importer: "IMP-007",
-        country_of_origin: "276",
-        count: 6
-      },
-      {
-        hs_code: "8504400001",
-        importer: "IMP-003",
-        country_of_origin: "392",
-        count: 8
+        hs_code: "8483405101",
+        importer: "",
+        country_of_origin: "",
+        count: 52
       },
       {
         hs_code: "6403990001",
-        importer: "IMP-001",
-        country_of_origin: "156",
-        count: 6
+        importer: "",
+        country_of_origin: "",
+        count: 90
       },
       {
-        hs_code: "7208390001",
-        importer: "IMP-003",
-        country_of_origin: "276",
-        count: 7
+        hs_code: "7213990000",
+        importer: "",
+        country_of_origin: "",
+        count: 65
       },
       {
-        hs_code: "8430490001",
-        importer: "IMP-007",
-        country_of_origin: "156",
-        count: 7
+        hs_code: "8504401000",
+        importer: "",
+        country_of_origin: "",
+        count: 42
       },
       {
-        hs_code: "8487900001",
-        importer: "IMP-003",
-        country_of_origin: "682",
-        count: 6
+        hs_code: "8542320000",
+        importer: "",
+        country_of_origin: "",
+        count: 78
       },
       {
-        hs_code: "7806000001",
-        importer: "IMP-003",
-        country_of_origin: "156",
-        count: 7
-      },
-      {
-        hs_code: "7213910001",
-        importer: "IMP-003",
-        country_of_origin: "276",
-        count: 7
-      },
-      {
-        hs_code: "3305900001",
-        importer: "IMP-005",
-        country_of_origin: "156",
-        count: 7
-      },
-      {
-        hs_code: "9403500001",
-        importer: "IMP-008",
-        country_of_origin: "156",
-        count: 5
-      },
-      {
-        hs_code: "6907900001",
-        importer: "IMP-006",
-        country_of_origin: "156",
-        count: 4
-      },
-      {
-        hs_code: "4907000001",
-        importer: "IMP-004",
-        country_of_origin: "276",
-        count: 3
+        hs_code: "8471411000",
+        importer: "",
+        country_of_origin: "",
+        count: 120
       }
     ]
   }
