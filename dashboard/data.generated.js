@@ -1,4 +1,4 @@
-// AUTO-GENERATED — do not edit; run `node scripts/build-data.js`
+// AUTO-GENERATED — do not edit; run `python scripts/build_data.py`
 window.MOCK = {
   summary: {
     totalDeclarations: 2842,
@@ -1648,138 +1648,6 @@ window.MOCK = {
     declarations_6_1y: [],
     declarations_6_3m: [
       {
-        hs_code: "330590",
-        importer: "",
-        country_of_origin: "",
-        count: 130
-      },
-      {
-        hs_code: "392690",
-        importer: "",
-        country_of_origin: "",
-        count: 220
-      },
-      {
-        hs_code: "490700",
-        importer: "",
-        country_of_origin: "",
-        count: 48
-      },
-      {
-        hs_code: "610990",
-        importer: "",
-        country_of_origin: "",
-        count: 247
-      },
-      {
-        hs_code: "640399",
-        importer: "",
-        country_of_origin: "",
-        count: 90
-      },
-      {
-        hs_code: "721391",
-        importer: "",
-        country_of_origin: "",
-        count: 156
-      },
-      {
-        hs_code: "721399",
-        importer: "",
-        country_of_origin: "",
-        count: 65
-      },
-      {
-        hs_code: "730429",
-        importer: "",
-        country_of_origin: "",
-        count: 185
-      },
-      {
-        hs_code: "730439",
-        importer: "",
-        country_of_origin: "",
-        count: 523
-      },
-      {
-        hs_code: "780600",
-        importer: "",
-        country_of_origin: "",
-        count: 65
-      },
-      {
-        hs_code: "841581",
-        importer: "",
-        country_of_origin: "",
-        count: 133
-      },
-      {
-        hs_code: "842230",
-        importer: "",
-        country_of_origin: "",
-        count: 106
-      },
-      {
-        hs_code: "843049",
-        importer: "",
-        country_of_origin: "",
-        count: 88
-      },
-      {
-        hs_code: "843280",
-        importer: "",
-        country_of_origin: "",
-        count: 256
-      },
-      {
-        hs_code: "847130",
-        importer: "",
-        country_of_origin: "",
-        count: 310
-      },
-      {
-        hs_code: "847141",
-        importer: "",
-        country_of_origin: "",
-        count: 120
-      },
-      {
-        hs_code: "848310",
-        importer: "",
-        country_of_origin: "",
-        count: 88
-      },
-      {
-        hs_code: "848340",
-        importer: "",
-        country_of_origin: "",
-        count: 164
-      },
-      {
-        hs_code: "848790",
-        importer: "",
-        country_of_origin: "",
-        count: 72
-      },
-      {
-        hs_code: "850440",
-        importer: "",
-        country_of_origin: "",
-        count: 282
-      },
-      {
-        hs_code: "854231",
-        importer: "",
-        country_of_origin: "",
-        count: 195
-      },
-      {
-        hs_code: "854232",
-        importer: "",
-        country_of_origin: "",
-        count: 78
-      },
-      {
         hs_code: "870421",
         importer: "",
         country_of_origin: "",
@@ -1798,38 +1666,152 @@ window.MOCK = {
         count: 215
       },
       {
-        hs_code: "940350",
+        hs_code: "730439",
         importer: "",
         country_of_origin: "",
-        count: 165
+        count: 523
+      },
+      {
+        hs_code: "843280",
+        importer: "",
+        country_of_origin: "",
+        count: 256
+      },
+      {
+        hs_code: "841581",
+        importer: "",
+        country_of_origin: "",
+        count: 133
+      },
+      {
+        hs_code: "842230",
+        importer: "",
+        country_of_origin: "",
+        count: 106
+      },
+      {
+        hs_code: "848340",
+        importer: "",
+        country_of_origin: "",
+        count: 164
+      },
+      {
+        hs_code: "848310",
+        importer: "",
+        country_of_origin: "",
+        count: 88
+      },
+      {
+        hs_code: "780600",
+        importer: "",
+        country_of_origin: "",
+        count: 65
+      },
+      {
+        hs_code: "610990",
+        importer: "",
+        country_of_origin: "",
+        count: 247
+      },
+      {
+        hs_code: "721391",
+        importer: "",
+        country_of_origin: "",
+        count: 156
       },
       {
         hs_code: "070200",
         importer: "",
         country_of_origin: "",
         count: 420
-      }
-    ],
-    declarations_10_1y: [],
-    declarations_10_3m: [
-      {
-        hs_code: "640399",
-        importer: "",
-        country_of_origin: "",
-        count: 0
       },
       {
-        hs_code: "3305900009",
+        hs_code: "848790",
+        importer: "",
+        country_of_origin: "",
+        count: 72
+      },
+      {
+        hs_code: "330590",
         importer: "",
         country_of_origin: "",
         count: 130
       },
       {
-        hs_code: "3926900000",
+        hs_code: "730429",
+        importer: "",
+        country_of_origin: "",
+        count: 185
+      },
+      {
+        hs_code: "490700",
+        importer: "",
+        country_of_origin: "",
+        count: 48
+      },
+      {
+        hs_code: "850440",
+        importer: "",
+        country_of_origin: "",
+        count: 282
+      },
+      {
+        hs_code: "940350",
+        importer: "",
+        country_of_origin: "",
+        count: 165
+      },
+      {
+        hs_code: "854231",
+        importer: "",
+        country_of_origin: "",
+        count: 195
+      },
+      {
+        hs_code: "847130",
+        importer: "",
+        country_of_origin: "",
+        count: 310
+      },
+      {
+        hs_code: "640399",
+        importer: "",
+        country_of_origin: "",
+        count: 90
+      },
+      {
+        hs_code: "392690",
         importer: "",
         country_of_origin: "",
         count: 220
       },
+      {
+        hs_code: "843049",
+        importer: "",
+        country_of_origin: "",
+        count: 88
+      },
+      {
+        hs_code: "721399",
+        importer: "",
+        country_of_origin: "",
+        count: 65
+      },
+      {
+        hs_code: "854232",
+        importer: "",
+        country_of_origin: "",
+        count: 78
+      },
+      {
+        hs_code: "847141",
+        importer: "",
+        country_of_origin: "",
+        count: 120
+      }
+    ],
+    declarations_10_1y: [],
+    declarations_10_3m: [
       {
         hs_code: "8704210000",
         importer: "",
@@ -1921,6 +1903,12 @@ window.MOCK = {
         count: 72
       },
       {
+        hs_code: "3305900009",
+        importer: "",
+        country_of_origin: "",
+        count: 130
+      },
+      {
         hs_code: "7304293004",
         importer: "",
         country_of_origin: "",
@@ -1955,6 +1943,18 @@ window.MOCK = {
         importer: "",
         country_of_origin: "",
         count: 310
+      },
+      {
+        hs_code: "640399",
+        importer: "",
+        country_of_origin: "",
+        count: 0
+      },
+      {
+        hs_code: "3926900000",
+        importer: "",
+        country_of_origin: "",
+        count: 220
       },
       {
         hs_code: "8430490000",
