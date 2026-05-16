@@ -1,4 +1,5 @@
-/dashboard/data
-dashboard/data.generated.js
-dashboard/data/pattern_summary.csv
-dashboard/data/patterns.csv
+# Local data is user-specific and shouldn't be tracked in git.
+# Each user generates their own data.generated.js from the CSVs they
+# drop into dashboard/data/.
+/dashboard/data/
+/dashboard/data.generated.js
