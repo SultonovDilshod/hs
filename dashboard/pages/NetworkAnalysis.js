@@ -19,7 +19,7 @@ const LAYOUT = {
   // When the visible node count is at or under this, use the "cose" layout
   // (organic, spring-based). Above it, fall back to "concentric" which is
   // much faster on large graphs.
-  coseMaxNodes: 250,
+  coseMaxNodes: 900,
 
   // "cose" layout tuning. Most edges in this dataset are between codes that
   // don't share a neighbour, so the graph has *many* small components. The
@@ -33,11 +33,18 @@ const LAYOUT = {
   // - gravity: pull toward the centre. Higher = less spread.
   // - numIter: more iterations = better layout but slower.
   cose: {
+<<<<<<< Updated upstream
     nodeRepulsion: 1500,
     idealEdgeLength: 45,
     componentSpacing: 20,
     gravity: 80,
     numIter: 400,
+=======
+    nodeRepulsion: 500,
+    idealEdgeLength: 60,
+    gravity: 4.2,
+    numIter: 250,
+>>>>>>> Stashed changes
   },
 
   // After the layout finishes, zoom out so all elements are visible plus
