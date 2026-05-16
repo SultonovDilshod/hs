@@ -13,6 +13,48 @@ const COUNTRY_NAMES = {
   '356':'Hindiston',
 };
 
+// ─── LAYOUT / DISPLAY TUNABLES ────────────────────────────────────────────
+// Edit these to change how the graph renders. Reload the page to see effects.
+const LAYOUT = {
+  // When the visible node count is at or under this, use the "cose" layout
+  // (organic, spring-based). Above it, fall back to "concentric" which is
+  // much faster on large graphs.
+  coseMaxNodes: 250,
+
+  // "cose" layout tuning:
+  // - nodeRepulsion: higher = nodes push each other further apart (wider graph).
+  // - idealEdgeLength: target distance between connected nodes, in pixels.
+  // - gravity: higher = stronger pull toward the centre (less spread).
+  //   If components fly off into the corners, raise this.
+  // - numIter: more iterations = better layout but slower. 250 is a good
+  //   default for ~50–250 nodes; drop to ~150 if the page feels sluggish.
+  cose: {
+    nodeRepulsion: 2500,
+    idealEdgeLength: 60,
+    gravity: 1.2,
+    numIter: 250,
+  },
+
+  // After the layout finishes, zoom out so all elements are visible plus
+  // this much padding (in pixels). Increase if labels get clipped at edges.
+  fitPadding: 40,
+};
+
+// Format an HS code with spaces so it's easier to read in the UI:
+//   10 digits → "1234 56 78 99"   (4-2-2-2 grouping used in customs)
+//    8 digits → "1234 56 78"
+//    6 digits → "1234 56"
+// Anything else is returned unchanged. The original id is never modified —
+// this is only used for display.
+function formatHs(code) {
+  if (!code) return '';
+  const s = String(code);
+  if (s.length === 10) return `${s.slice(0,4)} ${s.slice(4,6)} ${s.slice(6,8)} ${s.slice(8,10)}`;
+  if (s.length === 8)  return `${s.slice(0,4)} ${s.slice(4,6)} ${s.slice(6,8)}`;
+  if (s.length === 6)  return `${s.slice(0,4)} ${s.slice(4,6)}`;
+  return s;
+}
+
 window.NetworkAnalysisPage = () => {
   const [hsLevel, setHsLevel] = useState('10');
   const [period, setPeriod] = useState('3m');
@@ -231,7 +273,7 @@ window.NetworkAnalysisPage = () => {
       }
       return {
         group: 'nodes',
-        data: { id: code, label: code, color: getColor(code), nodeWidth: size, nodeHeight: size }
+        data: { id: code, label: formatHs(code), color: getColor(code), nodeWidth: size, nodeHeight: size }
       };
     });
 
@@ -473,21 +515,26 @@ window.NetworkAnalysisPage = () => {
     cy.elements().remove();
     if (nodeElements.length > 0) {
       cy.add([...nodeElements, ...edgeElements]);
-      const big = nodeElements.length > 250;
-      cy.layout(big
-        ? { name: 'concentric', animate: false, padding: 30,
+      const big = nodeElements.length > LAYOUT.coseMaxNodes;
+      const layout = cy.layout(big
+        ? { name: 'concentric', animate: false, fit: true, padding: LAYOUT.fitPadding,
             concentric: n => n.degree(), levelWidth: () => 4 }
         : {
             name: 'cose',
             animate: false,
+            fit: true,
             randomize: false,
-            numIter: 250,
-            nodeRepulsion: () => 6000,
-            idealEdgeLength: () => 90,
-            gravity: 0.3,
-            padding: 30,
+            numIter: LAYOUT.cose.numIter,
+            nodeRepulsion: () => LAYOUT.cose.nodeRepulsion,
+            idealEdgeLength: () => LAYOUT.cose.idealEdgeLength,
+            gravity: LAYOUT.cose.gravity,
+            padding: LAYOUT.fitPadding,
           }
-      ).run();
+      );
+      // Force a fit after the layout settles so the viewport always frames
+      // every node, regardless of how the layout positioned them.
+      layout.one('layoutstop', () => cy.fit(cy.elements(), LAYOUT.fitPadding));
+      layout.run();
     }
   }, [nodeElements, edgeElements]);
 
@@ -587,7 +634,7 @@ window.NetworkAnalysisPage = () => {
         <div className="space-y-1.5">
           {summaryStats.top5.map((p, i) => (
             <div key={i} className="flex items-center justify-between bg-[#151F35] rounded px-2.5 py-1.5">
-              <span className="text-[10px] font-mono text-gray-300">{p.source} <span className="text-cyan-400">{'\u2192'}</span> {p.target}</span>
+              <span className="text-[10px] font-mono text-gray-300">{formatHs(p.source)} <span className="text-cyan-400">{'\u2192'}</span> {formatHs(p.target)}</span>
               <span className="text-[10px] font-semibold text-cyan-400">{p.count}</span>
             </div>
           ))}
@@ -601,7 +648,7 @@ window.NetworkAnalysisPage = () => {
     <div className="space-y-4">
       <div>
         <div className="text-[10px] text-gray-500 mb-1">TIF TN kod</div>
-        <h3 className="text-lg font-bold font-mono text-white">{data.id}</h3>
+        <h3 className="text-lg font-bold font-mono text-white">{formatHs(data.id)}</h3>
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div className="bg-[#151F35] rounded-lg p-3">
@@ -624,7 +671,7 @@ window.NetworkAnalysisPage = () => {
             <div key={i} className="flex items-center justify-between bg-[#151F35] rounded px-2.5 py-1.5">
               <div className="flex items-center gap-2">
                 <span className="text-[10px] text-cyan-400">{c.dir}</span>
-                <span className="text-[10px] font-mono text-gray-300">{c.code}</span>
+                <span className="text-[10px] font-mono text-gray-300">{formatHs(c.code)}</span>
               </div>
               <div className="text-right">
                 <span className="text-[10px] font-semibold text-white">{c.count}</span>
@@ -642,7 +689,7 @@ window.NetworkAnalysisPage = () => {
     <div className="space-y-4">
       <div>
         <div className="text-[10px] text-gray-500 mb-1">Tuzatish yo'nalishi</div>
-        <h3 className="text-sm font-bold font-mono text-white">{data.source} <span className="text-cyan-400">{'\u2192'}</span> {data.target}</h3>
+        <h3 className="text-sm font-bold font-mono text-white">{formatHs(data.source)} <span className="text-cyan-400">{'\u2192'}</span> {formatHs(data.target)}</h3>
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div className="bg-[#151F35] rounded-lg p-3">
