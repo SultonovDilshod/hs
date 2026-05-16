@@ -21,6 +21,8 @@ window.NetworkAnalysisPage = () => {
   const [nodeSize, setNodeSize] = useState('uniform');
   const [importerFilter, setImporterFilter] = useState('all');
   const [countryFilter, setCountryFilter] = useState('all');
+  const [chapterFilter, setChapterFilter] = useState('all');
+  const [topN, setTopN] = useState(50);
   const [minEdge, setMinEdge] = useState(1);
   const [selected, setSelected] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -101,6 +103,18 @@ window.NetworkAnalysisPage = () => {
     return map;
   }, [filteredAmendments, declLookup]);
 
+  // Chapter (2-digit HS) stats for the chapter filter dropdown.
+  const chapterStats = useMemo(() => {
+    const ch = {};
+    Object.values(edgeMap).forEach(e => {
+      const a = e.source.slice(0, 2);
+      const b = e.target.slice(0, 2);
+      ch[a] = (ch[a] || 0) + e.frequency;
+      if (b !== a) ch[b] = (ch[b] || 0) + e.frequency;
+    });
+    return Object.entries(ch).sort((a, b) => b[1] - a[1]);
+  }, [edgeMap]);
+
   // Compute node amendment counts for sizing
   const nodeAmendCounts = useMemo(() => {
     const counts = {};
@@ -112,23 +126,41 @@ window.NetworkAnalysisPage = () => {
   }, [edgeMap]);
 
   // Build graph elements
-  const { nodeElements, edgeElements, maxWeight, summaryStats } = useMemo(() => {
+  const { nodeElements, edgeElements, maxWeight, summaryStats, totalCandidates } = useMemo(() => {
     const nodes = new Set();
     const edges = [];
     let totalAmend = 0, totalTax = 0;
     const declaredSet = new Set(), correctedSet = new Set();
     const pairCounts = [];
 
-    Object.values(edgeMap).forEach(e => {
-      let weight;
-      if (weightMetric === 'frequency') weight = e.frequency;
-      else if (weightMetric === 'tax') weight = e.tax;
-      else weight = e.declCount > 0 ? e.frequency / e.declCount : 0;
+    // 1. Compute weight per candidate and apply count + chapter filters.
+    const computeWeight = e => {
+      if (weightMetric === 'frequency') return e.frequency;
+      if (weightMetric === 'tax') return e.tax;
+      return e.declCount > 0 ? e.frequency / e.declCount : 0;
+    };
 
-      if (weight < minEdge && weightMetric === 'frequency') return;
-      if (weightMetric === 'frequency' && e.frequency < minEdge) return;
-      if (weightMetric !== 'frequency' && e.frequency < minEdge) return;
+    let candidates = Object.values(edgeMap).filter(e => {
+      if (e.frequency < minEdge) return false;
+      if (chapterFilter !== 'all') {
+        const a = e.source.slice(0, 2);
+        const b = e.target.slice(0, 2);
+        if (a !== chapterFilter && b !== chapterFilter) return false;
+      }
+      return true;
+    });
 
+    const totalCount = candidates.length;
+
+    // 2. Sort by weight desc and keep only the top N (so the layout actually renders).
+    candidates.sort((a, b) => computeWeight(b) - computeWeight(a));
+    if (topN !== 'all' && candidates.length > topN) {
+      candidates = candidates.slice(0, topN);
+    }
+
+    // 3. Build edge/node elements from the surviving candidates.
+    candidates.forEach(e => {
+      const weight = computeWeight(e);
       nodes.add(e.source);
       nodes.add(e.target);
       declaredSet.add(e.source);
@@ -210,9 +242,10 @@ window.NetworkAnalysisPage = () => {
       nodeElements: nodeEls,
       edgeElements: edges,
       maxWeight: maxW,
-      summaryStats: { totalAmend, totalTax, declaredCount: declaredSet.size, correctedCount: correctedSet.size, top5 }
+      summaryStats: { totalAmend, totalTax, declaredCount: declaredSet.size, correctedCount: correctedSet.size, top5 },
+      totalCandidates: totalCount,
     };
-  }, [edgeMap, filteredDeclarations, minEdge, weightMetric, nodeColor, nodeSize, nodeAmendCounts]);
+  }, [edgeMap, filteredDeclarations, minEdge, weightMetric, nodeColor, nodeSize, nodeAmendCounts, chapterFilter, topN]);
 
   // Max edge for slider
   const maxEdgeCount = useMemo(() => {
@@ -440,16 +473,21 @@ window.NetworkAnalysisPage = () => {
     cy.elements().remove();
     if (nodeElements.length > 0) {
       cy.add([...nodeElements, ...edgeElements]);
-      cy.layout({
-        name: 'cose',
-        animate: true,
-        animationDuration: 400,
-        nodeRepulsion: () => 6000,
-        idealEdgeLength: () => 90,
-        gravity: 0.3,
-        padding: 30,
-        randomize: true,
-      }).run();
+      const big = nodeElements.length > 250;
+      cy.layout(big
+        ? { name: 'concentric', animate: false, padding: 30,
+            concentric: n => n.degree(), levelWidth: () => 4 }
+        : {
+            name: 'cose',
+            animate: false,
+            randomize: false,
+            numIter: 250,
+            nodeRepulsion: () => 6000,
+            idealEdgeLength: () => 90,
+            gravity: 0.3,
+            padding: 30,
+          }
+      ).run();
     }
   }, [nodeElements, edgeElements]);
 
@@ -701,6 +739,30 @@ window.NetworkAnalysisPage = () => {
           </div>
         )}
 
+        {/* Chapter (2-digit HS) filter */}
+        {chapterStats.length > 0 && (
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] text-gray-500">Guruh:</span>
+            <select value={chapterFilter} onChange={e => { setChapterFilter(e.target.value); setSelected(null); }}
+              className="rule-builder-field text-xs py-1 px-2 rounded bg-[#151F35] border border-gray-700 text-gray-300">
+              <option value="all">Barchasi ({chapterStats.length})</option>
+              {chapterStats.map(([ch, n]) => (
+                <option key={ch} value={ch}>{ch} — {n} ta</option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {/* Top-N edges */}
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] text-gray-500">Eng yuqori:</span>
+          {[20, 50, 100, 200, 'all'].map(n => (
+            <ToggleBtn key={n} active={topN === n} onClick={() => setTopN(n)}>
+              {n === 'all' ? 'Barchasi' : n}
+            </ToggleBtn>
+          ))}
+        </div>
+
         {/* Search input */}
         <div className="flex items-center gap-2">
           <div className="relative">
@@ -735,7 +797,12 @@ window.NetworkAnalysisPage = () => {
           <span className="text-[10px] text-gray-500">Tugunlar:</span>
           <span className="text-xs font-semibold text-white">{nodeElements.length}</span>
           <span className="text-[10px] text-gray-500 ml-2">Bog'lanishlar:</span>
-          <span className="text-xs font-semibold text-white">{edgeElements.length}</span>
+          <span className="text-xs font-semibold text-white">
+            {edgeElements.length}
+            {totalCandidates > edgeElements.length && (
+              <span className="text-gray-500 font-normal"> / {totalCandidates}</span>
+            )}
+          </span>
         </div>
       </div>
 
