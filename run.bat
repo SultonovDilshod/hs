@@ -8,7 +8,7 @@ echo.
 REM ---- Build dashboard/data.generated.js from CSVs ----
 where python >nul 2>nul
 if %errorlevel%==0 (
-    python scripts\build_data.py
+    py scripts\build_data.py
     goto :build_done
 )
 where py >nul 2>nul
@@ -30,7 +30,7 @@ REM ---- Serve the dashboard ----
 start "" "http://localhost:3000"
 where python >nul 2>nul
 if %errorlevel%==0 (
-    python -m http.server 3000 --directory dashboard
+    py -m http.server 3000 --directory dashboard
     goto :eof
 )
 where py >nul 2>nul

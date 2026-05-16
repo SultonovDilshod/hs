@@ -1,1 +1,4 @@
 /dashboard/data
+dashboard/data.generated.js
+dashboard/data/pattern_summary.csv
+dashboard/data/patterns.csv
