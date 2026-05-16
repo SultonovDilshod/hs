@@ -33,18 +33,11 @@ const LAYOUT = {
   // - gravity: pull toward the centre. Higher = less spread.
   // - numIter: more iterations = better layout but slower.
   cose: {
-<<<<<<< Updated upstream
-    nodeRepulsion: 1500,
-    idealEdgeLength: 45,
-    componentSpacing: 20,
-    gravity: 80,
-    numIter: 400,
-=======
     nodeRepulsion: 500,
     idealEdgeLength: 60,
+    componentSpacing: 20,
     gravity: 4.2,
     numIter: 250,
->>>>>>> Stashed changes
   },
 
   // After the layout finishes, zoom out so all elements are visible plus
