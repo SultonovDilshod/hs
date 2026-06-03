@@ -102,16 +102,54 @@ window.CORRIDOR_META = {
   green:  { key:'green',  label:"Yashil yo'lak", short:'Yashil', color:'#059669', control:'Avtomatik rasmiylashtirish / kuzatuv' },
 };
 
+// A rule is itself a risk profile, so it can only route a declaration into a
+// *control* lane — sariq (yellow) or qizil (red), never yashil (green). Green
+// is the absence of any rule (automatic clearance).
 window.assessCorridor = (m = {}) => {
   const conf = m.hitRate ?? m.misclassRate ?? 0;          // ishonchlilik, %
   const rev  = m.revenueImpact ?? m.revenueRecovered ?? m.revenue ?? 0;
   const severity = Math.min(100, (rev / 600000) * 100);   // 600K ≈ yuqori ta'sir
   const risk = Math.round(0.62 * conf + 0.38 * severity);
-  let key;
-  if (conf >= 75 || risk >= 78) key = 'red';
-  else if (conf >= 50 || risk >= 45) key = 'yellow';
-  else key = 'green';
+  const key = (conf >= 72 || risk >= 70) ? 'red' : 'yellow';
   return { ...window.CORRIDOR_META[key], risk, confidence: Math.round(conf), severity: Math.round(severity) };
+};
+
+// Severity ordering and escalation. A rule never lowers a declaration's lane —
+// it keeps it or raises it. green→(rule lane), yellow→(max), red→red.
+window.CORRIDOR_ORDER = { green:0, yellow:1, red:2 };
+window.escalate = (baseKey, ruleKey) =>
+  (window.CORRIDOR_ORDER[ruleKey] ?? 1) >= (window.CORRIDOR_ORDER[baseKey] ?? 0) ? ruleKey : baseKey;
+window.escalationTargets = (ruleKey) => ({
+  green:  window.escalate('green', ruleKey),
+  yellow: window.escalate('yellow', ruleKey),
+  red:    'red',
+});
+
+// Visual "yashil → sariq" style matrix showing where a rule of a given
+// severity moves declarations from each starting lane.
+window.EscalationMatrix = ({ ruleKey }) => {
+  const t = window.escalationTargets(ruleKey);
+  const Lane = ({k}) => {
+    const c = window.CORRIDOR_META[k];
+    return (
+      <span className="tag border" style={{background:c.color+'1A', color:c.color, borderColor:c.color+'55'}}>
+        <span className="w-1.5 h-1.5 rounded-full inline-block" style={{background:c.color}}/>{c.short}
+      </span>
+    );
+  };
+  return (
+    <div className="space-y-2">
+      {['green','yellow','red'].map(base => (
+        <div key={base} className="flex items-center gap-2 text-xs">
+          <span className="w-16 text-txt-muted">Joriy:</span>
+          <Lane k={base}/>
+          <Icon name="arrowRight" size={13} className="text-txt-dim"/>
+          <Lane k={t[base]}/>
+          {base === t[base] && <span className="text-[10px] text-txt-dim">(o'zgarmaydi)</span>}
+        </div>
+      ))}
+    </div>
+  );
 };
 
 // Expected outcome of routing `affected` declarations through a corridor —

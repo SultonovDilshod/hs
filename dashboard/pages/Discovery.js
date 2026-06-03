@@ -32,18 +32,20 @@ window.DiscoveryPage = ({ onConvertToRule }) => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedPattern, setSelectedPattern] = useState(null);
   const [sortBy, setSortBy] = useState('revenue');
+  const [corridorFilter, setCorridorFilter] = useState('all');
 
   const filtered = useMemo(() => {
     let items = [...MOCK.patterns];
     if (hsLevel !== 'all') items = items.filter(p => p.level === parseInt(hsLevel));
     if (statusFilter !== 'all') items = items.filter(p => p.status === statusFilter);
+    if (corridorFilter !== 'all') items = items.filter(p => assessCorridor(p).key === corridorFilter);
     items = items.filter(p => (p.hitRate ?? 0) >= minHitRate);
     if (sortBy === 'revenue') items.sort((a,b) => b.revenueImpact - a.revenueImpact);
     else if (sortBy === 'hitRate') items.sort((a,b) => (b.hitRate ?? 0) - (a.hitRate ?? 0));
     else if (sortBy === 'cases') items.sort((a,b) => (b.misclassCases ?? 0) - (a.misclassCases ?? 0));
     else if (sortBy === 'lift') items.sort((a,b) => (b.lift ?? 0) - (a.lift ?? 0));
     return items;
-  }, [hsLevel, minHitRate, statusFilter, sortBy]);
+  }, [hsLevel, minHitRate, statusFilter, sortBy, corridorFilter]);
 
   // Corridor assessment for the open pattern + expectations in the yellow lane.
   const patternCorridor = selectedPattern ? assessCorridor(selectedPattern) : null;
@@ -78,6 +80,20 @@ window.DiscoveryPage = ({ onConvertToRule }) => {
               {v==='all'?'Barchasi':v==='new'?'Yangi':v==='strengthened'?'Kuchaygan':'Susaygan'}
             </button>
           ))}
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-txt-muted">Yo'lak:</span>
+          {['all','red','yellow'].map(v => {
+            const active = corridorFilter===v;
+            const col = v==='all' ? '#1D4ED8' : CORRIDOR_META[v].color;
+            return (
+              <button key={v} onClick={() => setCorridorFilter(v)}
+                className={`px-3 py-1 rounded text-xs font-medium transition-all border ${active ? '' : 'bg-surface-200 text-txt-muted border-transparent hover:text-txt-secondary'}`}
+                style={active ? {background:col+'22', color:col, borderColor:col+'66'} : undefined}>
+                {v==='all'?'Barchasi':CORRIDOR_META[v].short}
+              </button>
+            );
+          })}
         </div>
         <div className="flex items-center gap-2">
           <span className="text-xs text-txt-muted">Min. tasdiqlanish foizi:</span>
@@ -215,6 +231,10 @@ window.DiscoveryPage = ({ onConvertToRule }) => {
                     ? "O'rtacha xavf — hujjat tekshiruvi (sariq yo'lak) maqbul."
                     : "Past xavf — avtomatik rasmiylashtirish/kuzatuv kifoya."}
                 </p>
+                <div className="bg-surface-100 rounded-lg p-3 mb-3 border border-surface-300/40">
+                  <div className="text-[11px] text-txt-muted mb-2 font-medium uppercase tracking-wider">Qoida ta'siri (eskalatsiya)</div>
+                  <EscalationMatrix ruleKey={patternCorridor.key}/>
+                </div>
                 <div className="text-[11px] text-txt-muted mb-2 font-medium uppercase tracking-wider">Sariq yo'lakda sinov — kutilmalar</div>
                 <div className="grid grid-cols-4 gap-3">
                   {[

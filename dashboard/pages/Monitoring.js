@@ -17,11 +17,14 @@ const TYPE_COLORS = { statistical:'#2563EB', business:'#8B5CF6' };
 window.MonitoringPage = () => {
   const [selectedRule, setSelectedRule] = useState(null);
   const [filterType, setFilterType] = useState('all');
+  const [corridorFilter, setCorridorFilter] = useState('all');
   const [view, setView] = useState('table');
 
   const activeRules = MOCK.rules.filter(r => {
-    if (filterType === 'all') return r.status === 'active';
-    return r.status === 'active' && r.type === filterType;
+    if (r.status !== 'active') return false;
+    if (filterType !== 'all' && r.type !== filterType) return false;
+    if (corridorFilter !== 'all' && assessCorridor({hitRate:r.hitRate, revenueRecovered:r.revenueRecovered}).key !== corridorFilter) return false;
+    return true;
   });
 
   const activeForKpi = MOCK.rules.filter(r => r.status === 'active' && r.hitRate != null);
@@ -285,13 +288,13 @@ window.MonitoringPage = () => {
         {/* Risk corridor distribution */}
         <div className="glass rounded-xl p-5">
           <h3 className="text-sm font-semibold text-txt-primary mb-1">Xavf yo'laklari taqsimoti</h3>
-          <p className="text-xs text-txt-muted mb-4">Faol qoidalarning qizil / sariq / yashil yo'laklar bo'yicha taqsimoti va ularning daromad hissasi.</p>
+          <p className="text-xs text-txt-muted mb-4">Qoida (xavf profili) faqat sariq yoki qizil yo'lakka yo'naltiradi. Yashil — qoidasiz (avtomatik rasmiylashtirish).</p>
           {(() => {
-            const tot = analytics.corridor.red.count + analytics.corridor.yellow.count + analytics.corridor.green.count || 1;
+            const tot = analytics.corridor.red.count + analytics.corridor.yellow.count || 1;
             return (
               <>
                 <div className="grid grid-cols-3 gap-4 mb-4">
-                  {['red','yellow','green'].map(k => {
+                  {['red','yellow'].map(k => {
                     const c = CORRIDOR_META[k], d = analytics.corridor[k];
                     return (
                       <div key={k} className="rounded-xl p-4 border" style={{background:c.color+'0D', borderColor:c.color+'33'}}>
@@ -305,9 +308,18 @@ window.MonitoringPage = () => {
                       </div>
                     );
                   })}
+                  <div className="rounded-xl p-4 border border-dashed" style={{background:CORRIDOR_META.green.color+'0A', borderColor:CORRIDOR_META.green.color+'40'}}>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="w-2.5 h-2.5 rounded-full" style={{background:CORRIDOR_META.green.color}}/>
+                      <span className="text-xs font-semibold" style={{color:CORRIDOR_META.green.color}}>{CORRIDOR_META.green.label}</span>
+                    </div>
+                    <div className="text-2xl font-bold text-txt-muted">—</div>
+                    <div className="text-xs text-txt-secondary mt-1">Qoida talab etilmaydi</div>
+                    <div className="text-[10px] text-txt-muted mt-1">{CORRIDOR_META.green.control}</div>
+                  </div>
                 </div>
-                <div className="flex h-3 rounded-full overflow-hidden">
-                  {['red','yellow','green'].map(k => {
+                <div className="flex h-3 rounded-full overflow-hidden bg-surface-200">
+                  {['red','yellow'].map(k => {
                     const d = analytics.corridor[k];
                     return d.count > 0 ? <div key={k} style={{width:`${d.count/tot*100}%`, background:CORRIDOR_META[k].color}} title={`${CORRIDOR_META[k].label}: ${d.count}`}/> : null;
                   })}
@@ -480,7 +492,20 @@ window.MonitoringPage = () => {
       <div className="glass rounded-xl animate-in stagger-3">
         <div className="flex items-center gap-4 p-4 border-b border-surface-300/50">
           <h3 className="text-sm font-semibold text-txt-primary">Faol qoidalar monitoringi</h3>
-          <div className="ml-auto flex gap-2">
+          <div className="ml-auto flex items-center gap-2">
+            <span className="text-[10px] text-txt-muted uppercase tracking-wider">Yo'lak:</span>
+            {['all','red','yellow'].map(v => {
+              const active = corridorFilter===v;
+              const col = v==='all' ? '#1D4ED8' : CORRIDOR_META[v].color;
+              return (
+                <button key={v} onClick={() => setCorridorFilter(v)}
+                  className={`px-3 py-1 rounded text-xs font-medium transition-all border ${active ? '' : 'bg-surface-200 text-txt-muted border-transparent hover:text-txt-secondary'}`}
+                  style={active ? {background:col+'22', color:col, borderColor:col+'66'} : undefined}>
+                  {v==='all'?'Barchasi':CORRIDOR_META[v].short}
+                </button>
+              );
+            })}
+            <span className="w-px h-5 bg-surface-300 mx-1"/>
             {['all','statistical','business'].map(v => (
               <button key={v} onClick={() => setFilterType(v)}
                 className={`px-3 py-1 rounded text-xs font-medium transition-all ${filterType===v ? 'bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/40' : 'bg-surface-200 text-txt-muted border border-transparent hover:text-txt-secondary'}`}>

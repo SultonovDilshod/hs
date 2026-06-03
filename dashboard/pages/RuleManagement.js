@@ -388,6 +388,11 @@ window.RuleManagementPage = ({ draft }) => {
                   ? "O'rtacha xavf — hujjatlarni tekshirish (sariq yo'lak) maqbul, jismoniy ko'rik tanlamali o'tkaziladi."
                   : "Past xavf — avtomatik rasmiylashtirish va kuzatuvda saqlash kifoya."}
               </p>
+              <div className="mt-4 pt-3 border-t border-surface-300/50">
+                <div className="text-[11px] text-txt-muted mb-2 font-medium uppercase tracking-wider">Qoida ta'siri — yo'lak eskalatsiyasi</div>
+                <p className="text-xs text-txt-muted mb-3">Bu qoida deklaratsiyani faqat yuqori yo'lakka ko'taradi; yashil yo'lakka hech qachon tushirmaydi.</p>
+                <EscalationMatrix ruleKey={testResult.assessment.key}/>
+              </div>
             </div>
 
             {/* Corridor comparison — what to expect in each lane */}

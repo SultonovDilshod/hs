@@ -18,7 +18,7 @@ window.OverviewPage = () => {
       agg[a.key].count++;
       agg[a.key].revenue += p.revenueImpact || 0;
     });
-    const total = agg.red.count + agg.yellow.count + agg.green.count || 1;
+    const total = agg.red.count + agg.yellow.count || 1; // qoidalar faqat sariq/qizil
     return { agg, total };
   }, []);
 
@@ -40,30 +40,38 @@ window.OverviewPage = () => {
 
       {/* Risk corridor distribution */}
       <div className="glass rounded-xl p-5 mb-6 animate-in stagger-2">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-1">
           <h3 className="text-sm font-semibold text-txt-primary">Xavf yo'laklari bo'yicha shablonlar</h3>
-          <div className="flex items-center gap-3">
-            {['red','yellow','green'].map(k => (
-              <span key={k} className="flex items-center gap-1.5 text-[11px] text-txt-muted">
-                <span className="w-2.5 h-2.5 rounded-full" style={{background:CORRIDOR_META[k].color}}/>{CORRIDOR_META[k].short}
-              </span>
-            ))}
-          </div>
+          <span className="text-[11px] text-txt-muted">Qoida (xavf profili) faqat sariq yoki qizil yo'lakka yo'naltiradi</span>
         </div>
+        <p className="text-xs text-txt-muted mb-4">Yashil yo'lak — qoida qo'llanilmaydi (avtomatik rasmiylashtirish).</p>
         <div className="grid grid-cols-3 gap-4 mb-4">
-          {['red','yellow','green'].map(k => {
+          {['red','yellow'].map(k => {
             const c = CORRIDOR_META[k], d = corridorDist.agg[k];
             return (
               <div key={k} className="rounded-xl p-4 border" style={{background:c.color+'0D', borderColor:c.color+'33'}}>
-                <div className="text-[10px] uppercase tracking-wider mb-1" style={{color:c.color}}>{c.label}</div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="w-2.5 h-2.5 rounded-full" style={{background:c.color}}/>
+                  <span className="text-[10px] uppercase tracking-wider font-semibold" style={{color:c.color}}>{c.label}</span>
+                </div>
                 <div className="text-2xl font-bold text-txt-primary">{d.count} <span className="text-sm font-medium text-txt-muted">shablon</span></div>
                 <div className="text-xs text-txt-secondary mt-1">{formatCurrency(d.revenue)} · {Math.round(d.count/corridorDist.total*100)}%</div>
+                <div className="text-[10px] text-txt-muted mt-1">{c.control}</div>
               </div>
             );
           })}
+          <div className="rounded-xl p-4 border border-dashed" style={{background:CORRIDOR_META.green.color+'0A', borderColor:CORRIDOR_META.green.color+'40'}}>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="w-2.5 h-2.5 rounded-full" style={{background:CORRIDOR_META.green.color}}/>
+              <span className="text-[10px] uppercase tracking-wider font-semibold" style={{color:CORRIDOR_META.green.color}}>{CORRIDOR_META.green.label}</span>
+            </div>
+            <div className="text-2xl font-bold text-txt-muted">—</div>
+            <div className="text-xs text-txt-secondary mt-1">Xavf profili talab etilmaydi</div>
+            <div className="text-[10px] text-txt-muted mt-1">{CORRIDOR_META.green.control}</div>
+          </div>
         </div>
-        <div className="flex h-3 rounded-full overflow-hidden">
-          {['red','yellow','green'].map(k => {
+        <div className="flex h-3 rounded-full overflow-hidden bg-surface-200">
+          {['red','yellow'].map(k => {
             const d = corridorDist.agg[k];
             return d.count > 0 ? <div key={k} style={{width:`${d.count/corridorDist.total*100}%`, background:CORRIDOR_META[k].color}}/> : null;
           })}
