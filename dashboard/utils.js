@@ -79,7 +79,7 @@ window.StatusBadge = ({status}) => {
 window.CustomTooltip = ({active, payload, label}) => {
   if (!active || !payload?.length) return null;
   return (
-    <div className="glass rounded-lg px-3 py-2 text-xs" style={{border:'1px solid #1F2F4D'}}>
+    <div className="glass rounded-lg px-3 py-2 text-xs" style={{border:'1px solid #E2E8F0'}}>
       <p className="text-txt-secondary mb-1 font-medium">{label}</p>
       {payload.map((p,i) => (
         <p key={i} style={{color:p.color}} className="flex items-center gap-2">

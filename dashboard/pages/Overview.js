@@ -44,7 +44,7 @@ window.OverviewPage = () => {
                   <stop offset="100%" stopColor="#06B6D4" stopOpacity={0}/>
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1A2740" vertical={false}/>
+              <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false}/>
               <XAxis dataKey="month" tick={{fill:'#64748B',fontSize:11}} axisLine={false} tickLine={false}/>
               <YAxis yAxisId="left" tick={{fill:'#64748B',fontSize:11}} axisLine={false} tickLine={false}/>
               <YAxis yAxisId="right" orientation="right" tick={{fill:'#64748B',fontSize:11}} axisLine={false} tickLine={false} tickFormatter={v=>formatCurrency(v)}/>

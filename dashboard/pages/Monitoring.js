@@ -153,7 +153,7 @@ window.MonitoringPage = () => {
                       <stop offset="100%" stopColor="#06B6D4" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#1A2740" vertical={false}/>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false}/>
                   <XAxis dataKey="week" tick={{fill:'#64748B',fontSize:10}} axisLine={false} tickLine={false}/>
                   <YAxis domain={['dataMin-5','dataMax+5']} tick={{fill:'#64748B',fontSize:10}} axisLine={false} tickLine={false}/>
                   <Tooltip content={<CustomTooltip/>}/>

@@ -2,10 +2,12 @@ tailwind.config = {
   theme: {
     extend: {
       colors: {
-        surface: { 50:'#0B1120', 100:'#101829', 200:'#151F35', 300:'#1A2740', 400:'#1F2F4D' },
-        accent: { cyan:'#06B6D4' },
-        status: { green:'#10B981', amber:'#F59E0B' },
-        txt: { primary:'#F1F5F9', secondary:'#94A3B8', muted:'#64748B', dim:'#475569' }
+        // Light theme surface scale: 50 = page background (lightest),
+        // increasing numbers get slightly darker for elevation/borders.
+        surface: { 50:'#F8FAFC', 100:'#FFFFFF', 200:'#F1F5F9', 300:'#E2E8F0', 400:'#CBD5E1' },
+        accent: { cyan:'#0891B2' },
+        status: { green:'#059669', amber:'#D97706' },
+        txt: { primary:'#0F172A', secondary:'#475569', muted:'#64748B', dim:'#94A3B8' }
       },
       fontFamily: {
         display: ['Outfit', 'sans-serif'],

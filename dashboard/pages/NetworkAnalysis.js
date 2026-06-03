@@ -310,8 +310,8 @@ window.NetworkAnalysisPage = () => {
           'background-color': 'data(color)',
           'label': 'data(label)',
           'font-size': '9px',
-          'color': '#F1F5F9',
-          'text-outline-color': '#0B1120',
+          'color': '#1E293B',
+          'text-outline-color': '#FFFFFF',
           'text-outline-width': 1.5,
           'text-valign': 'bottom',
           'text-margin-y': 4,
@@ -324,16 +324,16 @@ window.NetworkAnalysisPage = () => {
         }},
         { selector: 'edge', style: {
           'width': 'data(width)',
-          'line-color': '#FFFFFF',
+          'line-color': '#94A3B8',
           'line-opacity': 'data(opacity)',
-          'target-arrow-color': '#FFFFFF',
+          'target-arrow-color': '#94A3B8',
           'target-arrow-shape': 'triangle',
           'arrow-scale': 0.7,
           'curve-style': 'bezier',
           'label': 'data(edgeLabel)',
           'font-size': '10px',
-          'color': '#F1F5F9',
-          'text-background-color': '#0B1120',
+          'color': '#1E293B',
+          'text-background-color': '#FFFFFF',
           'text-background-opacity': 0.75,
           'text-background-padding': '2px',
           'text-background-shape': 'roundrectangle',
@@ -597,7 +597,7 @@ window.NetworkAnalysisPage = () => {
   const handleExport = () => {
     const cy = cyRef.current;
     if (!cy) return;
-    const png = cy.png({ full: true, bg: '#0B1120', scale: 2 });
+    const png = cy.png({ full: true, bg: '#FFFFFF', scale: 2 });
     const link = document.createElement('a');
     link.href = png;
     link.download = `tarmoq_tahlili_${new Date().toISOString().split('T')[0]}.png`;
@@ -608,40 +608,40 @@ window.NetworkAnalysisPage = () => {
   const ToggleBtn = ({ active, onClick, children }) => (
     <button onClick={onClick}
       className={`px-3 py-1 rounded text-xs font-medium transition-all ${
-        active ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/40'
-               : 'bg-[#151F35] text-gray-400 border border-transparent hover:text-gray-300'
+        active ? 'bg-cyan-500/20 text-cyan-600 border border-cyan-500/40'
+               : 'bg-[#F1F5F9] text-gray-600 border border-transparent hover:text-gray-700'
       }`}>{children}</button>
   );
 
   // Summary panel
   const SummaryPanel = () => (
     <div className="space-y-4">
-      <h3 className="text-sm font-semibold text-white">Umumiy ko'rsatkichlar</h3>
+      <h3 className="text-sm font-semibold text-gray-900">Umumiy ko'rsatkichlar</h3>
       <div className="grid grid-cols-2 gap-3">
-        <div className="bg-[#151F35] rounded-lg p-3">
+        <div className="bg-[#F1F5F9] rounded-lg p-3">
           <div className="text-[10px] text-gray-500 mb-1">Jami tuzatishlar</div>
-          <div className="text-lg font-bold text-cyan-400">{formatNumber(summaryStats.totalAmend)}</div>
+          <div className="text-lg font-bold text-cyan-600">{formatNumber(summaryStats.totalAmend)}</div>
         </div>
-        <div className="bg-[#151F35] rounded-lg p-3">
+        <div className="bg-[#F1F5F9] rounded-lg p-3">
           <div className="text-[10px] text-gray-500 mb-1">Jami summa</div>
-          <div className="text-lg font-bold text-cyan-400">{formatCurrency(summaryStats.totalTax)}</div>
+          <div className="text-lg font-bold text-cyan-600">{formatCurrency(summaryStats.totalTax)}</div>
         </div>
-        <div className="bg-[#151F35] rounded-lg p-3">
+        <div className="bg-[#F1F5F9] rounded-lg p-3">
           <div className="text-[10px] text-gray-500 mb-1">Deklarat. kodlar</div>
-          <div className="text-lg font-bold text-white">{summaryStats.declaredCount}</div>
+          <div className="text-lg font-bold text-gray-900">{summaryStats.declaredCount}</div>
         </div>
-        <div className="bg-[#151F35] rounded-lg p-3">
+        <div className="bg-[#F1F5F9] rounded-lg p-3">
           <div className="text-[10px] text-gray-500 mb-1">Tuzatilgan kodlar</div>
-          <div className="text-lg font-bold text-white">{summaryStats.correctedCount}</div>
+          <div className="text-lg font-bold text-gray-900">{summaryStats.correctedCount}</div>
         </div>
       </div>
       <div>
-        <h4 className="text-xs font-semibold text-gray-400 mb-2">Top 5 juftliklar</h4>
+        <h4 className="text-xs font-semibold text-gray-600 mb-2">Top 5 juftliklar</h4>
         <div className="space-y-1.5">
           {summaryStats.top5.map((p, i) => (
-            <div key={i} className="flex items-center justify-between bg-[#151F35] rounded px-2.5 py-1.5">
-              <span className="text-[10px] font-mono text-gray-300">{formatHs(p.source)} <span className="text-cyan-400">{'\u2192'}</span> {formatHs(p.target)}</span>
-              <span className="text-[10px] font-semibold text-cyan-400">{p.count}</span>
+            <div key={i} className="flex items-center justify-between bg-[#F1F5F9] rounded px-2.5 py-1.5">
+              <span className="text-[10px] font-mono text-gray-700">{formatHs(p.source)} <span className="text-cyan-600">{'\u2192'}</span> {formatHs(p.target)}</span>
+              <span className="text-[10px] font-semibold text-cyan-600">{p.count}</span>
             </div>
           ))}
         </div>
@@ -654,33 +654,33 @@ window.NetworkAnalysisPage = () => {
     <div className="space-y-4">
       <div>
         <div className="text-[10px] text-gray-500 mb-1">TIF TN kod</div>
-        <h3 className="text-lg font-bold font-mono text-white">{formatHs(data.id)}</h3>
+        <h3 className="text-lg font-bold font-mono text-gray-900">{formatHs(data.id)}</h3>
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <div className="bg-[#151F35] rounded-lg p-3">
+        <div className="bg-[#F1F5F9] rounded-lg p-3">
           <div className="text-[10px] text-gray-500 mb-1">Chiquvchi tuzatishlar</div>
-          <div className="text-base font-bold text-cyan-400">{data.outCount}</div>
+          <div className="text-base font-bold text-cyan-600">{data.outCount}</div>
         </div>
-        <div className="bg-[#151F35] rounded-lg p-3">
+        <div className="bg-[#F1F5F9] rounded-lg p-3">
           <div className="text-[10px] text-gray-500 mb-1">Kiruvchi tuzatishlar</div>
-          <div className="text-base font-bold text-cyan-400">{data.inCount}</div>
+          <div className="text-base font-bold text-cyan-600">{data.inCount}</div>
         </div>
       </div>
-      <div className="bg-[#151F35] rounded-lg p-3">
+      <div className="bg-[#F1F5F9] rounded-lg p-3">
         <div className="text-[10px] text-gray-500 mb-1">Jami to'lov summasi</div>
-        <div className="text-base font-bold text-cyan-400">{formatCurrency(data.totalTax)}</div>
+        <div className="text-base font-bold text-cyan-600">{formatCurrency(data.totalTax)}</div>
       </div>
       <div>
-        <h4 className="text-xs font-semibold text-gray-400 mb-2">Eng ko'p bog'langan kodlar</h4>
+        <h4 className="text-xs font-semibold text-gray-600 mb-2">Eng ko'p bog'langan kodlar</h4>
         <div className="space-y-1.5">
           {data.top5.map((c, i) => (
-            <div key={i} className="flex items-center justify-between bg-[#151F35] rounded px-2.5 py-1.5">
+            <div key={i} className="flex items-center justify-between bg-[#F1F5F9] rounded px-2.5 py-1.5">
               <div className="flex items-center gap-2">
-                <span className="text-[10px] text-cyan-400">{c.dir}</span>
-                <span className="text-[10px] font-mono text-gray-300">{formatHs(c.code)}</span>
+                <span className="text-[10px] text-cyan-600">{c.dir}</span>
+                <span className="text-[10px] font-mono text-gray-700">{formatHs(c.code)}</span>
               </div>
               <div className="text-right">
-                <span className="text-[10px] font-semibold text-white">{c.count}</span>
+                <span className="text-[10px] font-semibold text-gray-900">{c.count}</span>
                 <span className="text-[10px] text-gray-500 ml-2">{formatCurrency(c.tax)}</span>
               </div>
             </div>
@@ -695,26 +695,26 @@ window.NetworkAnalysisPage = () => {
     <div className="space-y-4">
       <div>
         <div className="text-[10px] text-gray-500 mb-1">Tuzatish yo'nalishi</div>
-        <h3 className="text-sm font-bold font-mono text-white">{formatHs(data.source)} <span className="text-cyan-400">{'\u2192'}</span> {formatHs(data.target)}</h3>
+        <h3 className="text-sm font-bold font-mono text-gray-900">{formatHs(data.source)} <span className="text-cyan-600">{'\u2192'}</span> {formatHs(data.target)}</h3>
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <div className="bg-[#151F35] rounded-lg p-3">
+        <div className="bg-[#F1F5F9] rounded-lg p-3">
           <div className="text-[10px] text-gray-500 mb-1">Chastota</div>
-          <div className="text-base font-bold text-cyan-400">{data.frequency}</div>
+          <div className="text-base font-bold text-cyan-600">{data.frequency}</div>
         </div>
-        <div className="bg-[#151F35] rounded-lg p-3">
+        <div className="bg-[#F1F5F9] rounded-lg p-3">
           <div className="text-[10px] text-gray-500 mb-1">To'lov summasi</div>
-          <div className="text-base font-bold text-cyan-400">{formatCurrency(data.tax)}</div>
+          <div className="text-base font-bold text-cyan-600">{formatCurrency(data.tax)}</div>
         </div>
       </div>
-      <div className="bg-[#151F35] rounded-lg p-3">
+      <div className="bg-[#F1F5F9] rounded-lg p-3">
         <div className="text-[10px] text-gray-500 mb-1">Importyorlar soni</div>
-        <div className="text-base font-bold text-white">{data.importerCount}</div>
+        <div className="text-base font-bold text-gray-900">{data.importerCount}</div>
       </div>
       {data.rate !== null && (
-        <div className="bg-[#151F35] rounded-lg p-3">
+        <div className="bg-[#F1F5F9] rounded-lg p-3">
           <div className="text-[10px] text-gray-500 mb-1">Tuzatish darajasi</div>
-          <div className="text-base font-bold text-amber-400">{(data.rate * 100).toFixed(1)}%</div>
+          <div className="text-base font-bold text-amber-600">{(data.rate * 100).toFixed(1)}%</div>
         </div>
       )}
     </div>
@@ -731,7 +731,7 @@ window.NetworkAnalysisPage = () => {
           <ToggleBtn active={hsLevel==='10'} onClick={() => setHsLevel('10')}>10 xona</ToggleBtn>
         </div>
 
-        <div className="w-px h-6 bg-gray-700"/>
+        <div className="w-px h-6 bg-gray-300"/>
 
         {/* Period */}
         <div className="flex items-center gap-2">
@@ -740,7 +740,7 @@ window.NetworkAnalysisPage = () => {
           <ToggleBtn active={period==='3m'} onClick={() => setPeriod('3m')}>3 oy</ToggleBtn>
         </div>
 
-        <div className="w-px h-6 bg-gray-700"/>
+        <div className="w-px h-6 bg-gray-300"/>
 
         {/* Weight metric */}
         <div className="flex items-center gap-2">
@@ -750,7 +750,7 @@ window.NetworkAnalysisPage = () => {
           <ToggleBtn active={weightMetric==='rate'} onClick={() => setWeightMetric('rate')}>Tuzatish darajasi</ToggleBtn>
         </div>
 
-        <div className="w-px h-6 bg-gray-700"/>
+        <div className="w-px h-6 bg-gray-300"/>
 
         {/* Node color */}
         <div className="flex items-center gap-2">
@@ -759,7 +759,7 @@ window.NetworkAnalysisPage = () => {
           <ToggleBtn active={nodeColor==='chapter'} onClick={() => setNodeColor('chapter')}>Guruh</ToggleBtn>
         </div>
 
-        <div className="w-px h-6 bg-gray-700"/>
+        <div className="w-px h-6 bg-gray-300"/>
 
         {/* Node size */}
         <div className="flex items-center gap-2">
@@ -775,7 +775,7 @@ window.NetworkAnalysisPage = () => {
         {hasImporterData && (
           <div className="flex items-center gap-2">
             <select value={importerFilter} onChange={e => { setImporterFilter(e.target.value); setSelected(null); }}
-              className="rule-builder-field text-xs py-1 px-2 rounded bg-[#151F35] border border-gray-700 text-gray-300">
+              className="rule-builder-field text-xs py-1 px-2 rounded bg-[#F1F5F9] border border-gray-300 text-gray-700">
               <option value="all">Barcha importyorlar</option>
               {uniqueImporters.map(imp => <option key={imp} value={imp}>{imp}</option>)}
             </select>
@@ -785,7 +785,7 @@ window.NetworkAnalysisPage = () => {
         {hasCountryData && (
           <div className="flex items-center gap-2">
             <select value={countryFilter} onChange={e => { setCountryFilter(e.target.value); setSelected(null); }}
-              className="rule-builder-field text-xs py-1 px-2 rounded bg-[#151F35] border border-gray-700 text-gray-300">
+              className="rule-builder-field text-xs py-1 px-2 rounded bg-[#F1F5F9] border border-gray-300 text-gray-700">
               <option value="all">Barcha mamlakatlar</option>
               {uniqueCountries.map(c => <option key={c} value={c}>{COUNTRY_NAMES[c] || c} ({c})</option>)}
             </select>
@@ -797,7 +797,7 @@ window.NetworkAnalysisPage = () => {
           <div className="flex items-center gap-2">
             <span className="text-[10px] text-gray-500">Guruh:</span>
             <select value={chapterFilter} onChange={e => { setChapterFilter(e.target.value); setSelected(null); }}
-              className="rule-builder-field text-xs py-1 px-2 rounded bg-[#151F35] border border-gray-700 text-gray-300">
+              className="rule-builder-field text-xs py-1 px-2 rounded bg-[#F1F5F9] border border-gray-300 text-gray-700">
               <option value="all">Barchasi ({chapterStats.length})</option>
               {chapterStats.map(([ch, n]) => (
                 <option key={ch} value={ch}>{ch} — {n} ta</option>
@@ -825,12 +825,12 @@ window.NetworkAnalysisPage = () => {
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               placeholder="TIF TN kod qidirish..."
-              className="text-xs py-1 pl-7 pr-7 rounded bg-[#151F35] border border-gray-700 text-gray-300 placeholder-gray-600 w-40 focus:outline-none focus:border-cyan-500/50"
+              className="text-xs py-1 pl-7 pr-7 rounded bg-[#F1F5F9] border border-gray-300 text-gray-700 placeholder-gray-400 w-40 focus:outline-none focus:border-cyan-500/50"
             />
             {searchTerm && (
               <button
                 onClick={() => setSearchTerm('')}
-                className="absolute right-1.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
               >
                 <Icon name="x" size={12}/>
               </button>
@@ -843,14 +843,14 @@ window.NetworkAnalysisPage = () => {
           <input type="range" min="1" max={Math.max(maxEdgeCount, 2)} step="1" value={minEdge}
             onChange={e => setMinEdge(Number(e.target.value))}
             className="w-24 accent-cyan-500"/>
-          <span className="text-xs font-mono text-cyan-400 w-6 text-center">{minEdge}</span>
+          <span className="text-xs font-mono text-cyan-600 w-6 text-center">{minEdge}</span>
         </div>
 
         <div className="ml-auto flex items-center gap-2">
           <span className="text-[10px] text-gray-500">Tugunlar:</span>
-          <span className="text-xs font-semibold text-white">{nodeElements.length}</span>
+          <span className="text-xs font-semibold text-gray-900">{nodeElements.length}</span>
           <span className="text-[10px] text-gray-500 ml-2">Bog'lanishlar:</span>
-          <span className="text-xs font-semibold text-white">
+          <span className="text-xs font-semibold text-gray-900">
             {edgeElements.length}
             {totalCandidates > edgeElements.length && (
               <span className="text-gray-500 font-normal"> / {totalCandidates}</span>
@@ -864,36 +864,36 @@ window.NetworkAnalysisPage = () => {
         {/* Graph */}
         <div className="glass rounded-xl p-3 relative" style={{width:'73%'}}>
           <div ref={containerRef}
-            style={{width:'100%', height:'580px', background:'rgba(11,17,32,0.8)', borderRadius:'8px'}}/>
+            style={{width:'100%', height:'580px', background:'#FFFFFF', borderRadius:'8px'}}/>
 
           {/* Zoom & Export controls */}
           <div className="absolute bottom-6 right-6 flex flex-col gap-1.5" style={{zIndex:10}}>
             <button
               onClick={handleExport}
               title="PNG eksport"
-              className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#0B1120]/80 border border-gray-700 text-gray-400 hover:text-cyan-400 hover:border-cyan-500/50 transition-all backdrop-blur-sm"
+              className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/80 border border-gray-300 text-gray-600 hover:text-cyan-600 hover:border-cyan-500/50 transition-all backdrop-blur-sm"
             >
               <Icon name="download" size={14}/>
             </button>
-            <div className="w-full h-px bg-gray-700/50 my-0.5"/>
+            <div className="w-full h-px bg-gray-300/50 my-0.5"/>
             <button
               onClick={handleZoomIn}
               title="Kattalashtirish"
-              className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#0B1120]/80 border border-gray-700 text-gray-400 hover:text-cyan-400 hover:border-cyan-500/50 transition-all backdrop-blur-sm"
+              className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/80 border border-gray-300 text-gray-600 hover:text-cyan-600 hover:border-cyan-500/50 transition-all backdrop-blur-sm"
             >
               <Icon name="plus" size={14}/>
             </button>
             <button
               onClick={handleZoomOut}
               title="Kichiklashtirish"
-              className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#0B1120]/80 border border-gray-700 text-gray-400 hover:text-cyan-400 hover:border-cyan-500/50 transition-all backdrop-blur-sm"
+              className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/80 border border-gray-300 text-gray-600 hover:text-cyan-600 hover:border-cyan-500/50 transition-all backdrop-blur-sm"
             >
               <Icon name="minus" size={14}/>
             </button>
             <button
               onClick={handleFit}
               title="Ekranga moslashtirish"
-              className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#0B1120]/80 border border-gray-700 text-gray-400 hover:text-cyan-400 hover:border-cyan-500/50 transition-all backdrop-blur-sm"
+              className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/80 border border-gray-300 text-gray-600 hover:text-cyan-600 hover:border-cyan-500/50 transition-all backdrop-blur-sm"
             >
               <Icon name="maximize" size={14}/>
             </button>
