@@ -50,7 +50,7 @@ window.formatCurrency = (n) => {
   return '$' + (n || 0);
 };
 
-window.MiniSparkline = ({data, color='#06B6D4', width=80, height=24}) => {
+window.MiniSparkline = ({data, color='#1D4ED8', width=80, height=24}) => {
   if (!data || data.length === 0) return null;
   const max = Math.max(...data);
   const min = Math.min(...data);

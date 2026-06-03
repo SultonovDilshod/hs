@@ -3,11 +3,11 @@ const { AreaChart, Area, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, Car
 
 window.OverviewPage = () => {
   const cards = [
-    {label:'Tekshirilgan deklaratsiyalar',value:formatNumber(MOCK.summary.totalInspected),icon:'shield',color:'#06B6D4',sub:`Jami: ${formatNumber(MOCK.summary.totalDeclarations)}`},
+    {label:'Tekshirilgan deklaratsiyalar',value:formatNumber(MOCK.summary.totalInspected),icon:'shield',color:'#1D4ED8',sub:`Jami: ${formatNumber(MOCK.summary.totalDeclarations)}`},
     {label:'Aniqlangan noto\'g\'ri tasniflashlar',value:formatNumber(MOCK.summary.misclassifications),icon:'alertTriangle',color:'#F59E0B',sub:`${((MOCK.summary.misclassifications/MOCK.summary.totalInspected)*100).toFixed(1)}% tasdiqlanish foizi`},
-    {label:'Faol qoidalar',value:MOCK.summary.activeRules,icon:'layers',color:'#06B6D4',sub:MOCK.ruleTypeDistribution.map(d=>d.value+' '+d.name.toLowerCase()).join(' · ')},
+    {label:'Faol qoidalar',value:MOCK.summary.activeRules,icon:'layers',color:'#1D4ED8',sub:MOCK.ruleTypeDistribution.map(d=>d.value+' '+d.name.toLowerCase()).join(' · ')},
     {label:'Qo\'shimcha bojxona to\'lovi',value:formatCurrency(MOCK.summary.revenueImpact),icon:'dollarSign',color:'#10B981',sub:'So\'nggi 12 oy'},
-    {label:'O\'rtacha tasdiqlanish foizi',value:MOCK.summary.avgHitRate+'%',icon:'target',color:'#06B6D4',sub:'+6.4% o\'sish'},
+    {label:'O\'rtacha tasdiqlanish foizi',value:MOCK.summary.avgHitRate+'%',icon:'target',color:'#1D4ED8',sub:'+6.4% o\'sish'},
   ];
 
   return (
@@ -40,8 +40,8 @@ window.OverviewPage = () => {
             <ComposedChart data={MOCK.monthlyTrend}>
               <defs>
                 <linearGradient id="gradCyan" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#06B6D4" stopOpacity={0.3}/>
-                  <stop offset="100%" stopColor="#06B6D4" stopOpacity={0}/>
+                  <stop offset="0%" stopColor="#1D4ED8" stopOpacity={0.3}/>
+                  <stop offset="100%" stopColor="#1D4ED8" stopOpacity={0}/>
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false}/>
@@ -49,7 +49,7 @@ window.OverviewPage = () => {
               <YAxis yAxisId="left" tick={{fill:'#64748B',fontSize:11}} axisLine={false} tickLine={false}/>
               <YAxis yAxisId="right" orientation="right" tick={{fill:'#64748B',fontSize:11}} axisLine={false} tickLine={false} tickFormatter={v=>formatCurrency(v)}/>
               <Tooltip content={<CustomTooltip/>}/>
-              <Area yAxisId="left" type="monotone" dataKey="misclass" fill="url(#gradCyan)" stroke="#06B6D4" strokeWidth={2} name="Holatlar"/>
+              <Area yAxisId="left" type="monotone" dataKey="misclass" fill="url(#gradCyan)" stroke="#1D4ED8" strokeWidth={2} name="Holatlar"/>
               <Line yAxisId="right" type="monotone" dataKey="revenue" stroke="#10B981" strokeWidth={2} dot={false} name="Bojxona to'lovi"/>
             </ComposedChart>
           </ResponsiveContainer>
@@ -106,7 +106,7 @@ window.OverviewPage = () => {
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="progress-bar flex-1 max-w-[200px]">
-                      <div className="progress-fill" style={{width:`${s.hitRate}%`,background:`linear-gradient(90deg,#06B6D4,#0891B2)`}}/>
+                      <div className="progress-fill" style={{width:`${s.hitRate}%`,background:`linear-gradient(90deg,#1D4ED8,#2563EB)`}}/>
                     </div>
                     <span className="text-xs font-semibold text-txt-primary">{s.hitRate}%</span>
                   </div>

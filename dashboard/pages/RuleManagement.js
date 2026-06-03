@@ -1,5 +1,24 @@
 const { useState } = React;
 
+// Map the field tokens in a rule's stored `condition` string onto the
+// indicator values understood by the builder, so an existing rule can be
+// loaded back into the editor.
+const RULE_FIELD_TO_INDICATOR = {
+  HS6:'hs6', HS10:'hs10', COUNTRY:'country', IMPORTER:'importer',
+  DECLARANT:'declarant', EXPORTER:'exporter', DESCRIPTION:'description',
+};
+function conditionToRows(cond) {
+  const rows = [];
+  String(cond || '').split(/\s+AND\s+/i).forEach(clause => {
+    const m = clause.trim().match(/^([A-Za-z0-9]+)\s*(!=|>=|<=|=|STARTS WITH|CONTAINS|IN)\s*(.+)$/i);
+    if (!m) return;
+    const ind = RULE_FIELD_TO_INDICATOR[m[1].toUpperCase()];
+    if (!ind) return;
+    rows.push({ indicator: ind, operator: m[2].toUpperCase() === '=' ? '=' : m[2].toUpperCase(), value: m[3].trim() });
+  });
+  return rows.length ? rows : [{indicator:'hs6',operator:'=',value:''}];
+}
+
 window.RuleManagementPage = ({ draft }) => {
   // When arriving via Discovery's "Qoidaga aylantirish", `draft` carries the
   // pre-parsed conditions and a suggested name. The component remounts on each
@@ -15,8 +34,35 @@ window.RuleManagementPage = ({ draft }) => {
   const [ruleName, setRuleName] = useState(draft?.name || '');
   const [testResult, setTestResult] = useState(null);
   const fromPattern = draft?.source || null;
+  // The existing rule currently being edited (only for draft/archived rules).
+  const [editingRule, setEditingRule] = useState(null);
+  // An active rule opened in read-only view.
+  const [viewRule, setViewRule] = useState(null);
 
   const filteredRules = MOCK.rules.filter(r => statusFilter === 'all' || r.status === statusFilter);
+
+  // Reset the builder to a blank new rule.
+  const startNewRule = () => {
+    setEditingRule(null);
+    setRuleName('');
+    setBuilderConditions([{indicator:'hs6',operator:'=',value:''}]);
+    setTestResult(null);
+  };
+
+  // Clicking a rule in the list. Active rules are read-only (view); draft and
+  // archived rules open in the builder so they can be edited.
+  const openRule = (r) => {
+    if (r.status === 'active') {
+      setViewRule(r);
+      return;
+    }
+    setEditingRule(r);
+    setRuleName(r.name);
+    setBuilderConditions(conditionToRows(r.condition));
+    setTestResult(null);
+    setShowBuilder(true);
+    setActiveTab('builder');
+  };
 
   const addCondition = () => {
     setBuilderConditions([...builderConditions, {indicator:'country',operator:'=',value:''}]);
@@ -68,7 +114,7 @@ window.RuleManagementPage = ({ draft }) => {
       {/* Tabs */}
       <div className="flex items-center gap-2 mb-5 animate-in stagger-1">
         {[{id:'list',label:'Qoidalar ro\'yxati',icon:'layers'},{id:'builder',label:'Yangi qoida yaratish',icon:'plus'}].map(t => (
-          <button key={t.id} onClick={() => {setActiveTab(t.id); if(t.id==='builder') setShowBuilder(true);}}
+          <button key={t.id} onClick={() => {if(t.id==='builder'){startNewRule(); setShowBuilder(true);} setActiveTab(t.id);}}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab===t.id ? 'bg-accent-cyan/15 text-accent-cyan border border-accent-cyan/30' : 'bg-surface-100 text-txt-muted hover:text-txt-secondary border border-transparent'}`}>
             <Icon name={t.icon} size={15}/>{t.label}
           </button>
@@ -93,8 +139,11 @@ window.RuleManagementPage = ({ draft }) => {
 
           {/* Rules List */}
           <div className="space-y-3 animate-in stagger-3">
-            {filteredRules.map((r,i) => (
-              <div key={r.id} className="glass rounded-xl p-4 hover:border-accent-cyan/20 transition-all card-glow">
+            {filteredRules.map((r,i) => {
+              const canEdit = r.status !== 'active';
+              return (
+              <div key={r.id} onClick={() => openRule(r)}
+                className="glass rounded-xl p-4 hover:border-accent-cyan/20 transition-all card-glow cursor-pointer">
                 <div className="flex items-center gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
@@ -102,6 +151,9 @@ window.RuleManagementPage = ({ draft }) => {
                       <StatusBadge status={r.status}/>
                       <span className={`tag border text-[10px] ${r.type==='statistical'?'bg-accent-cyan/10 text-accent-cyan border-accent-cyan/20':'bg-accent-cyan/5 text-accent-cyan/70 border-accent-cyan/15'}`}>
                         {r.type==='statistical'?'Statistik':'Biznes'}
+                      </span>
+                      <span className={`tag border text-[10px] ${canEdit?'bg-status-amber/10 text-status-amber border-status-amber/20':'bg-surface-300 text-txt-muted border-surface-400/40'}`}>
+                        {canEdit ? 'Tahrirlanadi' : 'Faqat ko\'rish'}
                       </span>
                     </div>
                     <div className="font-mono text-[11px] text-txt-dim">{r.condition}</div>
@@ -121,10 +173,16 @@ window.RuleManagementPage = ({ draft }) => {
                       </div>
                     </div>
                   )}
-                  <div className="flex items-center gap-1">
-                    <button className="p-2 rounded-lg hover:bg-surface-200 text-txt-muted hover:text-accent-cyan transition-colors" title="Ko'rish">
-                      <Icon name="eye" size={15}/>
-                    </button>
+                  <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
+                    {canEdit ? (
+                      <button onClick={() => openRule(r)} className="p-2 rounded-lg hover:bg-surface-200 text-txt-muted hover:text-accent-cyan transition-colors" title="Tahrirlash">
+                        <Icon name="settings" size={15}/>
+                      </button>
+                    ) : (
+                      <button onClick={() => openRule(r)} className="p-2 rounded-lg hover:bg-surface-200 text-txt-muted hover:text-accent-cyan transition-colors" title="Ko'rish">
+                        <Icon name="eye" size={15}/>
+                      </button>
+                    )}
                     {r.status !== 'archived' && (
                       <button className="p-2 rounded-lg hover:bg-surface-200 text-txt-muted hover:text-status-amber transition-colors" title="Arxivlash">
                         <Icon name="archive" size={15}/>
@@ -133,7 +191,7 @@ window.RuleManagementPage = ({ draft }) => {
                   </div>
                 </div>
               </div>
-            ))}
+            );})}
           </div>
         </>
       )}
@@ -142,8 +200,17 @@ window.RuleManagementPage = ({ draft }) => {
         <div className="grid grid-cols-5 gap-5">
           {/* Builder */}
           <div className="col-span-3 glass rounded-xl p-5 animate-in stagger-2">
-            <h3 className="text-sm font-semibold text-txt-primary mb-1">Qoida konstruktori</h3>
+            <h3 className="text-sm font-semibold text-txt-primary mb-1">{editingRule ? 'Qoidani tahrirlash' : 'Qoida konstruktori'}</h3>
             <p className="text-xs text-txt-muted mb-4">Indikatorlarni tanlang va qiymatlarini belgilang</p>
+
+            {editingRule && (
+              <div className="flex items-center gap-2 bg-status-amber/5 border border-status-amber/20 rounded-lg px-3 py-2 mb-4">
+                <Icon name="settings" size={13} className="text-status-amber"/>
+                <span className="text-xs text-status-amber">
+                  <span className="font-mono font-semibold">{editingRule.id}</span> ({editingRule.status==='draft'?'qoralama':'arxiv'}) tahrirlanmoqda
+                </span>
+              </div>
+            )}
 
             {fromPattern && (
               <div className="flex items-center gap-2 bg-accent-cyan/5 border border-accent-cyan/20 rounded-lg px-3 py-2 mb-4">
@@ -196,16 +263,34 @@ window.RuleManagementPage = ({ draft }) => {
               <div className="font-mono text-xs text-accent-cyan bg-surface-50 rounded-lg px-3 py-2 mb-4 border border-surface-300/50">
                 {builderConditions.map((c,i) => `${i>0?' AND ':''}${c.indicator.toUpperCase()} ${c.operator} ${c.value||'?'}`).join('')}
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <button onClick={runTest} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent-cyan/20 text-accent-cyan text-sm font-medium hover:bg-accent-cyan/30 transition-colors border border-accent-cyan/30">
                   <Icon name="play" size={14}/> Sinov o'tkazish
                 </button>
-                <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent-cyan/20 text-accent-cyan text-sm font-medium hover:bg-accent-cyan/30 transition-colors border border-accent-cyan/30">
-                  <Icon name="check" size={14}/> Saqlash va faollashtirish
-                </button>
-                <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-300 text-txt-secondary text-sm font-medium hover:bg-surface-400 transition-colors">
-                  Qoralama sifatida saqlash
-                </button>
+                {editingRule ? (
+                  <>
+                    <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent-cyan/20 text-accent-cyan text-sm font-medium hover:bg-accent-cyan/30 transition-colors border border-accent-cyan/30">
+                      <Icon name="check" size={14}/> O'zgarishlarni saqlash
+                    </button>
+                    {editingRule.status === 'archived' && (
+                      <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-status-green/15 text-status-green text-sm font-medium hover:bg-status-green/25 transition-colors border border-status-green/30">
+                        <Icon name="trendUp" size={14}/> Tiklash va faollashtirish
+                      </button>
+                    )}
+                    <button onClick={() => {startNewRule(); setActiveTab('list');}} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-300 text-txt-secondary text-sm font-medium hover:bg-surface-400 transition-colors">
+                      <Icon name="x" size={14}/> Bekor qilish
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent-cyan/20 text-accent-cyan text-sm font-medium hover:bg-accent-cyan/30 transition-colors border border-accent-cyan/30">
+                      <Icon name="check" size={14}/> Saqlash va faollashtirish
+                    </button>
+                    <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-300 text-txt-secondary text-sm font-medium hover:bg-surface-400 transition-colors">
+                      Qoralama sifatida saqlash
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -252,6 +337,68 @@ window.RuleManagementPage = ({ draft }) => {
                 <p className="text-xs text-txt-dim">Qoidani to'ldiring va "Sinov o'tkazish" tugmasini bosing</p>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Read-only view for active rules */}
+      {viewRule && (
+        <div className="modal-overlay animate-fade" onClick={() => setViewRule(null)}>
+          <div className="modal-content p-6 animate-in" onClick={e => e.stopPropagation()}>
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  <h2 className="text-lg font-bold text-txt-primary">{viewRule.name}</h2>
+                  <StatusBadge status={viewRule.status}/>
+                  <span className={`tag border text-[10px] ${viewRule.type==='statistical'?'bg-accent-cyan/10 text-accent-cyan border-accent-cyan/20':'bg-accent-cyan/5 text-accent-cyan/70 border-accent-cyan/15'}`}>
+                    {viewRule.type==='statistical'?'Statistik':'Biznes'}
+                  </span>
+                </div>
+                <p className="font-mono text-xs text-accent-cyan">{viewRule.condition}</p>
+              </div>
+              <button onClick={() => setViewRule(null)} className="text-txt-muted hover:text-txt-primary transition-colors p-1">
+                <Icon name="x" size={20}/>
+              </button>
+            </div>
+
+            <div className="flex items-center gap-2 bg-accent-cyan/5 border border-accent-cyan/20 rounded-lg px-3 py-2 mb-5">
+              <Icon name="eye" size={13} className="text-accent-cyan"/>
+              <span className="text-xs text-accent-cyan">Faol qoidalar faqat ko'rish uchun. O'zgartirish uchun avval qoidani arxivlang.</span>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4 mb-5">
+              {[
+                {l:'Tasdiqlanish foizi',v:viewRule.hitRate+'%',c:'text-accent-cyan'},
+                {l:'Noto\'g\'ri signal',v:viewRule.falsePositive+'%',c:'text-status-amber'},
+                {l:'Qamrov',v:viewRule.coverage+'%',c:'text-txt-primary'},
+                {l:'Jami belgilangan',v:viewRule.flagged,c:'text-txt-primary'},
+                {l:'Tasdiqlangan',v:viewRule.confirmed,c:'text-status-green'},
+                {l:'Qo\'shimcha bojxona to\'lovi',v:formatCurrency(viewRule.revenueRecovered),c:'text-status-green'},
+              ].map((s,i) => (
+                <div key={i} className="bg-surface-200 rounded-lg p-3">
+                  <div className="text-xs text-txt-muted mb-1">{s.l}</div>
+                  <div className={`text-lg font-bold ${s.c}`}>{s.v}</div>
+                </div>
+              ))}
+            </div>
+
+            <div className="bg-surface-200 rounded-lg p-4 flex items-center justify-between mb-5">
+              <div>
+                <div className="text-xs text-txt-secondary font-semibold mb-0.5">Tasdiqlanish foizi trendi</div>
+                <div className="text-[11px] text-txt-dim">Oxirgi {viewRule.hitRateTrend.length} hafta · faollik: {viewRule.activeSince || '—'}</div>
+              </div>
+              <MiniSparkline data={viewRule.hitRateTrend} width={140} height={40}
+                color={viewRule.hitRateTrend[viewRule.hitRateTrend.length-1] >= viewRule.hitRateTrend[0] ? '#059669' : '#D97706'}/>
+            </div>
+
+            <div className="flex gap-3">
+              <button onClick={() => setViewRule(null)} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-300 text-txt-secondary text-sm font-medium hover:bg-surface-400 transition-colors">
+                Yopish
+              </button>
+              <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-status-amber/15 text-status-amber text-sm font-medium hover:bg-status-amber/25 transition-colors border border-status-amber/30">
+                <Icon name="archive" size={14}/> Arxivlash
+              </button>
+            </div>
           </div>
         </div>
       )}

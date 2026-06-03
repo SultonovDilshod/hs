@@ -8,7 +8,7 @@ body { font-family:'Outfit',sans-serif; background:#F8FAFC; color:#0F172A; overf
 @keyframes fadeInUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
 @keyframes fadeIn { from{opacity:0} to{opacity:1} }
 @keyframes slideInRight { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
-@keyframes pulse-glow { 0%,100%{box-shadow:0 0 8px rgba(6,182,212,0.3)} 50%{box-shadow:0 0 20px rgba(6,182,212,0.5)} }
+@keyframes pulse-glow { 0%,100%{box-shadow:0 0 8px rgba(29,78,216,0.3)} 50%{box-shadow:0 0 20px rgba(29,78,216,0.5)} }
 @keyframes countUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
 @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
 
@@ -23,19 +23,19 @@ body { font-family:'Outfit',sans-serif; background:#F8FAFC; color:#0F172A; overf
 .stagger-6 { animation-delay:0.3s }
 
 .glass { background:rgba(255,255,255,0.7); backdrop-filter:blur(12px); border:1px solid rgba(226,232,240,0.8); box-shadow:0 1px 3px rgba(15,23,42,0.04), 0 1px 2px rgba(15,23,42,0.06); }
-.glass-hover:hover { background:rgba(255,255,255,0.95); border-color:rgba(8,145,178,0.3); }
-.card-glow:hover { box-shadow:0 0 30px rgba(8,145,178,0.10); }
+.glass-hover:hover { background:rgba(255,255,255,0.95); border-color:rgba(29,78,216,0.3); }
+.card-glow:hover { box-shadow:0 0 30px rgba(29,78,216,0.10); }
 .accent-line { position:relative; }
-.accent-line::before { content:''; position:absolute; top:0; left:0; width:100%; height:2px; background:linear-gradient(90deg,#06B6D4,#0EA5C2); border-radius:1px; }
+.accent-line::before { content:''; position:absolute; top:0; left:0; width:100%; height:2px; background:linear-gradient(90deg,#1D4ED8,#2563EB); border-radius:1px; }
 .stat-card { transition: all 0.3s ease; }
 .stat-card:hover { transform:translateY(-2px); }
 .nav-item { position:relative; transition: all 0.2s ease; }
-.nav-item.active::after { content:''; position:absolute; bottom:-1px; left:0; right:0; height:2px; background:#06B6D4; border-radius:1px; }
+.nav-item.active::after { content:''; position:absolute; bottom:-1px; left:0; right:0; height:2px; background:#1D4ED8; border-radius:1px; }
 .tag { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:4px; font-size:12px; font-weight:500; }
 .sparkline-up { color:#10B981; }
 .sparkline-down { color:#F59E0B; }
 .pattern-row { transition:all 0.2s ease; cursor:pointer; }
-.pattern-row:hover { background:rgba(6,182,212,0.05) !important; }
+.pattern-row:hover { background:rgba(29,78,216,0.05) !important; }
 .glow-dot { width:8px; height:8px; border-radius:50%; animation: pulse-glow 2s infinite; }
 .progress-bar { height:4px; border-radius:2px; background:#E2E8F0; overflow:hidden; }
 .progress-fill { height:100%; border-radius:2px; transition:width 0.8s ease; }
@@ -43,7 +43,7 @@ body { font-family:'Outfit',sans-serif; background:#F8FAFC; color:#0F172A; overf
 .modal-overlay { position:fixed; inset:0; background:rgba(15,23,42,0.4); backdrop-filter:blur(4px); z-index:100; display:flex; align-items:center; justify-content:center; }
 .modal-content { background:#FFFFFF; border:1px solid #E2E8F0; border-radius:12px; box-shadow:0 20px 50px rgba(15,23,42,0.15); max-width:800px; width:95%; max-height:85vh; overflow-y:auto; }
 .rule-builder-field { background:#FFFFFF; border:1px solid #E2E8F0; border-radius:6px; padding:8px 12px; color:#0F172A; font-family:'Outfit',sans-serif; outline:none; transition:border-color 0.2s; }
-.rule-builder-field:focus { border-color:#0891B2; }
-.gradient-text { background:linear-gradient(135deg,#0891B2,#06B6D4); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.rule-builder-field:focus { border-color:#2563EB; }
+.gradient-text { background:linear-gradient(135deg,#2563EB,#1D4ED8); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
 .recharts-cartesian-grid-horizontal line, .recharts-cartesian-grid-vertical line { stroke:#E2E8F0 !important; }
 .recharts-text { fill:#64748B !important; font-family:'Outfit',sans-serif !important; font-size:11px !important; }

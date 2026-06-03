@@ -73,7 +73,7 @@ window.DiscoveryPage = ({ onConvertToRule }) => {
         </div>
         <div className="flex items-center gap-2">
           <span className="text-xs text-txt-muted">Min. tasdiqlanish foizi:</span>
-          <input type="range" min="0" max="90" step="5" value={minHitRate} onChange={e=>setMinHitRate(Number(e.target.value))} className="w-24 accent-cyan-500"/>
+          <input type="range" min="0" max="90" step="5" value={minHitRate} onChange={e=>setMinHitRate(Number(e.target.value))} className="w-24 accent-blue-600"/>
           <span className="text-xs font-mono text-accent-cyan w-8">{minHitRate}%</span>
         </div>
         <div className="ml-auto flex items-center gap-2">
@@ -194,7 +194,7 @@ window.DiscoveryPage = ({ onConvertToRule }) => {
                 <div key={i} className="flex items-center gap-3 bg-surface-200 rounded-lg p-3">
                   <span className="font-mono text-sm font-semibold text-accent-cyan">{ac.code}</span>
                   <div className="progress-bar flex-1">
-                    <div className="progress-fill" style={{width:`${ac.pct}%`,background:'linear-gradient(90deg,#06B6D4,#0891B2)'}}/>
+                    <div className="progress-fill" style={{width:`${ac.pct}%`,background:'linear-gradient(90deg,#1D4ED8,#2563EB)'}}/>
                   </div>
                   <span className="text-sm font-semibold text-txt-primary w-12 text-right">{ac.pct}%</span>
                   <span className="text-xs text-txt-muted">({ac.cases} holat)</span>

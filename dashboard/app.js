@@ -30,7 +30,7 @@ const App = () => {
           <div className="flex items-center h-14">
             {/* Logo */}
             <div className="flex items-center gap-3 mr-8">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{background:'linear-gradient(135deg,#06B6D4,#0891B2)'}}>
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{background:'linear-gradient(135deg,#1D4ED8,#2563EB)'}}>
                 <Icon name="shield" size={16} className="text-white"/>
               </div>
               <div>
