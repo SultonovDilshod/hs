@@ -127,8 +127,16 @@ window.MonitoringPage = () => {
       avgScore: ranking.length ? Math.round(ranking.reduce((s,r)=>s+r.score,0)/ranking.length) : 0,
     };
 
+    // 7. Risk corridor distribution across active rules.
+    const corridor = { red:{count:0,revenue:0}, yellow:{count:0,revenue:0}, green:{count:0,revenue:0} };
+    rules.forEach(r => {
+      const a = assessCorridor({ hitRate:r.hitRate, revenueRecovered:r.revenueRecovered });
+      corridor[a.key].count++;
+      corridor[a.key].revenue += r.revenueRecovered || 0;
+    });
+
     return { avgHitNum, avgFpNum, scatterStat, scatterBiz, precision, radar, hasBiz:!!aBiz,
-      pareto, programTrend, ranking, summary };
+      pareto, programTrend, ranking, summary, corridor };
   }, []);
 
   // Tooltip for the effectiveness quadrant.
@@ -273,6 +281,41 @@ window.MonitoringPage = () => {
             </div>
           </div>
         )}
+
+        {/* Risk corridor distribution */}
+        <div className="glass rounded-xl p-5">
+          <h3 className="text-sm font-semibold text-txt-primary mb-1">Xavf yo'laklari taqsimoti</h3>
+          <p className="text-xs text-txt-muted mb-4">Faol qoidalarning qizil / sariq / yashil yo'laklar bo'yicha taqsimoti va ularning daromad hissasi.</p>
+          {(() => {
+            const tot = analytics.corridor.red.count + analytics.corridor.yellow.count + analytics.corridor.green.count || 1;
+            return (
+              <>
+                <div className="grid grid-cols-3 gap-4 mb-4">
+                  {['red','yellow','green'].map(k => {
+                    const c = CORRIDOR_META[k], d = analytics.corridor[k];
+                    return (
+                      <div key={k} className="rounded-xl p-4 border" style={{background:c.color+'0D', borderColor:c.color+'33'}}>
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="w-2.5 h-2.5 rounded-full" style={{background:c.color}}/>
+                          <span className="text-xs font-semibold" style={{color:c.color}}>{c.label}</span>
+                        </div>
+                        <div className="text-2xl font-bold text-txt-primary">{d.count} <span className="text-sm font-medium text-txt-muted">qoida</span></div>
+                        <div className="text-xs text-txt-secondary mt-1">{formatCurrency(d.revenue)} · {Math.round(d.count/tot*100)}%</div>
+                        <div className="text-[10px] text-txt-muted mt-1">{c.control}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="flex h-3 rounded-full overflow-hidden">
+                  {['red','yellow','green'].map(k => {
+                    const d = analytics.corridor[k];
+                    return d.count > 0 ? <div key={k} style={{width:`${d.count/tot*100}%`, background:CORRIDOR_META[k].color}} title={`${CORRIDOR_META[k].label}: ${d.count}`}/> : null;
+                  })}
+                </div>
+              </>
+            );
+          })()}
+        </div>
 
         {/* Effectiveness quadrant */}
         <div className="glass rounded-xl p-5">
@@ -451,7 +494,7 @@ window.MonitoringPage = () => {
           <table className="w-full text-xs">
             <thead>
               <tr className="border-b border-surface-300/50">
-                {['Nomi','Turi','Tasd. foizi','Trend','Noto\'g\'ri','Qamrov','Bojxona to\'lovi','Yoshi',''].map((h,i) => (
+                {['Nomi','Turi','Yo\'lak','Tasd. foizi','Trend','Noto\'g\'ri','Qamrov','Bojxona to\'lovi','Yoshi',''].map((h,i) => (
                   <th key={i} className="px-4 py-3 text-left text-txt-muted font-medium uppercase tracking-wider text-[10px]">{h}</th>
                 ))}
               </tr>
@@ -470,6 +513,9 @@ window.MonitoringPage = () => {
                       <span className={`tag border text-[10px] ${r.type==='statistical'?'bg-accent-cyan/10 text-accent-cyan border-accent-cyan/20':'bg-accent-cyan/5 text-accent-cyan/70 border-accent-cyan/15'}`}>
                         {r.type==='statistical'?'Statistik':'Biznes'}
                       </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <CorridorBadge c={assessCorridor({hitRate:r.hitRate, revenueRecovered:r.revenueRecovered})}/>
                     </td>
                     <td className="px-4 py-3">
                       <span className="text-sm font-bold text-accent-cyan">{r.hitRate}%</span>

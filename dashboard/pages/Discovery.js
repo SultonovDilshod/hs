@@ -45,6 +45,14 @@ window.DiscoveryPage = ({ onConvertToRule }) => {
     return items;
   }, [hsLevel, minHitRate, statusFilter, sortBy]);
 
+  // Corridor assessment for the open pattern + expectations in the yellow lane.
+  const patternCorridor = selectedPattern ? assessCorridor(selectedPattern) : null;
+  const patternYellow = selectedPattern ? corridorPlan('yellow', {
+    affected: selectedPattern.totalCases || selectedPattern.misclassCases || 0,
+    hitRate: selectedPattern.hitRate || 0,
+    revenue: selectedPattern.revenueImpact || 0,
+  }) : null;
+
   return (
     <div className="animate-fade">
       {/* Filters */}
@@ -97,6 +105,7 @@ window.DiscoveryPage = ({ onConvertToRule }) => {
               <th className="px-4 py-3 text-left text-xs font-medium text-txt-muted">Shart</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-txt-muted">Indikatorlar</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-txt-muted">Status</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-txt-muted">Yo'lak</th>
               <th className="px-4 py-3 text-right text-xs font-medium text-txt-muted">Tasdiqlanish foizi</th>
               <th className="px-4 py-3 text-right text-xs font-medium text-txt-muted">Lift</th>
               <th className="px-4 py-3 text-right text-xs font-medium text-txt-muted">Holatlar</th>
@@ -124,6 +133,7 @@ window.DiscoveryPage = ({ onConvertToRule }) => {
                   </div>
                 </td>
                 <td className="px-4 py-3"><StatusBadge status={p.status}/></td>
+                <td className="px-4 py-3"><CorridorBadge c={assessCorridor(p)}/></td>
                 <td className="px-4 py-3 text-right font-semibold text-accent-cyan">
                   {p.hitRate != null ? `${p.hitRate}%` : '—'}
                 </td>
@@ -164,6 +174,7 @@ window.DiscoveryPage = ({ onConvertToRule }) => {
                 <div className="flex items-center gap-3 mb-2">
                   <h2 className="text-lg font-bold text-txt-primary">Shablon {selectedPattern.id}</h2>
                   <StatusBadge status={selectedPattern.status}/>
+                  <CorridorBadge c={patternCorridor}/>
                 </div>
                 <p className="font-mono text-sm text-accent-cyan">{selectedPattern.conditions}</p>
               </div>
@@ -186,6 +197,40 @@ window.DiscoveryPage = ({ onConvertToRule }) => {
                 </div>
               ))}
             </div>
+
+            {/* Risk corridor recommendation + yellow-lane expectations */}
+            {patternCorridor && (
+              <div className="rounded-xl p-4 mb-5 border" style={{background:patternCorridor.color+'0D', borderColor:patternCorridor.color+'33'}}>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <h4 className="text-sm font-semibold text-txt-primary">Tavsiya etilgan xavf yo'lagi</h4>
+                    <CorridorBadge c={patternCorridor}/>
+                  </div>
+                  <span className="text-xs text-txt-muted">Xavf bali: <span className="font-bold" style={{color:patternCorridor.color}}>{patternCorridor.risk}</span></span>
+                </div>
+                <p className="text-xs text-txt-secondary mb-3">
+                  {patternCorridor.key==='red'
+                    ? "Yuqori ishonchlilik — to'liq jismoniy ko'rik (qizil yo'lak) tavsiya etiladi."
+                    : patternCorridor.key==='yellow'
+                    ? "O'rtacha xavf — hujjat tekshiruvi (sariq yo'lak) maqbul."
+                    : "Past xavf — avtomatik rasmiylashtirish/kuzatuv kifoya."}
+                </p>
+                <div className="text-[11px] text-txt-muted mb-2 font-medium uppercase tracking-wider">Sariq yo'lakda sinov — kutilmalar</div>
+                <div className="grid grid-cols-4 gap-3">
+                  {[
+                    {l:'Aniqlash',v:patternYellow.detectionRate+'%',c:'text-status-amber'},
+                    {l:'Aniqlanadi',v:patternYellow.detected,c:'text-status-green'},
+                    {l:'Chetda qoladi',v:patternYellow.missed,c:'text-status-amber'},
+                    {l:'Daromad',v:formatCurrency(patternYellow.revenue),c:'text-status-green'},
+                  ].map((s,i) => (
+                    <div key={i} className="bg-surface-100 rounded-lg p-2.5 border border-surface-300/40">
+                      <div className="text-[10px] text-txt-muted mb-0.5">{s.l}</div>
+                      <div className={`text-sm font-bold ${s.c}`}>{s.v}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Actual Codes */}
             <h4 className="text-sm font-semibold text-txt-primary mb-3">Mumkin bo'lgan haqiqiy TIF TN kodlar</h4>

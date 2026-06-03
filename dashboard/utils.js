@@ -90,3 +90,101 @@ window.CustomTooltip = ({active, payload, label}) => {
     </div>
   );
 };
+
+// ─── Xavfni boshqarish yo'laklari (risk corridors) ─────────────────────────
+// Customs control corridors: qizil (red — full physical + documentary
+// inspection), sariq (yellow — documentary check) and yashil (green — auto
+// release / monitoring). Rules and statistical patterns are mapped onto a
+// corridor from their confidence (hit-rate) and fiscal severity (revenue).
+window.CORRIDOR_META = {
+  red:    { key:'red',    label:"Qizil yo'lak",  short:'Qizil',  color:'#DC2626', control:"To'liq ko'rik (jismoniy + hujjat)" },
+  yellow: { key:'yellow', label:"Sariq yo'lak",  short:'Sariq',  color:'#CA8A04', control:'Hujjatlarni tekshirish' },
+  green:  { key:'green',  label:"Yashil yo'lak", short:'Yashil', color:'#059669', control:'Avtomatik rasmiylashtirish / kuzatuv' },
+};
+
+window.assessCorridor = (m = {}) => {
+  const conf = m.hitRate ?? m.misclassRate ?? 0;          // ishonchlilik, %
+  const rev  = m.revenueImpact ?? m.revenueRecovered ?? m.revenue ?? 0;
+  const severity = Math.min(100, (rev / 600000) * 100);   // 600K ≈ yuqori ta'sir
+  const risk = Math.round(0.62 * conf + 0.38 * severity);
+  let key;
+  if (conf >= 75 || risk >= 78) key = 'red';
+  else if (conf >= 50 || risk >= 45) key = 'yellow';
+  else key = 'green';
+  return { ...window.CORRIDOR_META[key], risk, confidence: Math.round(conf), severity: Math.round(severity) };
+};
+
+// Expected outcome of routing `affected` declarations through a corridor —
+// inspection coverage, detection, recoverable revenue, clearance delay and
+// inspector workload. Answers "what to expect if tested in the yellow lane".
+window.corridorPlan = (corridorKey, base = {}) => {
+  const affected = base.affected ?? 0;
+  const hit = base.hitRate ?? 0;
+  const revenue = base.revenue ?? 0;
+  const P = ({
+    red:    { inspect:1.00, physical:1.00, detect:Math.min(0.98, hit/100 + 0.10), revenueShare:1.00, delayH:28, min:45 },
+    yellow: { inspect:1.00, physical:0.25, detect:Math.max(0, hit/100 - 0.12),    revenueShare:0.72, delayH:9,  min:15 },
+    green:  { inspect:0.05, physical:0.00, detect:Math.max(0, hit/100 - 0.35),    revenueShare:0.20, delayH:1,  min:3 },
+  })[corridorKey] || {};
+  const inspected = Math.round(affected * (P.inspect||0));
+  const detected  = Math.round(affected * (P.detect||0));
+  const expected  = Math.round(affected * (hit/100));
+  return {
+    key: corridorKey,
+    inspectionRate: Math.round((P.inspect||0)*100),
+    physicalRate:   Math.round((P.physical||0)*100),
+    inspected,
+    detected,
+    missed:         Math.max(0, expected - detected),
+    detectionRate:  Math.round((P.detect||0)*100),
+    revenue:        Math.round(revenue * (P.revenueShare||0)),
+    revenueShare:   Math.round((P.revenueShare||0)*100),
+    clearanceDelay: P.delayH || 0,
+    inspectorHours: Math.round(inspected * (P.min||0) / 60),
+  };
+};
+
+// Deterministic hash so the same input always yields the same breakdown.
+const _seedFrom = (str) => { let h=0; const s=String(str); for(let i=0;i<s.length;i++){h=(h*31+s.charCodeAt(i))>>>0;} return h; };
+
+window.CUSTOMS_POSTS = ['Toshkent "Avia"','Toshkent yuk','Andijon','Navoiy "Erkin"','Termiz','"Gisht ko\'prik"'];
+
+// Spread `total` declarations across customs posts using a stable weighting.
+window.distributeByPost = (total, seedKey) => {
+  const seed = _seedFrom(seedKey || 'x');
+  const weights = window.CUSTOMS_POSTS.map((_,i) => ((seed >> (i*3)) & 7) + 1);
+  const sum = weights.reduce((a,b)=>a+b,0) || 1;
+  let acc = 0;
+  return window.CUSTOMS_POSTS.map((post,i) => {
+    const cnt = i === window.CUSTOMS_POSTS.length-1 ? (total-acc) : Math.round(total*weights[i]/sum);
+    acc += cnt;
+    return { post, count: Math.max(0,cnt) };
+  }).filter(r => r.count > 0).sort((a,b)=>b.count-a.count);
+};
+
+// Legal / enforcement implications of a set of confirmed misclassifications.
+window.legalImpact = (m = {}) => {
+  const affected = m.affected ?? 0;
+  const hit = m.hitRate ?? 0;
+  const revenue = m.revenue ?? 0;
+  const violations = Math.round(affected * hit/100);
+  return {
+    violations,
+    article: "MK 226–227-modda (noto'g'ri tasniflash)",
+    administrative: Math.round(violations * 0.7),
+    criminal: Math.max(0, Math.round(violations * 0.08)),
+    penalty: Math.round(revenue * 0.30),
+    underpaidDuty: revenue,
+  };
+};
+
+// Small corridor pill, fed an assessCorridor() result.
+window.CorridorBadge = ({ c }) => {
+  if (!c) return null;
+  return (
+    <span className="tag border" style={{background:c.color+'1A', color:c.color, borderColor:c.color+'55'}}>
+      <span className="w-1.5 h-1.5 rounded-full inline-block" style={{background:c.color}}/>
+      {c.short}
+    </span>
+  );
+};

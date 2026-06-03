@@ -10,6 +10,18 @@ window.OverviewPage = () => {
     {label:'O\'rtacha tasdiqlanish foizi',value:MOCK.summary.avgHitRate+'%',icon:'target',color:'#1D4ED8',sub:'+6.4% o\'sish'},
   ];
 
+  // Aniqlangan shablonlarni xavf yo'laklari bo'yicha taqsimlash.
+  const corridorDist = useMemo(() => {
+    const agg = { red:{count:0,revenue:0}, yellow:{count:0,revenue:0}, green:{count:0,revenue:0} };
+    (MOCK.patterns || []).forEach(p => {
+      const a = assessCorridor(p);
+      agg[a.key].count++;
+      agg[a.key].revenue += p.revenueImpact || 0;
+    });
+    const total = agg.red.count + agg.yellow.count + agg.green.count || 1;
+    return { agg, total };
+  }, []);
+
   return (
     <div className="animate-fade">
       {/* Summary Cards */}
@@ -24,6 +36,38 @@ window.OverviewPage = () => {
             <div className="text-xs text-txt-muted">{c.sub}</div>
           </div>
         ))}
+      </div>
+
+      {/* Risk corridor distribution */}
+      <div className="glass rounded-xl p-5 mb-6 animate-in stagger-2">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-sm font-semibold text-txt-primary">Xavf yo'laklari bo'yicha shablonlar</h3>
+          <div className="flex items-center gap-3">
+            {['red','yellow','green'].map(k => (
+              <span key={k} className="flex items-center gap-1.5 text-[11px] text-txt-muted">
+                <span className="w-2.5 h-2.5 rounded-full" style={{background:CORRIDOR_META[k].color}}/>{CORRIDOR_META[k].short}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div className="grid grid-cols-3 gap-4 mb-4">
+          {['red','yellow','green'].map(k => {
+            const c = CORRIDOR_META[k], d = corridorDist.agg[k];
+            return (
+              <div key={k} className="rounded-xl p-4 border" style={{background:c.color+'0D', borderColor:c.color+'33'}}>
+                <div className="text-[10px] uppercase tracking-wider mb-1" style={{color:c.color}}>{c.label}</div>
+                <div className="text-2xl font-bold text-txt-primary">{d.count} <span className="text-sm font-medium text-txt-muted">shablon</span></div>
+                <div className="text-xs text-txt-secondary mt-1">{formatCurrency(d.revenue)} · {Math.round(d.count/corridorDist.total*100)}%</div>
+              </div>
+            );
+          })}
+        </div>
+        <div className="flex h-3 rounded-full overflow-hidden">
+          {['red','yellow','green'].map(k => {
+            const d = corridorDist.agg[k];
+            return d.count > 0 ? <div key={k} style={{width:`${d.count/corridorDist.total*100}%`, background:CORRIDOR_META[k].color}}/> : null;
+          })}
+        </div>
       </div>
 
       <div className="grid grid-cols-3 gap-4 mb-6">

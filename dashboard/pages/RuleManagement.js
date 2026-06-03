@@ -77,10 +77,25 @@ window.RuleManagementPage = ({ draft }) => {
   };
 
   const runTest = () => {
+    const affected = Math.floor(Math.random()*200)+50;
+    const hitRate = +(Math.random()*40+50).toFixed(1);
+    const revenue = Math.floor(Math.random()*500000)+100000;
+    const seed = editingRule?.id || ruleName || 'sinov';
+    const base = { affected, hitRate, revenue };
+    const assessment = assessCorridor({ hitRate, revenueImpact: revenue });
+    const plans = {
+      red: corridorPlan('red', base),
+      yellow: corridorPlan('yellow', base),
+      green: corridorPlan('green', base),
+    };
     setTestResult({
-      totalAffected: Math.floor(Math.random()*200)+50,
-      estimatedHitRate: (Math.random()*40+50).toFixed(1),
-      estimatedRevenue: Math.floor(Math.random()*500000)+100000,
+      totalAffected: affected,
+      estimatedHitRate: hitRate.toFixed(1),
+      estimatedRevenue: revenue,
+      assessment,
+      plans,
+      posts: distributeByPost(affected, seed),
+      legal: legalImpact(base),
       sampleMatches: [
         {id:'DEC-2025-00142',hs:'8704210000',importer:'IMP-0284',country:'Xitoy (156)'},
         {id:'DEC-2025-00187',hs:'8704210000',importer:'IMP-0156',country:'Xitoy (156)'},
@@ -196,7 +211,7 @@ window.RuleManagementPage = ({ draft }) => {
         </>
       )}
 
-      {activeTab === 'builder' && (
+      {activeTab === 'builder' && (<>
         <div className="grid grid-cols-5 gap-5">
           {/* Builder */}
           <div className="col-span-3 glass rounded-xl p-5 animate-in stagger-2">
@@ -339,7 +354,154 @@ window.RuleManagementPage = ({ draft }) => {
             )}
           </div>
         </div>
-      )}
+
+        {/* ── Deep analysis: risk corridors + impact ──────────────────── */}
+        {testResult && (
+          <div className="mt-5 space-y-5 animate-fade">
+            {/* Corridor recommendation */}
+            <div className="glass rounded-xl p-5">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-semibold text-txt-primary">Xavf yo'lagi tavsiyasi</h3>
+                <CorridorBadge c={testResult.assessment}/>
+              </div>
+              <div className="grid grid-cols-4 gap-4">
+                <div className="rounded-xl p-4 border" style={{background:testResult.assessment.color+'12', borderColor:testResult.assessment.color+'40'}}>
+                  <div className="text-[10px] uppercase tracking-wider mb-1" style={{color:testResult.assessment.color}}>Tavsiya etilgan yo'lak</div>
+                  <div className="text-xl font-bold" style={{color:testResult.assessment.color}}>{testResult.assessment.label}</div>
+                  <div className="text-xs text-txt-muted mt-1">{testResult.assessment.control}</div>
+                </div>
+                {[
+                  {l:'Xavf bali',v:testResult.assessment.risk,c:'text-txt-primary'},
+                  {l:'Ishonchlilik',v:testResult.assessment.confidence+'%',c:'text-accent-cyan'},
+                  {l:'Fiskal ta\'sir',v:testResult.assessment.severity+'%',c:'text-status-green'},
+                ].map((s,i) => (
+                  <div key={i} className="bg-surface-200 rounded-xl p-4">
+                    <div className="text-[10px] text-txt-muted uppercase tracking-wider mb-1">{s.l}</div>
+                    <div className={`text-xl font-bold ${s.c}`}>{s.v}</div>
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-txt-muted mt-3">
+                Izoh: {testResult.assessment.key==='red'
+                  ? "Yuqori ishonchlilik va sezilarli fiskal ta'sir — to'liq jismoniy ko'rik (qizil yo'lak) tavsiya etiladi."
+                  : testResult.assessment.key==='yellow'
+                  ? "O'rtacha xavf — hujjatlarni tekshirish (sariq yo'lak) maqbul, jismoniy ko'rik tanlamali o'tkaziladi."
+                  : "Past xavf — avtomatik rasmiylashtirish va kuzatuvda saqlash kifoya."}
+              </p>
+            </div>
+
+            {/* Corridor comparison — what to expect in each lane */}
+            <div className="glass rounded-xl p-5">
+              <h3 className="text-sm font-semibold text-txt-primary mb-1">Yo'laklar bo'yicha kutilayotgan natijalar</h3>
+              <p className="text-xs text-txt-muted mb-4">{testResult.totalAffected} ta deklaratsiya har bir yo'lakdan o'tkazilganda kutiladigan ko'rsatkichlar.</p>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="border-b border-surface-300/50">
+                      <th className="px-3 py-2 text-left text-txt-muted font-medium uppercase tracking-wider text-[10px]">Ko'rsatkich</th>
+                      {['red','yellow','green'].map(k => (
+                        <th key={k} className="px-3 py-2 text-right font-semibold text-[11px]" style={{color:CORRIDOR_META[k].color}}>{CORRIDOR_META[k].short}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      {l:'Tekshiruv qamrovi', f:p=>p.inspectionRate+'%'},
+                      {l:'Jismoniy ko\'rik', f:p=>p.physicalRate+'%'},
+                      {l:'Aniqlash darajasi', f:p=>p.detectionRate+'%'},
+                      {l:'Aniqlangan holatlar', f:p=>p.detected},
+                      {l:'E\'tibordan chetda', f:p=>p.missed},
+                      {l:'Qaytariladigan daromad', f:p=>`${formatCurrency(p.revenue)} (${p.revenueShare}%)`},
+                      {l:'Rasmiylashtirish kechikishi', f:p=>p.clearanceDelay+' soat'},
+                      {l:'Inspektor ish-soati', f:p=>p.inspectorHours+' s'},
+                    ].map((row,i) => (
+                      <tr key={i} className="border-b border-surface-300/30 last:border-0">
+                        <td className="px-3 py-2 text-txt-secondary">{row.l}</td>
+                        <td className="px-3 py-2 text-right font-medium text-txt-primary">{row.f(testResult.plans.red)}</td>
+                        <td className="px-3 py-2 text-right font-medium text-txt-primary">{row.f(testResult.plans.yellow)}</td>
+                        <td className="px-3 py-2 text-right font-medium text-txt-primary">{row.f(testResult.plans.green)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Yellow corridor expectations */}
+            <div className="glass rounded-xl p-5 border-l-4" style={{borderLeftColor:CORRIDOR_META.yellow.color}}>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="w-2.5 h-2.5 rounded-full" style={{background:CORRIDOR_META.yellow.color}}/>
+                <h3 className="text-sm font-semibold text-txt-primary">Sariq yo'lakda sinov — kutilmalar</h3>
+              </div>
+              <p className="text-xs text-txt-muted mb-4">Agar qoida sariq yo'lakka (faqat hujjat tekshiruvi) qo'yilsa, quyidagilar kutiladi.</p>
+              <div className="grid grid-cols-3 gap-4 mb-4">
+                {[
+                  {l:'Aniqlash darajasi',v:testResult.plans.yellow.detectionRate+'%',c:'text-status-amber'},
+                  {l:'Aniqlanadigan holatlar',v:testResult.plans.yellow.detected,c:'text-status-green'},
+                  {l:'E\'tibordan chetda qolishi',v:testResult.plans.yellow.missed,c:'text-status-amber'},
+                  {l:'Qaytariladigan daromad',v:formatCurrency(testResult.plans.yellow.revenue),c:'text-status-green'},
+                  {l:'O\'rtacha kechikish',v:testResult.plans.yellow.clearanceDelay+' soat',c:'text-txt-primary'},
+                  {l:'Inspektor ish-soati',v:testResult.plans.yellow.inspectorHours+' soat',c:'text-txt-primary'},
+                ].map((s,i) => (
+                  <div key={i} className="bg-surface-200 rounded-lg p-3">
+                    <div className="text-[10px] text-txt-muted mb-1">{s.l}</div>
+                    <div className={`text-lg font-bold ${s.c}`}>{s.v}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="text-xs text-txt-secondary bg-surface-50 rounded-lg px-3 py-2 border border-surface-300/50">
+                Qizil yo'lakka nisbatan: daromad <span className="font-semibold text-status-amber">{formatCurrency(testResult.plans.red.revenue - testResult.plans.yellow.revenue)}</span> kam qaytadi,
+                lekin <span className="font-semibold text-status-green">{testResult.plans.red.clearanceDelay - testResult.plans.yellow.clearanceDelay} soat</span> tezroq rasmiylashtiriladi va inspektor yuki <span className="font-semibold text-accent-cyan">{Math.max(0, testResult.plans.red.inspectorHours - testResult.plans.yellow.inspectorHours)} soat</span> kamayadi.
+              </div>
+            </div>
+
+            {/* Impact: customs posts + legal */}
+            <div className="grid grid-cols-2 gap-5">
+              <div className="glass rounded-xl p-5">
+                <h3 className="text-sm font-semibold text-txt-primary mb-1">Postlarga ta'sir</h3>
+                <p className="text-xs text-txt-muted mb-4">Ta'sirlangan deklaratsiyalarning bojxona postlari bo'yicha taqsimoti.</p>
+                <div className="space-y-2">
+                  {testResult.posts.map((p,i) => {
+                    const max = testResult.posts[0]?.count || 1;
+                    return (
+                      <div key={i} className="flex items-center gap-3">
+                        <span className="text-xs text-txt-secondary w-32 truncate">{p.post}</span>
+                        <div className="progress-bar flex-1">
+                          <div className="progress-fill" style={{width:`${(p.count/max)*100}%`,background:'linear-gradient(90deg,#1D4ED8,#2563EB)'}}/>
+                        </div>
+                        <span className="text-xs font-semibold text-txt-primary w-8 text-right">{p.count}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="glass rounded-xl p-5">
+                <h3 className="text-sm font-semibold text-txt-primary mb-1">Huquqiy ta'sir</h3>
+                <p className="text-xs text-txt-muted mb-4">Aniqlangan noto'g'ri tasniflash bo'yicha ehtimoliy huquqiy oqibatlar.</p>
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    {l:'Ehtimoliy huquqbuzarlik',v:testResult.legal.violations,c:'text-status-amber'},
+                    {l:'Ma\'muriy ish',v:testResult.legal.administrative,c:'text-txt-primary'},
+                    {l:'Jinoiy belgilar',v:testResult.legal.criminal,c:'text-status-red'},
+                    {l:'Kam to\'langan boj',v:formatCurrency(testResult.legal.underpaidDuty),c:'text-status-green'},
+                    {l:'Taxminiy jarima',v:formatCurrency(testResult.legal.penalty),c:'text-status-green'},
+                  ].map((s,i) => (
+                    <div key={i} className="bg-surface-200 rounded-lg p-3">
+                      <div className="text-[10px] text-txt-muted mb-1">{s.l}</div>
+                      <div className={`text-base font-bold ${s.c}`}>{s.v}</div>
+                    </div>
+                  ))}
+                  <div className="bg-surface-200 rounded-lg p-3 flex flex-col justify-center">
+                    <div className="text-[10px] text-txt-muted mb-1">Asosiy modda</div>
+                    <div className="text-[11px] font-semibold text-txt-secondary leading-tight">{testResult.legal.article}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </>)}
 
       {/* Read-only view for active rules */}
       {viewRule && (
