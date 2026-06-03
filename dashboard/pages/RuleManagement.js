@@ -1,11 +1,20 @@
 const { useState } = React;
 
-window.RuleManagementPage = () => {
-  const [activeTab, setActiveTab] = useState('list');
+window.RuleManagementPage = ({ draft }) => {
+  // When arriving via Discovery's "Qoidaga aylantirish", `draft` carries the
+  // pre-parsed conditions and a suggested name. The component remounts on each
+  // navigation, so initialising state from the prop is enough to pre-fill.
+  const [activeTab, setActiveTab] = useState(draft ? 'builder' : 'list');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [showBuilder, setShowBuilder] = useState(false);
-  const [builderConditions, setBuilderConditions] = useState([{indicator:'hs6',operator:'=',value:''}]);
+  const [showBuilder, setShowBuilder] = useState(!!draft);
+  const [builderConditions, setBuilderConditions] = useState(
+    draft && draft.conditions && draft.conditions.length
+      ? draft.conditions
+      : [{indicator:'hs6',operator:'=',value:''}]
+  );
+  const [ruleName, setRuleName] = useState(draft?.name || '');
   const [testResult, setTestResult] = useState(null);
+  const fromPattern = draft?.source || null;
 
   const filteredRules = MOCK.rules.filter(r => statusFilter === 'all' || r.status === statusFilter);
 
@@ -135,6 +144,22 @@ window.RuleManagementPage = () => {
           <div className="col-span-3 glass rounded-xl p-5 animate-in stagger-2">
             <h3 className="text-sm font-semibold text-txt-primary mb-1">Qoida konstruktori</h3>
             <p className="text-xs text-txt-muted mb-4">Indikatorlarni tanlang va qiymatlarini belgilang</p>
+
+            {fromPattern && (
+              <div className="flex items-center gap-2 bg-accent-cyan/5 border border-accent-cyan/20 rounded-lg px-3 py-2 mb-4">
+                <Icon name="zap" size={13} className="text-accent-cyan"/>
+                <span className="text-xs text-accent-cyan">
+                  <span className="font-mono font-semibold">{fromPattern}</span> shabloni asosida avtomatik to'ldirildi
+                </span>
+              </div>
+            )}
+
+            <div className="mb-4">
+              <label className="block text-[11px] text-txt-muted mb-1">Qoida nomi</label>
+              <input type="text" value={ruleName} onChange={e => setRuleName(e.target.value)}
+                placeholder="Masalan: Po'lat quvurlar — Xitoy"
+                className="rule-builder-field text-xs w-full"/>
+            </div>
 
             <div className="space-y-3 mb-4">
               {builderConditions.map((cond,i) => (

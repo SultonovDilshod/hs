@@ -1,6 +1,32 @@
 const { useState, useMemo } = React;
 
-window.DiscoveryPage = () => {
+// Map the field tokens used in a pattern's `conditions` string onto the
+// indicator values understood by the rule builder in RuleManagement.
+const PATTERN_FIELD_TO_INDICATOR = {
+  HS6:'hs6', HS10:'hs10', COUNTRY:'country', IMPORTER:'importer',
+  DECLARANT:'declarant', EXPORTER:'exporter', DESCRIPTION:'description',
+};
+
+// Parse a pattern (e.g. conditions = "HS10=7304399309 AND Importer=306764904
+// AND Country=156") into the structured condition rows the builder expects.
+function patternToConditions(p) {
+  if (!p) return [];
+  const rows = [];
+  String(p.conditions || '').split(/\s+AND\s+/i).forEach(clause => {
+    const m = clause.trim().match(/^([A-Za-z0-9]+)\s*(!=|>=|<=|=|STARTS WITH|CONTAINS|IN)\s*(.+)$/i);
+    if (!m) return;
+    const indicator = PATTERN_FIELD_TO_INDICATOR[m[1].toUpperCase()];
+    if (!indicator) return;
+    rows.push({ indicator, operator: m[2].toUpperCase() === '=' ? '=' : m[2].toUpperCase(), value: m[3].trim() });
+  });
+  // Fall back to the bare HS code if the conditions string couldn't be parsed.
+  if (rows.length === 0 && p.hsCode) {
+    rows.push({ indicator: p.level === 6 ? 'hs6' : 'hs10', operator: '=', value: p.hsCode });
+  }
+  return rows;
+}
+
+window.DiscoveryPage = ({ onConvertToRule }) => {
   const [hsLevel, setHsLevel] = useState('all');
   const [minHitRate, setMinHitRate] = useState(0);
   const [statusFilter, setStatusFilter] = useState('all');
@@ -208,7 +234,16 @@ window.DiscoveryPage = () => {
             )}
 
             <div className="flex gap-3 mt-5">
-              <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent-cyan/20 text-accent-cyan text-sm font-medium hover:bg-accent-cyan/30 transition-colors border border-accent-cyan/30">
+              <button
+                onClick={() => {
+                  onConvertToRule && onConvertToRule({
+                    conditions: patternToConditions(selectedPattern),
+                    name: `${selectedPattern.hsCode} — shablon ${selectedPattern.id}`,
+                    source: selectedPattern.id,
+                  });
+                  setSelectedPattern(null);
+                }}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent-cyan/20 text-accent-cyan text-sm font-medium hover:bg-accent-cyan/30 transition-colors border border-accent-cyan/30">
                 <Icon name="check" size={14}/> Qoidaga aylantirish
               </button>
               <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-300 text-txt-secondary text-sm font-medium hover:bg-surface-400 transition-colors">

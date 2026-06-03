@@ -2,6 +2,17 @@ const { useState } = React;
 
 const App = () => {
   const [page, setPage] = useState('overview');
+  // Draft handed off from the Discovery page when the user converts a
+  // statistical pattern into a rule. RuleManagement reads it on mount to
+  // pre-fill the "Yangi qoida yaratish" builder.
+  const [ruleDraft, setRuleDraft] = useState(null);
+
+  // Manual navigation clears any pending draft so an old pattern doesn't
+  // re-populate the builder when the user simply browses to the page.
+  const navigate = (id) => { setRuleDraft(null); setPage(id); };
+
+  // Called from Discovery's "Qoidaga aylantirish" button.
+  const convertToRule = (draft) => { setRuleDraft(draft); setPage('rules'); };
 
   const pages = [
     {id:'overview',label:'Umumiy ko\'rinish',icon:'home'},
@@ -31,7 +42,7 @@ const App = () => {
             {/* Navigation */}
             <nav className="flex items-center h-full">
               {pages.map(p => (
-                <button key={p.id} onClick={() => setPage(p.id)}
+                <button key={p.id} onClick={() => navigate(p.id)}
                   className={`nav-item flex items-center gap-2 px-4 h-full text-xs font-medium transition-all ${page===p.id ? 'active text-accent-cyan' : 'text-txt-muted hover:text-txt-secondary'}`}>
                   <Icon name={p.icon} size={15}/>{p.label}
                 </button>
@@ -53,9 +64,9 @@ const App = () => {
       {/* Main Content */}
       <main className="max-w-[1440px] mx-auto px-6 py-5">
         {page === 'overview' && <OverviewPage/>}
-        {page === 'discovery' && <DiscoveryPage/>}
+        {page === 'discovery' && <DiscoveryPage onConvertToRule={convertToRule}/>}
         {page === 'monitoring' && <MonitoringPage/>}
-        {page === 'rules' && <RuleManagementPage/>}
+        {page === 'rules' && <RuleManagementPage draft={ruleDraft}/>}
         {page === 'network' && <NetworkAnalysisPage/>}
       </main>
     </div>

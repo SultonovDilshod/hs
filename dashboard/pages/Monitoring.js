@@ -1,9 +1,14 @@
-const { useState } = React;
-const { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } = Recharts;
+const { useState, useMemo } = React;
+const { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  ScatterChart, Scatter, ZAxis, ReferenceLine, BarChart, Bar, Legend, Cell,
+  RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis } = Recharts;
+
+const TYPE_COLORS = { statistical:'#0891B2', business:'#8B5CF6' };
 
 window.MonitoringPage = () => {
   const [selectedRule, setSelectedRule] = useState(null);
   const [filterType, setFilterType] = useState('all');
+  const [view, setView] = useState('table');
 
   const activeRules = MOCK.rules.filter(r => {
     if (filterType === 'all') return r.status === 'active';
@@ -25,6 +30,82 @@ window.MonitoringPage = () => {
 
   // alerts for declining rules
   const decliningRules = MOCK.rules.filter(r => r.status === 'active' && r.hitRateTrend.length >= 2 && r.hitRateTrend[r.hitRateTrend.length-1] < r.hitRateTrend[0]);
+
+  // ── Advanced analytics (computed once per data change) ──────────────────
+  const analytics = useMemo(() => {
+    const rules = MOCK.rules.filter(r => r.status === 'active' && r.hitRate != null);
+    const avgHitNum = rules.length ? rules.reduce((s,r)=>s+r.hitRate,0)/rules.length : 0;
+    const avgFpNum = rules.length ? rules.reduce((s,r)=>s+r.falsePositive,0)/rules.length : 0;
+
+    // 1. Effectiveness quadrant — false-positive (x) vs hit-rate (y),
+    //    bubble sized by recovered revenue, split by rule type.
+    const toPoint = r => ({ x:r.falsePositive, y:r.hitRate, z:r.revenueRecovered||0,
+      name:r.name, id:r.id, type:r.type, coverage:r.coverage });
+    const scatterStat = rules.filter(r=>r.type==='statistical').map(toPoint);
+    const scatterBiz  = rules.filter(r=>r.type==='business').map(toPoint);
+
+    // 2. Detection precision — confirmed vs false signals per rule.
+    const precision = [...rules].sort((a,b)=>b.flagged-a.flagged).map(r => ({
+      id:r.id, name:r.name,
+      confirmed:r.confirmed,
+      falsePos:Math.max((r.flagged||0)-(r.confirmed||0),0),
+    }));
+
+    // 3. Type comparison radar — normalised profile of each rule type.
+    const aggr = t => {
+      const rs = rules.filter(r=>r.type===t);
+      if (!rs.length) return null;
+      const avg = f => rs.reduce((s,r)=>s+f(r),0)/rs.length;
+      return {
+        hit: avg(r=>r.hitRate),
+        precision: avg(r=> r.flagged ? (r.confirmed/r.flagged)*100 : 0),
+        lowFp: 100 - avg(r=>r.falsePositive),
+        coverage: avg(r=>r.coverage||0),
+        revenue: rs.reduce((s,r)=>s+(r.revenueRecovered||0),0),
+      };
+    };
+    const aStat = aggr('statistical'), aBiz = aggr('business');
+    const maxCov = Math.max(aStat?.coverage||0, aBiz?.coverage||0, 1);
+    const maxRev = Math.max(aStat?.revenue||0, aBiz?.revenue||0, 1);
+    const norm = (v,max) => +(((v||0)/max)*100).toFixed(0);
+    const radar = [
+      {metric:'Tasdiqlanish', Statistik:+(aStat?.hit||0).toFixed(0), Biznes:+(aBiz?.hit||0).toFixed(0)},
+      {metric:'Aniqlik',      Statistik:+(aStat?.precision||0).toFixed(0), Biznes:+(aBiz?.precision||0).toFixed(0)},
+      {metric:'Past xato',    Statistik:+(aStat?.lowFp||0).toFixed(0), Biznes:+(aBiz?.lowFp||0).toFixed(0)},
+      {metric:'Qamrov',       Statistik:norm(aStat?.coverage,maxCov), Biznes:norm(aBiz?.coverage,maxCov)},
+      {metric:'Daromad',      Statistik:norm(aStat?.revenue,maxRev), Biznes:norm(aBiz?.revenue,maxRev)},
+    ];
+    return { avgHitNum, avgFpNum, scatterStat, scatterBiz, precision, radar, hasBiz:!!aBiz };
+  }, []);
+
+  // Tooltip for the effectiveness quadrant.
+  const QuadrantTooltip = ({active, payload}) => {
+    if (!active || !payload?.length) return null;
+    const d = payload[0].payload;
+    return (
+      <div className="glass rounded-lg px-3 py-2 text-xs" style={{border:'1px solid #E2E8F0'}}>
+        <p className="font-semibold text-txt-primary mb-1">{d.name}</p>
+        <p className="text-txt-secondary">Tasdiqlanish: <span className="font-semibold text-accent-cyan">{d.y}%</span></p>
+        <p className="text-txt-secondary">Noto'g'ri signal: <span className="font-semibold text-status-amber">{d.x}%</span></p>
+        <p className="text-txt-secondary">Bojxona to'lovi: <span className="font-semibold text-status-green">{formatCurrency(d.z)}</span></p>
+      </div>
+    );
+  };
+
+  // Tooltip for the precision bars.
+  const PrecisionTooltip = ({active, payload}) => {
+    if (!active || !payload?.length) return null;
+    const d = payload[0].payload;
+    const total = d.confirmed + d.falsePos;
+    return (
+      <div className="glass rounded-lg px-3 py-2 text-xs" style={{border:'1px solid #E2E8F0'}}>
+        <p className="font-semibold text-txt-primary mb-1">{d.name}</p>
+        <p className="text-txt-secondary">Tasdiqlangan: <span className="font-semibold text-status-green">{d.confirmed}</span></p>
+        <p className="text-txt-secondary">Noto'g'ri signal: <span className="font-semibold text-status-amber">{d.falsePos}</span></p>
+        <p className="text-txt-secondary">Aniqlik: <span className="font-semibold text-accent-cyan">{total?Math.round(d.confirmed/total*100):0}%</span></p>
+      </div>
+    );
+  };
 
   return (
     <div className="animate-fade">
@@ -69,6 +150,86 @@ window.MonitoringPage = () => {
         </div>
       )}
 
+      {/* View switcher: classic table vs. advanced analytics */}
+      <div className="flex items-center gap-2 mb-4 animate-in stagger-2">
+        {[{id:'table',label:'Jadval monitoringi',icon:'layers'},{id:'analytics',label:'Chuqur tahlil',icon:'barChart'}].map(v => (
+          <button key={v.id} onClick={() => setView(v.id)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${view===v.id ? 'bg-accent-cyan/15 text-accent-cyan border border-accent-cyan/30' : 'bg-surface-100 text-txt-muted hover:text-txt-secondary border border-transparent'}`}>
+            <Icon name={v.icon} size={15}/>{v.label}
+          </button>
+        ))}
+      </div>
+
+      {view === 'analytics' && (
+      <div className="space-y-5 animate-fade">
+        {/* Effectiveness quadrant */}
+        <div className="glass rounded-xl p-5">
+          <div className="flex items-center justify-between mb-1">
+            <h3 className="text-sm font-semibold text-txt-primary">Samaradorlik kvadranti</h3>
+            <div className="flex items-center gap-4">
+              <span className="flex items-center gap-1.5 text-[11px] text-txt-muted"><span className="w-2.5 h-2.5 rounded-full" style={{background:TYPE_COLORS.statistical}}/>Statistik</span>
+              <span className="flex items-center gap-1.5 text-[11px] text-txt-muted"><span className="w-2.5 h-2.5 rounded-full" style={{background:TYPE_COLORS.business}}/>Biznes</span>
+            </div>
+          </div>
+          <p className="text-xs text-txt-muted mb-4">Noto'g'ri signal (X) ⟷ tasdiqlanish (Y). Pufak hajmi — qo'shimcha bojxona to'lovi. Yuqori-chap burchak eng samarali zona.</p>
+          <ResponsiveContainer width="100%" height={320}>
+            <ScatterChart margin={{top:10,right:20,bottom:20,left:0}}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0"/>
+              <XAxis type="number" dataKey="x" name="Noto'g'ri signal" unit="%" domain={[0,'dataMax+5']}
+                tick={{fill:'#64748B',fontSize:11}} axisLine={false} tickLine={false}
+                label={{value:"Noto'g'ri signal %", position:'insideBottom', offset:-10, fill:'#94A3B8', fontSize:11}}/>
+              <YAxis type="number" dataKey="y" name="Tasdiqlanish" unit="%" domain={[0,100]}
+                tick={{fill:'#64748B',fontSize:11}} axisLine={false} tickLine={false}
+                label={{value:'Tasdiqlanish %', angle:-90, position:'insideLeft', fill:'#94A3B8', fontSize:11}}/>
+              <ZAxis type="number" dataKey="z" range={[60,600]} name="Bojxona to'lovi"/>
+              <ReferenceLine y={analytics.avgHitNum} stroke="#94A3B8" strokeDasharray="4 4"/>
+              <ReferenceLine x={analytics.avgFpNum} stroke="#94A3B8" strokeDasharray="4 4"/>
+              <Tooltip content={<QuadrantTooltip/>} cursor={{strokeDasharray:'3 3'}}/>
+              <Scatter name="Statistik" data={analytics.scatterStat} fill={TYPE_COLORS.statistical} fillOpacity={0.7}/>
+              <Scatter name="Biznes" data={analytics.scatterBiz} fill={TYPE_COLORS.business} fillOpacity={0.7}/>
+            </ScatterChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="grid grid-cols-2 gap-5">
+          {/* Detection precision */}
+          <div className="glass rounded-xl p-5">
+            <h3 className="text-sm font-semibold text-txt-primary mb-1">Aniqlik tahlili</h3>
+            <p className="text-xs text-txt-muted mb-4">Har bir qoida bo'yicha tasdiqlangan va noto'g'ri signallar nisbati.</p>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={analytics.precision} margin={{top:5,right:10,bottom:5,left:0}}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false}/>
+                <XAxis dataKey="id" tick={{fill:'#64748B',fontSize:10}} axisLine={false} tickLine={false} interval={0} angle={-35} textAnchor="end" height={50}/>
+                <YAxis tick={{fill:'#64748B',fontSize:11}} axisLine={false} tickLine={false}/>
+                <Tooltip content={<PrecisionTooltip/>} cursor={{fill:'rgba(8,145,178,0.05)'}}/>
+                <Legend wrapperStyle={{fontSize:11}}/>
+                <Bar dataKey="confirmed" stackId="a" fill="#059669" name="Tasdiqlangan" radius={[0,0,0,0]}/>
+                <Bar dataKey="falsePos" stackId="a" fill="#D97706" name="Noto'g'ri signal" radius={[3,3,0,0]}/>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Type comparison radar */}
+          <div className="glass rounded-xl p-5">
+            <h3 className="text-sm font-semibold text-txt-primary mb-1">Qoida turlari profili</h3>
+            <p className="text-xs text-txt-muted mb-4">Statistik va biznes qoidalarining normallashtirilgan ko'rsatkichlari (0–100).</p>
+            <ResponsiveContainer width="100%" height={300}>
+              <RadarChart data={analytics.radar} outerRadius={100}>
+                <PolarGrid stroke="#E2E8F0"/>
+                <PolarAngleAxis dataKey="metric" tick={{fill:'#475569',fontSize:11}}/>
+                <PolarRadiusAxis domain={[0,100]} tick={{fill:'#94A3B8',fontSize:9}} axisLine={false}/>
+                <Radar name="Statistik" dataKey="Statistik" stroke={TYPE_COLORS.statistical} fill={TYPE_COLORS.statistical} fillOpacity={0.25}/>
+                {analytics.hasBiz && <Radar name="Biznes" dataKey="Biznes" stroke={TYPE_COLORS.business} fill={TYPE_COLORS.business} fillOpacity={0.25}/>}
+                <Legend wrapperStyle={{fontSize:11}}/>
+                <Tooltip content={<CustomTooltip/>}/>
+              </RadarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+      )}
+
+      {view === 'table' && (<>
       {/* Filter + Table */}
       <div className="glass rounded-xl animate-in stagger-3">
         <div className="flex items-center gap-4 p-4 border-b border-surface-300/50">
@@ -177,6 +338,7 @@ window.MonitoringPage = () => {
           </div>
         </div>
       )}
+      </>)}
     </div>
   );
 };
