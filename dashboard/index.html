@@ -3,6 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Prevent the browser from serving a stale (e.g. dark-theme) cached copy
+     when the dashboard is reloaded on the same localhost address. -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Tovar kodi moduli — Noto'g'ri tasniflashni aniqlash tizimi</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
@@ -13,18 +18,18 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.4/cytoscape.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="tailwind.config.js"></script>
-<link rel="stylesheet" href="styles.css">
+<script src="tailwind.config.js?v=2"></script>
+<link rel="stylesheet" href="styles.css?v=2">
 </head>
 <body>
 <div id="root"></div>
-<script type="text/babel" src="data.generated.js"></script>
-<script type="text/babel" src="utils.js"></script>
-<script type="text/babel" src="pages/Overview.js"></script>
-<script type="text/babel" src="pages/Discovery.js"></script>
-<script type="text/babel" src="pages/Monitoring.js"></script>
-<script type="text/babel" src="pages/RuleManagement.js"></script>
-<script type="text/babel" src="pages/NetworkAnalysis.js"></script>
-<script type="text/babel" src="app.js"></script>
+<script type="text/babel" src="data.generated.js?v=2"></script>
+<script type="text/babel" src="utils.js?v=2"></script>
+<script type="text/babel" src="pages/Overview.js?v=2"></script>
+<script type="text/babel" src="pages/Discovery.js?v=2"></script>
+<script type="text/babel" src="pages/Monitoring.js?v=2"></script>
+<script type="text/babel" src="pages/RuleManagement.js?v=2"></script>
+<script type="text/babel" src="pages/NetworkAnalysis.js?v=2"></script>
+<script type="text/babel" src="app.js?v=2"></script>
 </body>
 </html>
