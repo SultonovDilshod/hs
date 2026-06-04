@@ -447,8 +447,6 @@ window.RuleManagementPage = ({ draft }) => {
                       {l:'Aniqlangan holatlar', f:p=>p.detected},
                       {l:'E\'tibordan chetda', f:p=>p.missed},
                       {l:'Qaytariladigan daromad', f:p=>`${formatCurrency(p.revenue)} (${p.revenueShare}%)`},
-                      {l:'Rasmiylashtirish kechikishi', f:p=>p.clearanceDelay+' soat'},
-                      {l:'Inspektor ish-soati', f:p=>p.inspectorHours+' s'},
                     ].map((row,i) => (
                       <tr key={i} className="border-b border-surface-300/30 last:border-0">
                         <td className="px-3 py-2 text-txt-secondary">{row.l}</td>
@@ -469,14 +467,12 @@ window.RuleManagementPage = ({ draft }) => {
                 <h3 className="text-sm font-semibold text-txt-primary">Sariq yo'lakda sinov — kutilmalar</h3>
               </div>
               <p className="text-xs text-txt-muted mb-4">Agar qoida sariq yo'lakka (faqat hujjat tekshiruvi) qo'yilsa, quyidagilar kutiladi.</p>
-              <div className="grid grid-cols-3 gap-4 mb-4">
+              <div className="grid grid-cols-4 gap-4 mb-4">
                 {[
                   {l:'Aniqlash darajasi',v:testResult.plans.yellow.detectionRate+'%',c:'text-status-amber'},
                   {l:'Aniqlanadigan holatlar',v:testResult.plans.yellow.detected,c:'text-status-green'},
                   {l:'E\'tibordan chetda qolishi',v:testResult.plans.yellow.missed,c:'text-status-amber'},
                   {l:'Qaytariladigan daromad',v:formatCurrency(testResult.plans.yellow.revenue),c:'text-status-green'},
-                  {l:'O\'rtacha kechikish',v:testResult.plans.yellow.clearanceDelay+' soat',c:'text-txt-primary'},
-                  {l:'Inspektor ish-soati',v:testResult.plans.yellow.inspectorHours+' soat',c:'text-txt-primary'},
                 ].map((s,i) => (
                   <div key={i} className="bg-surface-200 rounded-lg p-3">
                     <div className="text-[10px] text-txt-muted mb-1">{s.l}</div>
@@ -485,53 +481,27 @@ window.RuleManagementPage = ({ draft }) => {
                 ))}
               </div>
               <div className="text-xs text-txt-secondary bg-surface-50 rounded-lg px-3 py-2 border border-surface-300/50">
-                Qizil yo'lakka nisbatan: daromad <span className="font-semibold text-status-amber">{formatCurrency(testResult.plans.red.revenue - testResult.plans.yellow.revenue)}</span> kam qaytadi,
-                lekin <span className="font-semibold text-status-green">{testResult.plans.red.clearanceDelay - testResult.plans.yellow.clearanceDelay} soat</span> tezroq rasmiylashtiriladi va inspektor yuki <span className="font-semibold text-accent-cyan">{Math.max(0, testResult.plans.red.inspectorHours - testResult.plans.yellow.inspectorHours)} soat</span> kamayadi.
+                Qizil yo'lakka nisbatan sariq yo'lakda daromad <span className="font-semibold text-status-amber">{formatCurrency(testResult.plans.red.revenue - testResult.plans.yellow.revenue)}</span> kam qaytadi, lekin <span className="font-semibold text-status-green">{testResult.plans.red.missed >= testResult.plans.yellow.missed ? 0 : testResult.plans.yellow.missed - testResult.plans.red.missed}</span> ta holat ko'proq e'tibordan chetda qoladi.
               </div>
             </div>
 
-            {/* Impact: customs posts + legal */}
-            <div className="grid grid-cols-2 gap-5">
-              <div className="glass rounded-xl p-5">
-                <h3 className="text-sm font-semibold text-txt-primary mb-1">Postlarga ta'sir</h3>
-                <p className="text-xs text-txt-muted mb-4">Ta'sirlangan deklaratsiyalarning bojxona postlari bo'yicha taqsimoti.</p>
-                <div className="space-y-2">
-                  {testResult.posts.map((p,i) => {
-                    const max = testResult.posts[0]?.count || 1;
-                    return (
-                      <div key={i} className="flex items-center gap-3">
-                        <span className="text-xs text-txt-secondary w-32 truncate">{p.post}</span>
-                        <div className="progress-bar flex-1">
-                          <div className="progress-fill" style={{width:`${(p.count/max)*100}%`,background:'linear-gradient(90deg,#1D4ED8,#2563EB)'}}/>
-                        </div>
-                        <span className="text-xs font-semibold text-txt-primary w-8 text-right">{p.count}</span>
+            {/* Impact: customs posts */}
+            <div className="glass rounded-xl p-5">
+              <h3 className="text-sm font-semibold text-txt-primary mb-1">Postlarga ta'sir</h3>
+              <p className="text-xs text-txt-muted mb-4">Ta'sirlangan deklaratsiyalarning bojxona postlari bo'yicha taqsimoti.</p>
+              <div className="space-y-2">
+                {testResult.posts.map((p,i) => {
+                  const max = testResult.posts[0]?.count || 1;
+                  return (
+                    <div key={i} className="flex items-center gap-3">
+                      <span className="text-xs text-txt-secondary w-40 truncate">{p.post}</span>
+                      <div className="progress-bar flex-1">
+                        <div className="progress-fill" style={{width:`${(p.count/max)*100}%`,background:'linear-gradient(90deg,#1D4ED8,#2563EB)'}}/>
                       </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="glass rounded-xl p-5">
-                <h3 className="text-sm font-semibold text-txt-primary mb-1">Huquqiy ta'sir</h3>
-                <p className="text-xs text-txt-muted mb-4">Aniqlangan noto'g'ri tasniflash bo'yicha ehtimoliy huquqiy oqibatlar.</p>
-                <div className="grid grid-cols-2 gap-3">
-                  {[
-                    {l:'Ehtimoliy huquqbuzarlik',v:testResult.legal.violations,c:'text-status-amber'},
-                    {l:'Ma\'muriy ish',v:testResult.legal.administrative,c:'text-txt-primary'},
-                    {l:'Jinoiy belgilar',v:testResult.legal.criminal,c:'text-status-red'},
-                    {l:'Kam to\'langan boj',v:formatCurrency(testResult.legal.underpaidDuty),c:'text-status-green'},
-                    {l:'Taxminiy jarima',v:formatCurrency(testResult.legal.penalty),c:'text-status-green'},
-                  ].map((s,i) => (
-                    <div key={i} className="bg-surface-200 rounded-lg p-3">
-                      <div className="text-[10px] text-txt-muted mb-1">{s.l}</div>
-                      <div className={`text-base font-bold ${s.c}`}>{s.v}</div>
+                      <span className="text-xs font-semibold text-txt-primary w-8 text-right">{p.count}</span>
                     </div>
-                  ))}
-                  <div className="bg-surface-200 rounded-lg p-3 flex flex-col justify-center">
-                    <div className="text-[10px] text-txt-muted mb-1">Asosiy modda</div>
-                    <div className="text-[11px] font-semibold text-txt-secondary leading-tight">{testResult.legal.article}</div>
-                  </div>
-                </div>
+                  );
+                })}
               </div>
             </div>
           </div>
