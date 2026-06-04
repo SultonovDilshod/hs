@@ -130,12 +130,16 @@ window.MonitoringPage = () => {
       avgScore: ranking.length ? Math.round(ranking.reduce((s,r)=>s+r.score,0)/ranking.length) : 0,
     };
 
-    // 7. Risk corridor distribution across active rules.
-    const corridor = { red:{count:0,revenue:0}, yellow:{count:0,revenue:0}, green:{count:0,revenue:0} };
+    // 7. Risk corridor distribution across active rules (rules are only
+    //    sariq/qizil). inspected = flagged, detected = confirmed.
+    const corridor = { red:{count:0,revenue:0,inspected:0,detected:0}, yellow:{count:0,revenue:0,inspected:0,detected:0} };
     rules.forEach(r => {
       const a = assessCorridor({ hitRate:r.hitRate, revenueRecovered:r.revenueRecovered });
+      if (!corridor[a.key]) return;
       corridor[a.key].count++;
       corridor[a.key].revenue += r.revenueRecovered || 0;
+      corridor[a.key].inspected += r.flagged || 0;
+      corridor[a.key].detected += r.confirmed || 0;
     });
 
     return { avgHitNum, avgFpNum, scatterStat, scatterBiz, precision, radar, hasBiz:!!aBiz,
@@ -285,48 +289,19 @@ window.MonitoringPage = () => {
           </div>
         )}
 
-        {/* Risk corridor distribution */}
+        {/* Risk corridor distribution — doughnuts */}
         <div className="glass rounded-xl p-5">
-          <h3 className="text-sm font-semibold text-txt-primary mb-1">Xavf yo'laklari taqsimoti</h3>
-          <p className="text-xs text-txt-muted mb-4">Qoida (xavf profili) faqat sariq yoki qizil yo'lakka yo'naltiradi. Yashil — qoidasiz (avtomatik rasmiylashtirish).</p>
-          {(() => {
-            const tot = analytics.corridor.red.count + analytics.corridor.yellow.count || 1;
-            return (
-              <>
-                <div className="grid grid-cols-3 gap-4 mb-4">
-                  {['red','yellow'].map(k => {
-                    const c = CORRIDOR_META[k], d = analytics.corridor[k];
-                    return (
-                      <div key={k} className="rounded-xl p-4 border" style={{background:c.color+'0D', borderColor:c.color+'33'}}>
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="w-2.5 h-2.5 rounded-full" style={{background:c.color}}/>
-                          <span className="text-xs font-semibold" style={{color:c.color}}>{c.label}</span>
-                        </div>
-                        <div className="text-2xl font-bold text-txt-primary">{d.count} <span className="text-sm font-medium text-txt-muted">qoida</span></div>
-                        <div className="text-xs text-txt-secondary mt-1">{formatCurrency(d.revenue)} · {Math.round(d.count/tot*100)}%</div>
-                        <div className="text-[10px] text-txt-muted mt-1">{c.control}</div>
-                      </div>
-                    );
-                  })}
-                  <div className="rounded-xl p-4 border border-dashed" style={{background:CORRIDOR_META.green.color+'0A', borderColor:CORRIDOR_META.green.color+'40'}}>
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="w-2.5 h-2.5 rounded-full" style={{background:CORRIDOR_META.green.color}}/>
-                      <span className="text-xs font-semibold" style={{color:CORRIDOR_META.green.color}}>{CORRIDOR_META.green.label}</span>
-                    </div>
-                    <div className="text-2xl font-bold text-txt-muted">—</div>
-                    <div className="text-xs text-txt-secondary mt-1">Qoida talab etilmaydi</div>
-                    <div className="text-[10px] text-txt-muted mt-1">{CORRIDOR_META.green.control}</div>
-                  </div>
-                </div>
-                <div className="flex h-3 rounded-full overflow-hidden bg-surface-200">
-                  {['red','yellow'].map(k => {
-                    const d = analytics.corridor[k];
-                    return d.count > 0 ? <div key={k} style={{width:`${d.count/tot*100}%`, background:CORRIDOR_META[k].color}} title={`${CORRIDOR_META[k].label}: ${d.count}`}/> : null;
-                  })}
-                </div>
-              </>
-            );
-          })()}
+          <div className="flex items-center justify-between mb-1">
+            <h3 className="text-sm font-semibold text-txt-primary">Xavf yo'laklari taqsimoti</h3>
+            <span className="text-[11px] text-txt-muted">
+              Qizil: {analytics.corridor.red.count} qoida · Sariq: {analytics.corridor.yellow.count} qoida · Yashil — qoidasiz
+            </span>
+          </div>
+          <p className="text-xs text-txt-muted mb-4">Har bir yo'lakda tekshirilgan deklaratsiyalar, aniqlangan tafovutlar, undirilgan to'lov va samaradorlik.</p>
+          <div className="grid grid-cols-2 gap-4">
+            <CorridorDoughnut corridorKey="red" inspected={analytics.corridor.red.inspected} detected={analytics.corridor.red.detected} revenue={analytics.corridor.red.revenue}/>
+            <CorridorDoughnut corridorKey="yellow" inspected={analytics.corridor.yellow.inspected} detected={analytics.corridor.yellow.detected} revenue={analytics.corridor.yellow.revenue}/>
+          </div>
         </div>
 
         {/* Effectiveness quadrant */}

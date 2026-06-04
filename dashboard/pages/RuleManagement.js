@@ -94,6 +94,7 @@ window.RuleManagementPage = ({ draft }) => {
       estimatedRevenue: revenue,
       assessment,
       plans,
+      lanes: laneHistory(seed),
       posts: distributeByPost(affected, seed),
       legal: legalImpact(base),
       sampleMatches: [
@@ -102,6 +103,35 @@ window.RuleManagementPage = ({ draft }) => {
         {id:'DEC-2025-00203',hs:'8704210000',importer:'IMP-0342',country:'Xitoy (156)'},
       ]
     });
+  };
+
+  // Build the condition string from the current builder rows.
+  const buildCondition = () =>
+    builderConditions.map((c,i) => `${i>0?' AND ':''}${c.indicator.toUpperCase()} ${c.operator} ${c.value||'?'}`).join('');
+
+  // Persist the rule into MOCK.rules so it appears in the list. Editing an
+  // existing rule and saving keeps it as a draft; activation sets it active.
+  const saveRule = (status) => {
+    const condition = buildCondition();
+    if (editingRule) {
+      const r = MOCK.rules.find(x => x.id === editingRule.id);
+      if (r) { r.name = ruleName || r.name; r.condition = condition; r.status = status; }
+    } else {
+      MOCK.rules.push({
+        id: 'R' + String(MOCK.rules.length + 1).padStart(3,'0'),
+        name: ruleName || 'Nomsiz qoida',
+        type: 'statistical', status,
+        indicators: builderConditions.map(c => c.indicator),
+        condition,
+        hitRate: 0, hitRateTrend: [0,0,0,0,0], falsePositive: 0,
+        coverage: 0, revenueRecovered: 0,
+        activeSince: status === 'active' ? '2025-03-15' : null,
+        lastTriggered: null, flagged: 0, confirmed: 0,
+      });
+    }
+    startNewRule();
+    setStatusFilter(status);
+    setActiveTab('list');
   };
 
   const indicators = [
@@ -284,24 +314,22 @@ window.RuleManagementPage = ({ draft }) => {
                 </button>
                 {editingRule ? (
                   <>
-                    <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent-cyan/20 text-accent-cyan text-sm font-medium hover:bg-accent-cyan/30 transition-colors border border-accent-cyan/30">
+                    <button onClick={() => saveRule('draft')} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent-cyan/20 text-accent-cyan text-sm font-medium hover:bg-accent-cyan/30 transition-colors border border-accent-cyan/30">
                       <Icon name="check" size={14}/> O'zgarishlarni saqlash
                     </button>
-                    {editingRule.status === 'archived' && (
-                      <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-status-green/15 text-status-green text-sm font-medium hover:bg-status-green/25 transition-colors border border-status-green/30">
-                        <Icon name="trendUp" size={14}/> Tiklash va faollashtirish
-                      </button>
-                    )}
+                    <button onClick={() => saveRule('active')} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-status-green/15 text-status-green text-sm font-medium hover:bg-status-green/25 transition-colors border border-status-green/30">
+                      <Icon name="trendUp" size={14}/> {editingRule.status === 'archived' ? 'Tiklash va faollashtirish' : 'Faollashtirish'}
+                    </button>
                     <button onClick={() => {startNewRule(); setActiveTab('list');}} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-300 text-txt-secondary text-sm font-medium hover:bg-surface-400 transition-colors">
                       <Icon name="x" size={14}/> Bekor qilish
                     </button>
                   </>
                 ) : (
                   <>
-                    <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent-cyan/20 text-accent-cyan text-sm font-medium hover:bg-accent-cyan/30 transition-colors border border-accent-cyan/30">
+                    <button onClick={() => saveRule('active')} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent-cyan/20 text-accent-cyan text-sm font-medium hover:bg-accent-cyan/30 transition-colors border border-accent-cyan/30">
                       <Icon name="check" size={14}/> Saqlash va faollashtirish
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-300 text-txt-secondary text-sm font-medium hover:bg-surface-400 transition-colors">
+                    <button onClick={() => saveRule('draft')} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-300 text-txt-secondary text-sm font-medium hover:bg-surface-400 transition-colors">
                       Qoralama sifatida saqlash
                     </button>
                   </>
@@ -390,8 +418,10 @@ window.RuleManagementPage = ({ draft }) => {
               </p>
               <div className="mt-4 pt-3 border-t border-surface-300/50">
                 <div className="text-[11px] text-txt-muted mb-2 font-medium uppercase tracking-wider">Qoida ta'siri — yo'lak eskalatsiyasi</div>
-                <p className="text-xs text-txt-muted mb-3">Bu qoida deklaratsiyani faqat yuqori yo'lakka ko'taradi; yashil yo'lakka hech qachon tushirmaydi.</p>
-                <EscalationMatrix ruleKey={testResult.assessment.key}/>
+                <p className="text-xs text-txt-secondary mb-3">
+                  Mazkur qoidaga mos holatlarning <span className="font-semibold" style={{color:CORRIDOR_META.green.color}}>{testResult.lanes.green}%</span> yashil, <span className="font-semibold" style={{color:CORRIDOR_META.yellow.color}}>{testResult.lanes.yellow}%</span> sariq, <span className="font-semibold" style={{color:CORRIDOR_META.red.color}}>{testResult.lanes.red}%</span> qizil yo'lakda rasmiylashtirilgan. Qoida ularni <span className="font-semibold" style={{color:testResult.assessment.color}}>{testResult.assessment.short}</span> yo'lakka ko'taradi (yashilga hech qachon tushirmaydi).
+                </p>
+                <LaneHistoryBars dist={testResult.lanes}/>
               </div>
             </div>
 

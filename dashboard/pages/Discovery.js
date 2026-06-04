@@ -54,6 +54,8 @@ window.DiscoveryPage = ({ onConvertToRule }) => {
     hitRate: selectedPattern.hitRate || 0,
     revenue: selectedPattern.revenueImpact || 0,
   }) : null;
+  // Historical lane distribution of matching cases (the leakage the rule closes).
+  const patternLanes = selectedPattern ? laneHistory(selectedPattern.id) : null;
 
   return (
     <div className="animate-fade">
@@ -232,8 +234,9 @@ window.DiscoveryPage = ({ onConvertToRule }) => {
                     : "Past xavf — avtomatik rasmiylashtirish/kuzatuv kifoya."}
                 </p>
                 <div className="bg-surface-100 rounded-lg p-3 mb-3 border border-surface-300/40">
-                  <div className="text-[11px] text-txt-muted mb-2 font-medium uppercase tracking-wider">Qoida ta'siri (eskalatsiya)</div>
-                  <EscalationMatrix ruleKey={patternCorridor.key}/>
+                  <div className="text-[11px] text-txt-muted mb-1 font-medium uppercase tracking-wider">Qoida ta'siri (eskalatsiya)</div>
+                  <p className="text-[11px] text-txt-muted mb-2">Mazkur qoidaga mos holatlarning <span className="font-semibold" style={{color:CORRIDOR_META.green.color}}>{patternLanes.green}%</span> yashil, <span className="font-semibold" style={{color:CORRIDOR_META.yellow.color}}>{patternLanes.yellow}%</span> sariq, <span className="font-semibold" style={{color:CORRIDOR_META.red.color}}>{patternLanes.red}%</span> qizil yo'lakda rasmiylashtirilgan. Qoida ularni <CorridorBadge c={patternCorridor}/> ga ko'taradi.</p>
+                  <LaneHistoryBars dist={patternLanes}/>
                 </div>
                 <div className="text-[11px] text-txt-muted mb-2 font-medium uppercase tracking-wider">Sariq yo'lakda sinov — kutilmalar</div>
                 <div className="grid grid-cols-4 gap-3">

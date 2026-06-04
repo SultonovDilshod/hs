@@ -127,8 +127,7 @@ window.escalationTargets = (ruleKey) => ({
 
 // Visual "yashil → sariq" style matrix showing where a rule of a given
 // severity moves declarations from each starting lane.
-window.EscalationMatrix = ({ ruleKey }) => {
-  const t = window.escalationTargets(ruleKey);
+window.EscalationMatrix = ({ ruleKey }) => {  const t = window.escalationTargets(ruleKey);
   const Lane = ({k}) => {
     const c = window.CORRIDOR_META[k];
     return (
@@ -224,5 +223,81 @@ window.CorridorBadge = ({ c }) => {
       <span className="w-1.5 h-1.5 rounded-full inline-block" style={{background:c.color}}/>
       {c.short}
     </span>
+  );
+};
+
+// Historical clearance distribution for declarations matching a pattern —
+// shows how cases were *actually* cleared before the rule (weighted toward
+// the lower lanes to highlight the leakage the rule closes). Deterministic.
+window.laneHistory = (seedKey) => {
+  const s = _seedFrom(seedKey || 'x');
+  let g = 42 + (s % 28);              // 42..69 — ko'pi yashildan o'tib ketgan
+  let y = 16 + ((s >> 3) % 24);       // 16..39
+  let r = 100 - g - y;
+  if (r < 3) { r = 3; }
+  const tot = g + y + r;
+  const green = Math.round(g / tot * 100);
+  const yellow = Math.round(y / tot * 100);
+  return { green, yellow, red: 100 - green - yellow };
+};
+
+// Three labelled bars showing the green/yellow/red historical share.
+window.LaneHistoryBars = ({ dist }) => {
+  if (!dist) return null;
+  return (
+    <div className="space-y-2">
+      {['green','yellow','red'].map(k => {
+        const c = window.CORRIDOR_META[k];
+        return (
+          <div key={k} className="flex items-center gap-2">
+            <span className="text-xs w-12 font-medium" style={{color:c.color}}>{c.short}</span>
+            <div className="flex-1 h-2 rounded-full bg-surface-200 overflow-hidden">
+              <div className="h-full rounded-full" style={{width:`${dist[k]}%`, background:c.color}}/>
+            </div>
+            <span className="text-xs font-semibold text-txt-primary w-9 text-right">{dist[k]}%</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+// Doughnut card for a corridor: inspected vs detected discrepancies, with the
+// effectiveness (detection rate) printed in the centre, plus the recovered
+// duty alongside.
+window.CorridorDoughnut = ({ corridorKey, inspected, detected, revenue }) => {
+  const c = window.CORRIDOR_META[corridorKey];
+  const { PieChart, Pie, Cell, ResponsiveContainer } = Recharts;
+  const eff = inspected ? Math.round(detected / inspected * 100) : 0;
+  const data = [ {name:'Tafovut', value:detected}, {name:'Toza', value:Math.max(0, inspected - detected)} ];
+  return (
+    <div className="rounded-xl p-4 border" style={{background:c.color+'0D', borderColor:c.color+'33'}}>
+      <div className="flex items-center gap-2 mb-3">
+        <span className="w-2.5 h-2.5 rounded-full" style={{background:c.color}}/>
+        <span className="text-sm font-semibold" style={{color:c.color}}>{c.label}</span>
+        <span className="ml-auto text-[10px] text-txt-muted">{c.control}</span>
+      </div>
+      <div className="flex items-center gap-4">
+        <div className="relative shrink-0" style={{width:120, height:120}}>
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie data={data} dataKey="value" innerRadius={42} outerRadius={56} startAngle={90} endAngle={-270} stroke="none">
+                <Cell fill={c.color}/>
+                <Cell fill="#E2E8F0"/>
+              </Pie>
+            </PieChart>
+          </ResponsiveContainer>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className="text-2xl font-bold" style={{color:c.color}}>{eff}%</span>
+            <span className="text-[9px] text-txt-muted">samaradorlik</span>
+          </div>
+        </div>
+        <div className="flex-1 space-y-2.5">
+          <div><div className="text-[10px] text-txt-muted">Tekshirilgan deklaratsiya</div><div className="text-base font-bold text-txt-primary">{formatNumber(inspected)}</div></div>
+          <div><div className="text-[10px] text-txt-muted">Tafovut aniqlandi</div><div className="text-base font-bold" style={{color:c.color}}>{formatNumber(detected)}</div></div>
+          <div><div className="text-[10px] text-txt-muted">Qo'shimcha to'lov undirildi</div><div className="text-base font-bold text-status-green">{formatCurrency(revenue)}</div></div>
+        </div>
+      </div>
+    </div>
   );
 };
