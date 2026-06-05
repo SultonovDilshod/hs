@@ -2,6 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
+const zlib = require('zlib');
 
 const ROOT = path.resolve(__dirname, '..');
 const DATA_DIR = path.join(ROOT, 'dashboard', 'data');
@@ -66,6 +67,115 @@ function readCSV(name) {
     return null;
   }
   return parseCSV(fs.readFileSync(p, 'utf8'));
+}
+
+// ---- Minimal .xlsx reader (zip of XML) using only Node built-ins ----
+function unzip(buf) {
+  // Locate End Of Central Directory record.
+  let eocd = -1;
+  for (let i = buf.length - 22; i >= 0; i--) {
+    if (buf.readUInt32LE(i) === 0x06054b50) { eocd = i; break; }
+  }
+  if (eocd < 0) throw new Error('not a zip file');
+  const count = buf.readUInt16LE(eocd + 10);
+  let off = buf.readUInt32LE(eocd + 16);
+  const entries = {};
+  for (let n = 0; n < count; n++) {
+    if (buf.readUInt32LE(off) !== 0x02014b50) break;
+    const method = buf.readUInt16LE(off + 10);
+    const compSize = buf.readUInt32LE(off + 20);
+    const nameLen = buf.readUInt16LE(off + 28);
+    const extraLen = buf.readUInt16LE(off + 30);
+    const commLen = buf.readUInt16LE(off + 32);
+    const lho = buf.readUInt32LE(off + 42);
+    const name = buf.toString('utf8', off + 46, off + 46 + nameLen);
+    const lhNameLen = buf.readUInt16LE(lho + 26);
+    const lhExtraLen = buf.readUInt16LE(lho + 28);
+    const dataStart = lho + 30 + lhNameLen + lhExtraLen;
+    const comp = buf.slice(dataStart, dataStart + compSize);
+    entries[name] = method === 0 ? comp : zlib.inflateRawSync(comp);
+    off += 46 + nameLen + extraLen + commLen;
+  }
+  return entries;
+}
+
+function decodeXml(s) {
+  return s.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"')
+          .replace(/&apos;/g, "'")
+          .replace(/&#x([0-9a-fA-F]+);/g, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+          .replace(/&#(\d+);/g, (_, d) => String.fromCodePoint(+d))
+          .replace(/&amp;/g, '&');
+}
+
+function colToIdx(ref) {
+  const m = ref.match(/^[A-Za-z]+/);
+  if (!m) return 0;
+  let idx = 0;
+  for (const ch of m[0].toUpperCase()) idx = idx * 26 + (ch.charCodeAt(0) - 64);
+  return Math.max(idx - 1, 0);
+}
+
+function parseXLSX(buf) {
+  const z = unzip(buf);
+  const dec = k => (z[k] ? z[k].toString('utf8') : null);
+  const shared = [];
+  const ss = dec('xl/sharedStrings.xml');
+  if (ss) {
+    const reSi = /<si>([\s\S]*?)<\/si>/g; let m;
+    while ((m = reSi.exec(ss))) {
+      const reT = /<t[^>]*>([\s\S]*?)<\/t>/g; let tm, acc = '';
+      while ((tm = reT.exec(m[1]))) acc += decodeXml(tm[1]);
+      shared.push(acc);
+    }
+  }
+  const sheetKey = Object.keys(z).filter(k => /^xl\/worksheets\/sheet\d+\.xml$/.test(k)).sort()[0];
+  if (!sheetKey) return [];
+  const xml = z[sheetKey].toString('utf8');
+  const grid = [];
+  const reRow = /<row[^>]*>([\s\S]*?)<\/row>/g; let rm;
+  while ((rm = reRow.exec(xml))) {
+    const cells = {}; let maxc = -1;
+    const reC = /<c\s+([^>]*?)(\/>|>([\s\S]*?)<\/c>)/g; let cm;
+    while ((cm = reC.exec(rm[1]))) {
+      const attrs = cm[1]; const inner = cm[3] || '';
+      const rref = (attrs.match(/r="([^"]+)"/) || [])[1] || '';
+      const ci = rref ? colToIdx(rref) : 0;
+      const t = (attrs.match(/t="([^"]+)"/) || [])[1];
+      let val = '';
+      if (t === 's') {
+        const v = (inner.match(/<v>([\s\S]*?)<\/v>/) || [])[1];
+        val = v != null ? (shared[+v] ?? '') : '';
+      } else if (t === 'inlineStr') {
+        const reT = /<t[^>]*>([\s\S]*?)<\/t>/g; let tm;
+        while ((tm = reT.exec(inner))) val += decodeXml(tm[1]);
+      } else {
+        const v = (inner.match(/<v>([\s\S]*?)<\/v>/) || [])[1];
+        val = v != null ? decodeXml(v) : '';
+      }
+      cells[ci] = val; maxc = Math.max(maxc, ci);
+    }
+    const arr = [];
+    for (let i = 0; i <= maxc; i++) arr.push(String(cells[i] ?? '').trim());
+    grid.push(arr);
+  }
+  const rows = grid.filter(r => r.some(v => v !== ''));
+  if (!rows.length) return [];
+  const header = rows[0].map(h => h.trim().toLowerCase());
+  return rows.slice(1).map(r => {
+    const o = {};
+    header.forEach((h, idx) => { o[h] = (r[idx] ?? '').trim(); });
+    return o;
+  });
+}
+
+// Try <base>.xlsx first, then <base>.csv.
+function readTable(base) {
+  const xlsx = path.join(DATA_DIR, base + '.xlsx');
+  if (fs.existsSync(xlsx)) return parseXLSX(fs.readFileSync(xlsx));
+  const csv = path.join(DATA_DIR, base + '.csv');
+  if (fs.existsSync(csv)) return parseCSV(fs.readFileSync(csv, 'utf8'));
+  console.warn(`[build-data] WARN: ${base}.xlsx/.csv not found, skipping`);
+  return null;
 }
 
 function num(v) {
@@ -219,6 +329,40 @@ function buildDeclarations(allHsRows, hsLen) {
   return Object.values(map);
 }
 
+function buildMonthly(rows) {
+  return (rows || []).map(r => ({
+    month: r.month || '',
+    declarations: num(r.declarations) ?? 0,
+    misclass: num(r.misclass) ?? 0,
+    revenue: num(r.revenue) ?? 0,
+    hitRate: num(r.hit_rate) ?? 0,
+  }));
+}
+
+function buildRules(rows) {
+  return (rows || []).map(r => {
+    let trend = String(r.hit_rate_trend || '').split(/[,;]/).map(x => num(x)).filter(x => x != null);
+    if (!trend.length) trend = [0];
+    return {
+      id: r.id || r.rule_id || '',
+      name: r.name || '',
+      type: r.type || 'statistical',
+      status: r.status || 'active',
+      indicators: [],
+      condition: r.condition || '',
+      hitRate: num(r.hit_rate) ?? 0,
+      hitRateTrend: trend,
+      falsePositive: num(r.false_positive) ?? 0,
+      coverage: num(r.coverage) ?? 0,
+      revenueRecovered: num(r.revenue_recovered) ?? 0,
+      activeSince: nonEmpty(r.active_since),
+      lastTriggered: nonEmpty(r.last_triggered),
+      flagged: num(r.flagged) ?? 0,
+      confirmed: num(r.confirmed) ?? 0,
+    };
+  });
+}
+
 function serialize(value, indent = 2, depth = 0) {
   const pad = ' '.repeat(indent * depth);
   const padIn = ' '.repeat(indent * (depth + 1));
@@ -253,12 +397,14 @@ function main() {
     process.exit(1);
   }
 
-  const patternRows    = readCSV('patterns.csv');
-  const correctionRows = readCSV('possible_corrections.csv');
-  const summaryRows    = readCSV('pattern_summary.csv');
-  const allHsRows      = readCSV('all_hs.csv');
+  const patternRows    = readTable('patterns');
+  const correctionRows = readTable('possible_corrections');
+  const summaryRows    = readTable('pattern_summary');
+  const allHsRows      = readTable('all_hs');
+  const monthlyRows    = readTable('monthly_trend');
+  const ruleRows       = readTable('rules');
 
-  if (!patternRows && !correctionRows && !allHsRows) {
+  if (!patternRows && !correctionRows && !allHsRows && !monthlyRows && !ruleRows) {
     console.warn('[build-data] No real data found; writing data.generated.js identical to mock');
     const out = 'window.MOCK = ' + serialize(mock) + ';\n';
     fs.writeFileSync(OUT_FILE, out);
@@ -277,8 +423,17 @@ function main() {
   // Summary overrides
   if (summaryRows && summaryRows.length) {
     const s = summaryRows[0];
-    if (s.total_patterns)      mock.summary.activeRules   = num(s.total_patterns);
-    if (s.total_extra_revenue) mock.summary.revenueImpact = num(s.total_extra_revenue);
+    const colMap = {
+      total_patterns: 'activeRules',
+      total_extra_revenue: 'revenueImpact',
+      total_declarations: 'totalDeclarations',
+      total_inspected: 'totalInspected',
+      misclassifications: 'misclassifications',
+      avg_hit_rate: 'avgHitRate',
+    };
+    for (const [col, key] of Object.entries(colMap)) {
+      if (s[col] !== undefined && s[col] !== '') mock.summary[key] = num(s[col]);
+    }
   } else {
     mock.summary.activeRules = patterns.length;
     mock.summary.revenueImpact = patterns.reduce((a, p) => a + p.revenueImpact, 0);
@@ -286,6 +441,14 @@ function main() {
   mock.summary.weeklyNewPatterns = 0;
   mock.summary.weeklyStrengthened = 0;
   mock.summary.weeklyWeakened = 0;
+
+  // Optional real monthly trend and rules (drive Overview & Monitoring).
+  if (monthlyRows) mock.monthlyTrend = buildMonthly(monthlyRows);
+  if (ruleRows) {
+    mock.rules = buildRules(ruleRows);
+    const noSummaryRules = !(summaryRows && summaryRows.length && summaryRows[0].total_patterns);
+    if (noSummaryRules) mock.summary.activeRules = mock.rules.filter(r => r.status === 'active').length;
+  }
 
   // Network — real data only covers HS10/3m. Aggregate to HS6/3m for the toggle.
   // Wipe 1y windows so the UI doesn't mix real and mock data (empty arrays render as "no data").

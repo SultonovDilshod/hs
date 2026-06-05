@@ -16,6 +16,8 @@ import json
 import os
 import re
 import sys
+import zipfile
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -76,6 +78,78 @@ def read_csv_optional(name: str) -> list[dict] | None:
         print(f"[build-data] WARN: {name} not found, skipping")
         return None
     return parse_csv(p)
+
+
+_XLNS = "{http://schemas.openxmlformats.org/spreadsheetml/2006/main}"
+
+
+def _col_to_idx(ref: str) -> int:
+    """'B3' -> 1 (0-based column index)."""
+    letters = "".join(c for c in ref if c.isalpha())
+    idx = 0
+    for ch in letters:
+        idx = idx * 26 + (ord(ch.upper()) - ord("A") + 1)
+    return max(idx - 1, 0)
+
+
+def parse_xlsx(path: Path) -> list[dict]:
+    """Read the first worksheet of an .xlsx file using only the standard
+    library (xlsx is a zip of XML). Returns list of dicts keyed by the
+    lower-cased header row, exactly like parse_csv."""
+    with zipfile.ZipFile(path) as z:
+        names = z.namelist()
+        shared: list[str] = []
+        if "xl/sharedStrings.xml" in names:
+            root = ET.fromstring(z.read("xl/sharedStrings.xml"))
+            for si in root.findall(f"{_XLNS}si"):
+                shared.append("".join(t.text or "" for t in si.iter(f"{_XLNS}t")))
+        sheet = next((n for n in sorted(names)
+                      if n.startswith("xl/worksheets/sheet") and n.endswith(".xml")), None)
+        if not sheet:
+            return []
+        root = ET.fromstring(z.read(sheet))
+        grid: list[list[str]] = []
+        for row in root.iter(f"{_XLNS}row"):
+            cells: dict[int, str] = {}
+            maxc = -1
+            for c in row.findall(f"{_XLNS}c"):
+                ref = c.get("r", "")
+                ci = _col_to_idx(ref) if ref else 0
+                t = c.get("t")
+                v = c.find(f"{_XLNS}v")
+                if t == "s":
+                    val = shared[int(v.text)] if (v is not None and v.text) else ""
+                elif t == "inlineStr":
+                    is_el = c.find(f"{_XLNS}is")
+                    val = "".join(tt.text or "" for tt in is_el.iter(f"{_XLNS}t")) if is_el is not None else ""
+                else:
+                    val = v.text if v is not None else ""
+                cells[ci] = (val or "")
+                maxc = max(maxc, ci)
+            grid.append([str(cells.get(i, "")).strip() for i in range(maxc + 1)])
+    grid = [r for r in grid if any(v != "" for v in r)]
+    if not grid:
+        return []
+    header = [h.strip().lower() for h in grid[0]]
+    out = []
+    for r in grid[1:]:
+        obj = {}
+        for i, h in enumerate(header):
+            obj[h] = (r[i] if i < len(r) else "").strip()
+        out.append(obj)
+    return out
+
+
+def read_table_optional(base: str) -> list[dict] | None:
+    """Try <base>.xlsx first, then <base>.csv. `base` has no extension."""
+    xlsx = DATA_DIR / f"{base}.xlsx"
+    if xlsx.exists():
+        return parse_xlsx(xlsx)
+    csvp = DATA_DIR / f"{base}.csv"
+    if csvp.exists():
+        return parse_csv(csvp)
+    print(f"[build-data] WARN: {base}.xlsx/.csv not found, skipping")
+    return None
 
 
 def num(v):
@@ -354,6 +428,44 @@ def build_declarations(rows: list[dict] | None, hs_len: int) -> list[dict]:
     return list(agg.values())
 
 
+def build_monthly(rows: list[dict] | None) -> list[dict]:
+    out = []
+    for r in rows or []:
+        out.append({
+            "month": r.get("month", ""),
+            "declarations": num(r.get("declarations")) or 0,
+            "misclass": num(r.get("misclass")) or 0,
+            "revenue": num(r.get("revenue")) or 0,
+            "hitRate": num(r.get("hit_rate")) or 0,
+        })
+    return out
+
+
+def build_rules(rows: list[dict] | None) -> list[dict]:
+    out = []
+    for r in rows or []:
+        trend = [num(x) for x in re.split(r"[,;]", str(r.get("hit_rate_trend", ""))) if x.strip() != ""]
+        trend = [t for t in trend if t is not None] or [0]
+        out.append({
+            "id": r.get("id") or r.get("rule_id") or "",
+            "name": r.get("name", ""),
+            "type": r.get("type") or "statistical",
+            "status": r.get("status") or "active",
+            "indicators": [],
+            "condition": r.get("condition", ""),
+            "hitRate": num(r.get("hit_rate")) or 0,
+            "hitRateTrend": trend,
+            "falsePositive": num(r.get("false_positive")) or 0,
+            "coverage": num(r.get("coverage")) or 0,
+            "revenueRecovered": num(r.get("revenue_recovered")) or 0,
+            "activeSince": non_empty(r.get("active_since")),
+            "lastTriggered": non_empty(r.get("last_triggered")),
+            "flagged": num(r.get("flagged")) or 0,
+            "confirmed": num(r.get("confirmed")) or 0,
+        })
+    return out
+
+
 def serialize(value, indent=2, depth=0) -> str:
     pad = " " * (indent * depth)
     pad_in = " " * (indent * (depth + 1))
@@ -393,12 +505,14 @@ def main():
         print(f"[build-data] ERROR: could not parse window.MOCK from data.js: {e}", file=sys.stderr)
         sys.exit(1)
 
-    pattern_rows    = read_csv_optional("patterns.csv")
-    correction_rows = read_csv_optional("possible_corrections.csv")
-    summary_rows    = read_csv_optional("pattern_summary.csv")
-    all_hs_rows     = read_csv_optional("all_hs.csv")
+    pattern_rows    = read_table_optional("patterns")
+    correction_rows = read_table_optional("possible_corrections")
+    summary_rows    = read_table_optional("pattern_summary")
+    all_hs_rows     = read_table_optional("all_hs")
+    monthly_rows    = read_table_optional("monthly_trend")
+    rule_rows       = read_table_optional("rules")
 
-    if not pattern_rows and not correction_rows and not all_hs_rows:
+    if not pattern_rows and not correction_rows and not all_hs_rows and not monthly_rows and not rule_rows:
         print("[build-data] No real data found; writing data.generated.js identical to mock")
         OUT_FILE.write_text("window.MOCK = " + serialize(mock) + ";\n", encoding="utf-8")
         return
@@ -413,16 +527,32 @@ def main():
 
     if summary_rows:
         s = summary_rows[0]
-        if s.get("total_patterns"):
-            mock["summary"]["activeRules"] = num(s["total_patterns"])
-        if s.get("total_extra_revenue"):
-            mock["summary"]["revenueImpact"] = num(s["total_extra_revenue"])
+        col_map = {
+            "total_patterns": "activeRules",
+            "total_extra_revenue": "revenueImpact",
+            "total_declarations": "totalDeclarations",
+            "total_inspected": "totalInspected",
+            "misclassifications": "misclassifications",
+            "avg_hit_rate": "avgHitRate",
+        }
+        for col, key in col_map.items():
+            if s.get(col) not in (None, ""):
+                mock["summary"][key] = num(s[col])
     else:
         mock["summary"]["activeRules"] = len(patterns)
         mock["summary"]["revenueImpact"] = sum(p["revenueImpact"] for p in patterns)
     mock["summary"]["weeklyNewPatterns"] = 0
     mock["summary"]["weeklyStrengthened"] = 0
     mock["summary"]["weeklyWeakened"] = 0
+
+    # Optional real monthly trend and rules (drive Overview & Monitoring).
+    if monthly_rows:
+        mock["monthlyTrend"] = build_monthly(monthly_rows)
+    if rule_rows:
+        mock["rules"] = build_rules(rule_rows)
+        active = [r for r in mock["rules"] if r["status"] == "active"]
+        if not summary_rows or summary_rows[0].get("total_patterns") in (None, ""):
+            mock["summary"]["activeRules"] = len(active)
 
     if "network" not in mock:
         mock["network"] = {}
